@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create plugin zip
+        run: |
+          # Temporary directory with the correct folder name
+          mkdir -p build/update-pilot
+
+          # Copy plugin files (excluding git, github, and build artifacts)
+          rsync -av --exclude='.git' \
+                    --exclude='.github' \
+                    --exclude='build' \
+                    --exclude='tests' \
+                    --exclude='.gitignore' \
+                    --exclude='*.md' \
+                    --exclude='composer.*' \
+                    --exclude='package*.json' \
+                    --exclude='node_modules' \
+                    --exclude='.DS_Store' \
+                    --exclude='screenshot*.*' \
+                    ./ build/update-pilot/
+
+          # Keep README.md: it feeds the View details popup, and its License
+          # section carries the MIT notice for the bundled Parsedown, which has
+          # to travel with the code.
+          cp README.md build/update-pilot/ 2>/dev/null || true
+          cp LICENSE build/update-pilot/ 2>/dev/null || true
+
+          cd build
+          zip -r ../update-pilot.zip update-pilot
+          cd ..
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: update-pilot.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

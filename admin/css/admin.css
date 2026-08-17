@@ -1,0 +1,304 @@
+/**
+ * Update Pilot — admin styles.
+ *
+ * Loaded only on this plugin's screens. Written from scratch rather than
+ * inherited: it leans on the core admin classes and only adds what they do not
+ * already provide.
+ */
+
+.update-pilot h2 {
+	margin-top: 2em;
+	padding-top: 1em;
+	border-top: 1px solid #dcdcde;
+	font-size: 1.15em;
+}
+
+.update-pilot h2:first-of-type {
+	border-top: 0;
+	padding-top: 0;
+}
+
+/*
+ * Tabbed settings header, styled after Settings > Privacy: a centred title
+ * with the tabs directly beneath it, the active one underlined in the
+ * current admin colour scheme. Tab switching itself is handled by admin.js;
+ * without it every panel stays visible, so the page still works, just as one
+ * long list again.
+ */
+
+/*
+ * .upilot-tabbed (the settings screen's own wrapper, in place of .wrap — see
+ * class-admin.php) sits directly in #wpbody-content with no margin of its
+ * own, so it already spans #wpcontent's full width. The one thing still in
+ * the way is #wpcontent's own left padding, which body.upilot-settings-screen
+ * (added by the PHP side) zeroes out, exactly as core does for Privacy and
+ * Site Health.
+ */
+
+body.upilot-settings-screen #wpcontent,
+body.upilot-settings-screen.auto-fold #wpcontent {
+	padding-left: 0;
+}
+
+.upilot-tabs-header {
+	text-align: center;
+	margin: 0 0 1rem;
+	background: #fff;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.upilot-tabs-title-section {
+	/*
+	 * Privacy's header stands ~32px taller than its 8px of padding would
+	 * suggest, because its title clears #screen-meta-links — the floated
+	 * "Help" box WP renders only on screens with a help tab or screen
+	 * options. This screen registers neither, so nothing floats, clear: both
+	 * has nothing to clear, and copying the 32px onto padding-top alone left
+	 * the title adrift under an empty band: on Privacy that space holds the
+	 * Help button, here it held nothing.
+	 *
+	 * So the same height is reached by splitting the difference between the
+	 * space above the title and the space below it (see the h1's
+	 * margin-bottom). The tabs stay hard against the header's bottom border,
+	 * which the active tab's underline has to meet to read as a tab at all —
+	 * that is why none of this height goes into padding-bottom.
+	 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	clear: both;
+	padding-top: 20px;
+}
+
+/* The 800px column Privacy and Site Health both use below their header. */
+.upilot-tabs-body {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.upilot-tabs-header h1 {
+	display: inline-block;
+	/* 2.25rem below, not Privacy's 1rem: the other half of the height its
+	   Help button provides and this screen has to find elsewhere. */
+	margin: 0 0.8rem 2.25rem;
+	padding: 9px 0 4px;
+	font-size: 23px;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.upilot-tabs-nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.upilot-tab {
+	display: block;
+	background: none;
+	border: 0;
+	cursor: pointer;
+	color: inherit;
+	font-size: 14px;
+	padding: 0.5rem 1rem 1rem;
+	margin: 0 0.75rem;
+	box-shadow: inset 0 -3px transparent;
+	transition: box-shadow 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.upilot-tab:hover {
+	color: var( --wp-admin-theme-color, #2271b1 );
+}
+
+.upilot-tab:focus-visible {
+	color: #1d2327;
+	outline: 1px solid #787c82;
+	box-shadow: none;
+}
+
+.upilot-tab[aria-selected="true"] {
+	box-shadow: inset 0 -3px var( --wp-admin-theme-color, #2271b1 );
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.upilot-tab-panel[hidden] {
+	display: none;
+}
+
+.upilot-tab-panel > .form-table:first-child {
+	margin-top: 0;
+}
+
+/*
+ * WP puts 4px between paragraphs in a form-table cell, which is right for a
+ * run of sibling checkboxes — the tight rhythm is what reads them as one
+ * list — but too tight where a master switch is followed by the fields it
+ * governs, or by the paragraph explaining it: those ran together into one
+ * flat stack. Only the dependent blocks are opened up; the checkbox lists
+ * keep their 4px.
+ */
+
+.upilot-tab-panel .form-table td > .upilot-subfields,
+.upilot-tab-panel .form-table td > fieldset:not(:first-child),
+.upilot-tab-panel .form-table td > .description:not(:first-child) {
+	margin-top: 14px;
+}
+
+.update-pilot .form-table th {
+	width: 220px;
+}
+
+.update-pilot .upilot-muted {
+	color: #646970;
+	font-size: 12px;
+}
+
+.update-pilot .upilot-inline-notice {
+	display: block;
+	padding: 8px 12px;
+	margin: 0 0 12px;
+}
+
+/* Migration notice buttons (outside a <p>, so the markup stays valid) */
+
+.upilot-notice-actions {
+	margin: 0 0 12px;
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+/* Maintenance window weekdays */
+
+.update-pilot .upilot-weekdays {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 16px;
+	/* Top spacing comes from the dependent-block rule above. */
+	margin: 0;
+}
+
+.update-pilot .upilot-weekday {
+	white-space: nowrap;
+}
+
+/* Log filters */
+
+.update-pilot .upilot-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	margin: 12px 0;
+}
+
+/* Outcome badges */
+
+.update-pilot .upilot-status,
+#update_pilot_widget .upilot-status {
+	display: inline-block;
+	padding: 1px 8px;
+	border-radius: 9px;
+	font-size: 12px;
+	line-height: 1.6;
+	border: 1px solid transparent;
+}
+
+.update-pilot .upilot-status-success {
+	background: #edfaef;
+	border-color: #68de7c;
+	color: #00450c;
+}
+
+.update-pilot .upilot-status-failed {
+	background: #fcf0f1;
+	border-color: #f86368;
+	color: #8a2424;
+}
+
+.update-pilot .upilot-status-rolled_back {
+	background: #fcf9e8;
+	border-color: #f0c33c;
+	color: #674600;
+}
+
+/* Environment check indicators */
+
+.update-pilot .upilot-dot {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	margin-right: 6px;
+	vertical-align: baseline;
+}
+
+.update-pilot .upilot-dot-good {
+	background: #00a32a;
+}
+
+.update-pilot .upilot-dot-warning {
+	background: #dba617;
+}
+
+.update-pilot .upilot-dot-critical {
+	background: #d63638;
+}
+
+.update-pilot .upilot-snippet {
+	display: inline-block;
+	margin-top: 6px;
+	padding: 4px 8px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	user-select: all;
+}
+
+/* Fields greyed out while their parent option is off */
+
+.update-pilot .upilot-dependent-off {
+	opacity: 0.5;
+}
+
+/* Dashboard widget */
+
+#update_pilot_widget .upilot-widget-list {
+	margin: 0;
+}
+
+#update_pilot_widget .upilot-widget-list li {
+	margin: 0 0 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+#update_pilot_widget .upilot-widget-list li:last-child {
+	border-bottom: 0;
+}
+
+#update_pilot_widget .upilot-status {
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	border-radius: 50%;
+	margin-right: 4px;
+}
+
+#update_pilot_widget .upilot-status-success {
+	background: #00a32a;
+}
+
+#update_pilot_widget .upilot-status-failed {
+	background: #d63638;
+}
+
+#update_pilot_widget .upilot-status-rolled_back {
+	background: #dba617;
+}
+
+#update_pilot_widget .upilot-muted {
+	color: #646970;
+	font-size: 12px;
+}

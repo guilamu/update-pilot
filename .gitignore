@@ -1,0 +1,20 @@
+# Dependencies (development only — the release workflow excludes them from the zip)
+/vendor/
+/node_modules/
+composer.lock
+package-lock.json
+
+# Build artefacts
+/build/
+*.zip
+
+# Local environment
+.env
+.phpunit.result.cache
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.sublime-*
