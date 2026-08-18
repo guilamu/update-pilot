@@ -87,16 +87,6 @@ body.upilot-screen.auto-fold #wpcontent {
 	line-height: 1.3;
 }
 
-/*
- * A screen carrying sections of its own shows two rows of tabs, and the
- * header would grow by the height of the second. The title gives that height
- * back: the header keeps the size it has everywhere else, and the four screen
- * tabs stay level as one moves between them.
- */
-.upilot-tabs-header.upilot-has-sections h1 {
-	margin-bottom: 1rem;
-}
-
 .upilot-tabs-nav {
 	display: flex;
 	flex-wrap: wrap;

@@ -135,6 +135,12 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.3 - 2026-08-18
+
+The settings screen stood a little tighter than the other three.
+
+- Its title now sits the same distance above its tabs as everywhere else. The second row of tabs makes that header taller, rather than the title moving up to hold the header at a fixed height
+
 ### 1.1.2 - 2026-08-18
 
 An update run from the Status screen left the plugin it had just updated switched off.
