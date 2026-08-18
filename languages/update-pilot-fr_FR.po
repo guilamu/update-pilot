@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the Update Pilot plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Update Pilot 1.0.0\n"
+"Project-Id-Version: Update Pilot 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/guilamu/update-pilot/issues\n"
-"POT-Creation-Date: 2026-08-17 06:55+0000\n"
-"PO-Revision-Date: 2026-08-17 06:55+0000\n"
+"POT-Creation-Date: 2026-08-17 22:00+0000\n"
+"PO-Revision-Date: 2026-08-17 22:00+0000\n"
 "Last-Translator: Guilamu\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -15,558 +15,569 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Domain: update-pilot\n"
 
-#: includes/class-admin.php:68
 #: includes/class-admin.php:69
-#: includes/class-admin.php:380
-#: includes/class-admin.php:1229
+#: includes/class-admin.php:70
+#: includes/class-admin.php:416
+#: includes/class-admin.php:1376
 #: includes/class-migrator.php:87
-#: update-pilot.php:196
-#: update-pilot.php:203
+#: update-pilot.php:197
+#: update-pilot.php:204
 msgid "Update Pilot"
 msgstr "Update Pilot"
 
-#: includes/class-admin.php:79
 #: includes/class-admin.php:80
-#: update-pilot.php:227
+#: includes/class-admin.php:81
+#: update-pilot.php:228
 msgid "Settings"
 msgstr "Réglages"
 
-#: includes/class-admin.php:88
 #: includes/class-admin.php:89
-#: includes/class-admin.php:425
-#: includes/class-admin.php:657
+#: includes/class-admin.php:90
+#: includes/class-admin.php:476
+#: includes/class-admin.php:748
 msgid "Exclusions"
 msgstr "Exclusions"
 
-#: includes/class-admin.php:97
 #: includes/class-admin.php:98
+#: includes/class-admin.php:99
 msgid "Log"
 msgstr "Journal"
 
-#: includes/class-admin.php:106
 #: includes/class-admin.php:107
-#: includes/class-admin.php:999
+#: includes/class-admin.php:108
+#: includes/class-admin.php:1066
+#: includes/class-admin.php:1212
 msgid "Status"
 msgstr "Statut"
 
-#: includes/class-admin.php:155
+#: includes/class-admin.php:174
 msgid "You are not allowed to change these settings."
 msgstr "Vous n’avez pas l’autorisation de modifier ces réglages."
 
-#: includes/class-admin.php:284
+#: includes/class-admin.php:303
 msgid "Running updates requires permission to install updates on this site."
 msgstr "Lancer les mises à jour nécessite le droit d’installer des mises à jour sur ce site."
 
-#: includes/class-admin.php:309
+#: includes/class-admin.php:328
 msgid "Settings saved."
 msgstr "Réglages enregistrés."
 
-#: includes/class-admin.php:310
+#: includes/class-admin.php:329
 msgid "Settings saved, but the schedule could not be changed. The previous schedule is still in place — see the Status page."
 msgstr "Réglages enregistrés, mais la planification n’a pas pu être modifiée. L’ancienne planification reste en place — voir la page Statut."
 
-#: includes/class-admin.php:311
+#: includes/class-admin.php:330
 msgid "WordPress has re-checked for updates."
 msgstr "WordPress a revérifié les mises à jour disponibles."
 
-#: includes/class-admin.php:312
+#: includes/class-admin.php:331
 msgid "The update pass has run. Anything it did is in the log."
 msgstr "Le passage de mise à jour a eu lieu. Tout ce qu’il a fait figure dans le journal."
 
-#: includes/class-admin.php:313
+#: includes/class-admin.php:332
 msgid "Companion Auto Update settings were imported, and its own data was left untouched. Its schedule was copied into the Scheduled run fields but not switched on — check it before enabling it."
 msgstr "Les réglages de Companion Auto Update ont été importés, et ses propres données n’ont pas été touchées. Sa planification a été recopiée dans les champs « Passage planifié » sans être activée — vérifiez-la avant de l’activer."
 
-#: includes/class-admin.php:314
+#: includes/class-admin.php:333
 msgid "A test message was handed to WordPress. If it does not arrive, the problem is in how this site sends mail, not in Update Pilot."
 msgstr "Un message de test a été remis à WordPress. S’il n’arrive pas, le problème vient de la façon dont ce site envoie les e-mails, pas d’Update Pilot."
 
-#: includes/class-admin.php:315
+#: includes/class-admin.php:334
 msgid "WordPress refused to send the test message. Check the recipients, and whether an SMTP plugin is configured on this site."
 msgstr "WordPress a refusé d’envoyer le message de test. Vérifiez les destinataires, et si une extension SMTP est configurée sur ce site."
 
-#: includes/class-admin.php:345
+#: includes/class-admin.php:364
+#: includes/class-admin.php:427
 msgid "This is a multisite network. Update Pilot 1.0 manages the current site only, has no network settings screen, and does not write the network-wide auto-update options."
 msgstr "Ceci est un réseau multisite. Update Pilot 1.0 ne gère que le site courant, ne propose pas de réglages réseau, et n’écrit pas les options de mise à jour automatique communes au réseau."
 
-#: includes/class-admin.php:346
+#: includes/class-admin.php:365
+#: includes/class-admin.php:428
 msgid "This is a sub-site of a network. WordPress runs automatic updates on the main site only, so nothing set here will take effect. Configure Update Pilot on the main site."
 msgstr "Ceci est un sous-site d’un réseau. WordPress n’exécute les mises à jour automatiques que sur le site principal : rien de ce qui est réglé ici n’aura d’effet. Configurez Update Pilot sur le site principal."
 
-#: includes/class-admin.php:374
-#: includes/class-admin.php:652
-#: includes/class-admin.php:855
-#: includes/class-admin.php:996
+#: includes/class-admin.php:393
+#: includes/class-admin.php:740
+#: includes/class-admin.php:922
+#: includes/class-admin.php:1063
 msgid "You are not allowed to view this page."
 msgstr "Vous n’avez pas l’autorisation de voir cette page."
 
-#: includes/class-admin.php:383
-msgid "WordPress installs the updates. Update Pilot decides which ones are eligible, when they may run, how long a release must wait, and keeps a record of what happened."
-msgstr "C’est WordPress qui installe les mises à jour. Update Pilot décide lesquelles sont éligibles, quand elles peuvent s’exécuter, combien de temps une version doit patienter, et garde la trace de ce qui s’est passé."
-
-#: includes/class-admin.php:391
+#: includes/class-admin.php:400
 msgid "What updates automatically"
 msgstr "Ce qui se met à jour automatiquement"
 
-#: includes/class-admin.php:395
-msgid "WP_AUTO_UPDATE_CORE is defined in wp-config.php. It overrides the three core options below, which are shown for reference but have no effect."
-msgstr "WP_AUTO_UPDATE_CORE est définie dans wp-config.php. Elle prime sur les trois options du cœur ci-dessous, affichées pour information mais sans effet."
-
 #: includes/class-admin.php:401
-msgid "WordPress core"
-msgstr "Cœur de WordPress"
-
-#: includes/class-admin.php:405
-msgid "Minor releases (6.9.1 → 6.9.2). These are almost always security and maintenance fixes."
-msgstr "Versions mineures (6.9.1 → 6.9.2). Ce sont presque toujours des correctifs de sécurité et de maintenance."
-
-#: includes/class-admin.php:406
-msgid "Major releases (6.9 → 7.0)."
-msgstr "Versions majeures (6.9 → 7.0)."
-
-#: includes/class-admin.php:407
-msgid "Development builds. For test sites only."
-msgstr "Versions de développement. Pour les sites de test uniquement."
-
-#: includes/class-admin.php:413
-msgid "Plugins and themes"
-msgstr "Extensions et thèmes"
-
-#: includes/class-admin.php:416
-msgid "Manage plugin auto-updates"
-msgstr "Gérer les mises à jour automatiques des extensions"
-
-#: includes/class-admin.php:417
-msgid "Manage theme auto-updates"
-msgstr "Gérer les mises à jour automatiques des thèmes"
-
-#: includes/class-admin.php:418
-msgid "Translation files"
-msgstr "Fichiers de traduction"
-
-#. translators: %s: link to the Exclusions screen.
-#: includes/class-admin.php:424
-msgid "Choose which ones on the %s screen. When these are switched off, Update Pilot leaves plugin and theme auto-updates exactly as WordPress found them rather than forcing them off."
-msgstr "Choisissez lesquels sur la page %s. Lorsque ces options sont désactivées, Update Pilot laisse les mises à jour automatiques des extensions et des thèmes exactement telles que WordPress les a trouvées, au lieu de les forcer à « non »."
-
-#: includes/class-admin.php:433
 msgid "When updates may run"
 msgstr "Quand les mises à jour peuvent s’exécuter"
 
-#: includes/class-admin.php:437
-msgid "Maintenance window"
-msgstr "Fenêtre de maintenance"
-
-#: includes/class-admin.php:439
-msgid "Only allow updates during this window"
-msgstr "N’autoriser les mises à jour que pendant cette fenêtre"
-
-#: includes/class-admin.php:443
-msgid "From"
-msgstr "De"
-
-#: includes/class-admin.php:447
-msgid "to"
-msgstr "à"
-
-#: includes/class-admin.php:453
-msgid "Days of the week"
-msgstr "Jours de la semaine"
-
-#: includes/class-admin.php:458
-msgid "This is what actually confines updates to a time range: outside the window, every eligibility check says no, including during the update runs WordPress starts on its own. It applies to the types Update Pilot manages — anything left unmanaged keeps WordPress's own behaviour. A window may cross midnight: 23:00 to 02:00 works, and belongs to the day it opened."
-msgstr "C’est cette option qui confine réellement les mises à jour à une plage horaire : hors de la fenêtre, tous les contrôles d’éligibilité répondent non, y compris pendant les passages que WordPress lance de lui-même. Elle s’applique aux types gérés par Update Pilot — ce qui est laissé non géré conserve le comportement propre à WordPress. Une fenêtre peut franchir minuit : 23:00 à 02:00 fonctionne, et appartient au jour où elle s’est ouverte."
-
-#: includes/class-admin.php:463
-msgid "Scheduled run"
-msgstr "Passage planifié"
-
-#: includes/class-admin.php:465
-msgid "Ask WordPress to install updates at a chosen time"
-msgstr "Demander à WordPress d’installer les mises à jour à une heure choisie"
-
-#: includes/class-admin.php:469
-msgid "At"
-msgstr "À"
-
-#: includes/class-admin.php:475
-msgid "Repeating"
-msgstr "Répétition"
-
-#. translators: %s: the site's timezone string.
-#: includes/class-admin.php:490
-msgid "Times are in the site timezone (%s). WP-Cron only fires when someone visits the site, so without a real system cron this is an intention rather than a guarantee — the Status page shows how late things actually are."
-msgstr "Les heures sont exprimées dans le fuseau du site (%s). WP-Cron ne se déclenche qu’à la visite d’un internaute : sans véritable cron système, c’est une intention et non une garantie — la page Statut indique le retard réel."
-
-#: includes/class-admin.php:499
+#: includes/class-admin.php:402
 msgid "Safety delay"
 msgstr "Délai de sécurité"
 
-#: includes/class-admin.php:503
-msgid "Hold new releases"
-msgstr "Retenir les nouvelles versions"
-
-#: includes/class-admin.php:505
-msgid "Wait before installing a newly released version"
-msgstr "Attendre avant d’installer une version fraîchement publiée"
-
-#: includes/class-admin.php:511
-msgid "days after the version first appears"
-msgstr "jours après la première apparition de la version"
-
-#: includes/class-admin.php:519
-#: includes/class-admin.php:668
-msgid "Plugins"
-msgstr "Extensions"
-
-#: includes/class-admin.php:520
-#: includes/class-admin.php:678
-msgid "Themes"
-msgstr "Thèmes"
-
-#: includes/class-admin.php:521
-msgid "WordPress core — not recommended: minor releases are usually security fixes"
-msgstr "Cœur de WordPress — déconseillé : les versions mineures sont généralement des correctifs de sécurité"
-
-#: includes/class-admin.php:526
-msgid "The clock starts the first time this site is offered a given version, and it applies to plugins, themes and core alike."
-msgstr "Le décompte démarre la première fois qu’une version est proposée à ce site, et il s’applique aussi bien aux extensions qu’aux thèmes et au cœur."
-
-#: includes/class-admin.php:532
+#: includes/class-admin.php:403
 msgid "Notifications"
 msgstr "Notifications"
 
-#: includes/class-admin.php:536
-msgid "Send an e-mail when"
-msgstr "Envoyer un e-mail lorsque"
-
-#: includes/class-admin.php:539
-msgid "An update fails — the one thing WordPress does not really tell you"
-msgstr "Une mise à jour échoue — la seule chose que WordPress ne vous dit pas vraiment"
-
-#: includes/class-admin.php:540
-msgid "An update is installed"
-msgstr "Une mise à jour est installée"
-
-#: includes/class-admin.php:541
-msgid "An update is available but not installed (checked once a day)"
-msgstr "Une mise à jour est disponible sans être installée (vérifié une fois par jour)"
-
-#: includes/class-admin.php:542
-msgid "A plugin's author stops declaring compatibility with recent WordPress releases (sent only when the list changes)"
-msgstr "L’auteur d’une extension cesse de déclarer la compatibilité avec les versions récentes de WordPress (envoyé uniquement quand la liste change)"
-
-#: includes/class-admin.php:547
-msgid "Recipients"
-msgstr "Destinataires"
-
-#. translators: %s: the site administration e-mail address.
-#: includes/class-admin.php:556
-msgid "One address per line. Leave empty to use the site administration address (%s)."
-msgstr "Une adresse par ligne. Laissez vide pour utiliser l’adresse d’administration du site (%s)."
-
-#: includes/class-admin.php:564
-msgid "Format"
-msgstr "Format"
-
-#: includes/class-admin.php:566
-#: includes/class-notifier.php:382
-msgid "HTML"
-msgstr "HTML"
-
-#: includes/class-admin.php:567
-#: includes/class-notifier.php:382
-msgid "Plain text"
-msgstr "Texte brut"
-
-#: includes/class-admin.php:571
-msgid "WordPress e-mails"
-msgstr "E-mails de WordPress"
-
-#: includes/class-admin.php:573
-msgid "Stop WordPress from sending its own update e-mails"
-msgstr "Empêcher WordPress d’envoyer ses propres e-mails de mise à jour"
-
-#: includes/class-admin.php:575
-msgid "Off by default, so our messages are added to the native ones rather than replacing them. If this plugin ever stops working, the site still gets WordPress's own notifications."
-msgstr "Désactivé par défaut : nos messages s’ajoutent aux messages natifs au lieu de les remplacer. Si cette extension venait à ne plus fonctionner, le site recevrait toujours les notifications de WordPress."
-
-#: includes/class-admin.php:581
+#: includes/class-admin.php:404
 msgid "Access and data"
 msgstr "Accès et données"
 
-#: includes/class-admin.php:585
+#: includes/class-admin.php:434
+msgid "WordPress installs the updates. Update Pilot decides which ones are eligible, when they may run, how long a release must wait, and keeps a record of what happened."
+msgstr "C’est WordPress qui installe les mises à jour. Update Pilot décide lesquelles sont éligibles, quand elles peuvent s’exécuter, combien de temps une version doit patienter, et garde la trace de ce qui s’est passé."
+
+#: includes/class-admin.php:446
+msgid "WP_AUTO_UPDATE_CORE is defined in wp-config.php. It overrides the three core options below, which are shown for reference but have no effect."
+msgstr "WP_AUTO_UPDATE_CORE est définie dans wp-config.php. Elle prime sur les trois options du cœur ci-dessous, affichées pour information mais sans effet."
+
+#: includes/class-admin.php:452
+msgid "WordPress core"
+msgstr "Cœur de WordPress"
+
+#: includes/class-admin.php:456
+msgid "Minor releases (6.9.1 → 6.9.2). These are almost always security and maintenance fixes."
+msgstr "Versions mineures (6.9.1 → 6.9.2). Ce sont presque toujours des correctifs de sécurité et de maintenance."
+
+#: includes/class-admin.php:457
+msgid "Major releases (6.9 → 7.0)."
+msgstr "Versions majeures (6.9 → 7.0)."
+
+#: includes/class-admin.php:458
+msgid "Development builds. For test sites only."
+msgstr "Versions de développement. Pour les sites de test uniquement."
+
+#: includes/class-admin.php:464
+msgid "Plugins and themes"
+msgstr "Extensions et thèmes"
+
+#: includes/class-admin.php:467
+msgid "Manage plugin auto-updates"
+msgstr "Gérer les mises à jour automatiques des extensions"
+
+#: includes/class-admin.php:468
+msgid "Manage theme auto-updates"
+msgstr "Gérer les mises à jour automatiques des thèmes"
+
+#: includes/class-admin.php:469
+msgid "Translation files"
+msgstr "Fichiers de traduction"
+
+#.translators: %s: link to the Exclusions screen.
+#: includes/class-admin.php:475
+msgid "Choose which ones on the %s screen. When these are switched off, Update Pilot leaves plugin and theme auto-updates exactly as WordPress found them rather than forcing them off."
+msgstr "Choisissez lesquels sur la page %s. Lorsque ces options sont désactivées, Update Pilot laisse les mises à jour automatiques des extensions et des thèmes exactement telles que WordPress les a trouvées, au lieu de les forcer à « non »."
+
+#: includes/class-admin.php:488
+msgid "Maintenance window"
+msgstr "Fenêtre de maintenance"
+
+#: includes/class-admin.php:490
+msgid "Only allow updates during this window"
+msgstr "N’autoriser les mises à jour que pendant cette fenêtre"
+
+#: includes/class-admin.php:494
+msgid "From"
+msgstr "De"
+
+#: includes/class-admin.php:498
+msgid "to"
+msgstr "à"
+
+#: includes/class-admin.php:504
+msgid "Days of the week"
+msgstr "Jours de la semaine"
+
+#: includes/class-admin.php:509
+msgid "This is what actually confines updates to a time range: outside the window, every eligibility check says no, including during the update runs WordPress starts on its own. It applies to the types Update Pilot manages — anything left unmanaged keeps WordPress's own behaviour. A window may cross midnight: 23:00 to 02:00 works, and belongs to the day it opened."
+msgstr "C’est cette option qui confine réellement les mises à jour à une plage horaire : hors de la fenêtre, tous les contrôles d’éligibilité répondent non, y compris pendant les passages que WordPress lance de lui-même. Elle s’applique aux types gérés par Update Pilot — ce qui est laissé non géré conserve le comportement propre à WordPress. Une fenêtre peut franchir minuit : 23:00 à 02:00 fonctionne, et appartient au jour où elle s’est ouverte."
+
+#: includes/class-admin.php:514
+msgid "Scheduled run"
+msgstr "Passage planifié"
+
+#: includes/class-admin.php:516
+msgid "Ask WordPress to install updates at a chosen time"
+msgstr "Demander à WordPress d’installer les mises à jour à une heure choisie"
+
+#: includes/class-admin.php:520
+msgid "At"
+msgstr "À"
+
+#: includes/class-admin.php:526
+msgid "Repeating"
+msgstr "Répétition"
+
+#.translators: %s: the site's timezone string.
+#: includes/class-admin.php:541
+msgid "Times are in the site timezone (%s). WP-Cron only fires when someone visits the site, so without a real system cron this is an intention rather than a guarantee — the Status page shows how late things actually are."
+msgstr "Les heures sont exprimées dans le fuseau du site (%s). WP-Cron ne se déclenche qu’à la visite d’un internaute : sans véritable cron système, c’est une intention et non une garantie — la page Statut indique le retard réel."
+
+#: includes/class-admin.php:554
+msgid "Hold new releases"
+msgstr "Retenir les nouvelles versions"
+
+#: includes/class-admin.php:556
+msgid "Wait before installing a newly released version"
+msgstr "Attendre avant d’installer une version fraîchement publiée"
+
+#: includes/class-admin.php:562
+msgid "days after the version first appears"
+msgstr "jours après la première apparition de la version"
+
+#: includes/class-admin.php:570
+#: includes/class-admin.php:759
+msgid "Plugins"
+msgstr "Extensions"
+
+#: includes/class-admin.php:571
+#: includes/class-admin.php:769
+msgid "Themes"
+msgstr "Thèmes"
+
+#: includes/class-admin.php:572
+msgid "WordPress core — not recommended: minor releases are usually security fixes"
+msgstr "Cœur de WordPress — déconseillé : les versions mineures sont généralement des correctifs de sécurité"
+
+#: includes/class-admin.php:577
+msgid "The clock starts the first time this site is offered a given version, and it applies to plugins, themes and core alike."
+msgstr "Le décompte démarre la première fois qu’une version est proposée à ce site, et il s’applique aussi bien aux extensions qu’aux thèmes et au cœur."
+
+#: includes/class-admin.php:587
+msgid "Send an e-mail when"
+msgstr "Envoyer un e-mail lorsque"
+
+#: includes/class-admin.php:590
+msgid "An update fails — the one thing WordPress does not really tell you"
+msgstr "Une mise à jour échoue — la seule chose que WordPress ne vous dit pas vraiment"
+
+#: includes/class-admin.php:591
+msgid "An update is installed"
+msgstr "Une mise à jour est installée"
+
+#: includes/class-admin.php:592
+msgid "An update is available but not installed (checked once a day)"
+msgstr "Une mise à jour est disponible sans être installée (vérifié une fois par jour)"
+
+#: includes/class-admin.php:593
+msgid "A plugin's author stops declaring compatibility with recent WordPress releases (sent only when the list changes)"
+msgstr "L’auteur d’une extension cesse de déclarer la compatibilité avec les versions récentes de WordPress (envoyé uniquement quand la liste change)"
+
+#: includes/class-admin.php:598
+msgid "Recipients"
+msgstr "Destinataires"
+
+#.translators: %s: the site administration e-mail address.
+#: includes/class-admin.php:607
+msgid "One address per line. Leave empty to use the site administration address (%s)."
+msgstr "Une adresse par ligne. Laissez vide pour utiliser l’adresse d’administration du site (%s)."
+
+#: includes/class-admin.php:615
+msgid "Format"
+msgstr "Format"
+
+#: includes/class-admin.php:617
+#: includes/class-notifier.php:354
+msgid "HTML"
+msgstr "HTML"
+
+#: includes/class-admin.php:618
+#: includes/class-notifier.php:354
+msgid "Plain text"
+msgstr "Texte brut"
+
+#: includes/class-admin.php:622
+msgid "WordPress e-mails"
+msgstr "E-mails de WordPress"
+
+#: includes/class-admin.php:624
+msgid "Stop WordPress from sending its own update e-mails"
+msgstr "Empêcher WordPress d’envoyer ses propres e-mails de mise à jour"
+
+#: includes/class-admin.php:626
+msgid "Off by default, so our messages are added to the native ones rather than replacing them. If this plugin ever stops working, the site still gets WordPress's own notifications."
+msgstr "Désactivé par défaut : nos messages s’ajoutent aux messages natifs au lieu de les remplacer. Si cette extension venait à ne plus fonctionner, le site recevrait toujours les notifications de WordPress."
+
+#: includes/class-admin.php:636
 msgid "Who may use Update Pilot"
 msgstr "Qui peut utiliser Update Pilot"
 
-#: includes/class-admin.php:587
+#: includes/class-admin.php:638
 msgid "Administrator (always)"
 msgstr "Administrateur (toujours)"
 
-#: includes/class-admin.php:609
+#: includes/class-admin.php:660
 msgid "This grants a real capability, and it is the same capability these pages require."
 msgstr "Ceci attribue un véritable droit, et c’est exactement celui que ces pages exigent."
 
-#: includes/class-admin.php:614
+#: includes/class-admin.php:665
 msgid "Keep log entries for"
 msgstr "Conserver les entrées du journal pendant"
 
-#: includes/class-admin.php:618
+#: includes/class-admin.php:669
 msgid "days (0 keeps everything)"
 msgstr "jours (0 conserve tout)"
 
-#: includes/class-admin.php:622
+#: includes/class-admin.php:673
 msgid "On uninstall"
 msgstr "À la désinstallation"
 
-#: includes/class-admin.php:624
+#: includes/class-admin.php:675
 msgid "Delete all Update Pilot data when the plugin is uninstalled"
 msgstr "Supprimer toutes les données d’Update Pilot lors de la désinstallation"
 
-#: includes/class-admin.php:626
+#: includes/class-admin.php:677
 msgid "Off by default. Deactivating the plugin never deletes anything."
 msgstr "Désactivé par défaut. Désactiver l’extension ne supprime jamais rien."
 
-#: includes/class-admin.php:660
+#: includes/class-admin.php:707
+msgid "Settings sections"
+msgstr "Sections des réglages"
+
+#: includes/class-admin.php:751
 msgid "Tick what may update on its own. These boxes are the same information as the Auto-updates column on the Plugins and Themes screens, and changing them in either place changes both."
 msgstr "Cochez ce qui peut se mettre à jour tout seul. Ces cases portent la même information que la colonne « Mises à jour automatiques » des pages Extensions et Thèmes : les modifier ici ou là revient au même."
 
-#: includes/class-admin.php:672
+#: includes/class-admin.php:763
 msgid "Plugin auto-updates are not managed by Update Pilot at the moment, so these boxes have no effect. Switch it on in Settings."
 msgstr "Les mises à jour automatiques des extensions ne sont pas gérées par Update Pilot pour l’instant : ces cases sont donc sans effet. Activez la gestion dans les Réglages."
 
-#: includes/class-admin.php:682
+#: includes/class-admin.php:773
 msgid "Theme auto-updates are not managed by Update Pilot at the moment, so these boxes have no effect. Switch it on in Settings."
 msgstr "Les mises à jour automatiques des thèmes ne sont pas gérées par Update Pilot pour l’instant : ces cases sont donc sans effet. Activez la gestion dans les Réglages."
 
-#: includes/class-admin.php:712
-#: includes/class-admin.php:1139
+#: includes/class-admin.php:804
+#: includes/class-admin.php:1286
 #: includes/class-log-repository.php:195
 msgid "Plugin"
 msgstr "Extension"
 
-#: includes/class-admin.php:713
-#: includes/class-admin.php:756
-#: includes/class-admin.php:1140
+#: includes/class-admin.php:805
+#: includes/class-admin.php:849
+#: includes/class-admin.php:1287
 #: includes/class-notifier.php:190
 msgid "Installed"
 msgstr "Installée"
 
-#: includes/class-admin.php:714
-#: includes/class-admin.php:757
+#: includes/class-admin.php:806
+#: includes/class-admin.php:850
 msgid "Update"
 msgstr "Mise à jour"
 
-#: includes/class-admin.php:755
+#: includes/class-admin.php:848
 #: includes/class-log-repository.php:198
 msgid "Theme"
 msgstr "Thème"
 
-#: includes/class-admin.php:798
+#: includes/class-admin.php:891
 msgid "Up to date"
 msgstr "À jour"
 
-#. translators: %s: version number.
-#: includes/class-admin.php:811
+#.translators: %s: version number.
+#: includes/class-admin.php:896
 msgid "%s available"
 msgstr "%s disponible"
 
-#: includes/class-admin.php:817
-msgid "excluded"
-msgstr "exclu"
-
-#: includes/class-admin.php:820
-msgid "waiting for the maintenance window"
-msgstr "en attente de la fenêtre de maintenance"
-
-#. translators: %s: date and time.
-#: includes/class-admin.php:827
-msgid "held until %s"
-msgstr "retenue jusqu’au %s"
-
-#: includes/class-admin.php:832
-msgid "held, delay starting"
-msgstr "retenue, décompte démarré"
-
-#: includes/class-admin.php:835
-msgid "left to WordPress"
-msgstr "laissée à WordPress"
-
-#: includes/class-admin.php:838
+#: includes/class-admin.php:903
+#: includes/class-admin.php:1219
 msgid "eligible"
 msgstr "éligible"
 
-#: includes/class-admin.php:875
+#: includes/class-admin.php:942
 msgid "Update log"
 msgstr "Journal des mises à jour"
 
-#: includes/class-admin.php:878
+#: includes/class-admin.php:945
 msgid "Every entry comes from WordPress reporting an update it actually performed, with the version before and after. Nothing here is reconstructed from file dates."
 msgstr "Chaque entrée provient de WordPress signalant une mise à jour réellement effectuée, avec la version avant et après. Rien ici n’est reconstitué à partir de dates de fichiers."
 
-#: includes/class-admin.php:886
+#: includes/class-admin.php:953
 msgid "All types"
 msgstr "Tous les types"
 
-#: includes/class-admin.php:895
+#: includes/class-admin.php:962
 msgid "All outcomes"
 msgstr "Tous les résultats"
 
-#: includes/class-admin.php:903
+#: includes/class-admin.php:970
 msgid "Search"
 msgstr "Rechercher"
 
-#: includes/class-admin.php:905
+#: includes/class-admin.php:972
 msgid "Filter"
 msgstr "Filtrer"
 
-#: includes/class-admin.php:911
+#: includes/class-admin.php:978
 msgid "When"
 msgstr "Quand"
 
-#: includes/class-admin.php:912
+#: includes/class-admin.php:979
 msgid "What"
 msgstr "Quoi"
 
-#: includes/class-admin.php:913
+#: includes/class-admin.php:980
 msgid "Versions"
 msgstr "Versions"
 
-#: includes/class-admin.php:914
+#: includes/class-admin.php:981
 msgid "Trigger"
 msgstr "Déclencheur"
 
-#: includes/class-admin.php:915
+#: includes/class-admin.php:982
 msgid "Outcome"
 msgstr "Résultat"
 
-#: includes/class-admin.php:920
+#: includes/class-admin.php:987
 msgid "Nothing recorded yet."
 msgstr "Rien d’enregistré pour l’instant."
 
-#: includes/class-admin.php:1007
+#: includes/class-admin.php:1074
 msgid "Schedule"
 msgstr "Planification"
 
-#: includes/class-admin.php:1011
+#: includes/class-admin.php:1078
 msgid "Next scheduled run"
 msgstr "Prochain passage planifié"
 
-#: includes/class-admin.php:1012
+#: includes/class-admin.php:1079
 msgid "No scheduled run — Update Pilot is not asking for one, so WordPress updates on its own timing."
 msgstr "Aucun passage planifié — Update Pilot n’en demande pas, WordPress met donc à jour à son propre rythme."
 
-#: includes/class-admin.php:1016
+#: includes/class-admin.php:1083
 msgid "Last run"
 msgstr "Dernier passage"
 
-#: includes/class-admin.php:1017
+#: includes/class-admin.php:1084
 msgid "Never"
 msgstr "Jamais"
 
-#: includes/class-admin.php:1021
+#: includes/class-admin.php:1088
 msgid "WP-Cron"
 msgstr "WP-Cron"
 
-#. translators: %s: human readable duration.
-#: includes/class-admin.php:1025
+#.translators: %s: human readable duration.
+#: includes/class-admin.php:1092
 msgid "Running %s behind schedule"
 msgstr "En retard de %s sur l’horaire prévu"
 
-#: includes/class-admin.php:1028
+#: includes/class-admin.php:1095
 msgid "On time"
 msgstr "À l’heure"
 
-#: includes/class-admin.php:1031
+#: includes/class-admin.php:1098
 msgid "Site timezone"
 msgstr "Fuseau horaire du site"
 
-#: includes/class-admin.php:1035
+#: includes/class-admin.php:1104
 msgid "Environment"
 msgstr "Environnement"
 
-#: includes/class-admin.php:1058
+#: includes/class-admin.php:1127
 msgid "Last 30 days"
 msgstr "30 derniers jours"
 
-#: includes/class-admin.php:1060
+#: includes/class-admin.php:1129
 msgid "Updates installed"
 msgstr "Mises à jour installées"
 
-#: includes/class-admin.php:1061
+#: includes/class-admin.php:1130
 msgid "Updates that failed"
 msgstr "Mises à jour en échec"
 
-#: includes/class-admin.php:1062
+#: includes/class-admin.php:1131
 #: includes/class-log-repository.php:226
 msgid "Rolled back"
 msgstr "Restaurées"
 
-#: includes/class-admin.php:1065
+#: includes/class-admin.php:1134
 msgid "Actions"
 msgstr "Actions"
 
-#: includes/class-admin.php:1071
+#: includes/class-admin.php:1140
 msgid "Check for updates now"
 msgstr "Vérifier les mises à jour maintenant"
 
-#: includes/class-admin.php:1077
+#: includes/class-admin.php:1146
 msgid "Run an update pass now"
 msgstr "Lancer un passage de mise à jour maintenant"
 
-#: includes/class-admin.php:1083
+#: includes/class-admin.php:1152
 msgid "Send a test e-mail"
 msgstr "Envoyer un e-mail de test"
 
-#: includes/class-admin.php:1087
+#: includes/class-admin.php:1156
 msgid "An update pass runs in this request and can take a while on a slow connection. It obeys the same rules as a scheduled run, including the maintenance window."
 msgstr "Un passage de mise à jour s’exécute dans cette requête et peut prendre un certain temps sur une connexion lente. Il obéit aux mêmes règles qu’un passage planifié, fenêtre de maintenance comprise."
 
-#: includes/class-admin.php:1103
+#: includes/class-admin.php:1176
+msgid "Pending updates"
+msgstr "Mises à jour en attente"
+
+#: includes/class-admin.php:1179
+msgid "No updates are available."
+msgstr "Aucune mise à jour n’est disponible."
+
+#: includes/class-admin.php:1193
+msgid "Nothing is waiting. Every available update is eligible to install."
+msgstr "Rien n’est en attente. Toutes les mises à jour disponibles sont éligibles à l’installation."
+
+#: includes/class-admin.php:1199
+msgid "Only the first rule that applies is named. An update that is both outside the maintenance window and still inside its safety delay is reported as waiting for the window, because that is the order the decision is made in."
+msgstr "Seule la première règle qui s’applique est indiquée. Une mise à jour à la fois hors de la fenêtre de maintenance et encore dans son délai de sécurité est signalée comme attendant la fenêtre, car c’est l’ordre dans lequel la décision est prise."
+
+#: includes/class-admin.php:1210
+msgid "Item"
+msgstr "Élément"
+
+#: includes/class-admin.php:1211
+msgid "Version"
+msgstr "Version"
+
+#: includes/class-admin.php:1250
 msgid "Plugin compatibility"
 msgstr "Compatibilité des extensions"
 
-#: includes/class-admin.php:1107
+#: includes/class-admin.php:1254
 msgid "No check has run yet. It happens once a day, or immediately with the button below."
 msgstr "Aucune vérification n’a encore eu lieu. Elle se fait une fois par jour, ou immédiatement avec le bouton ci-dessous."
 
-#. translators: 1: number of plugins, 2: number of plugins, 3: number of plugins, 4: number of plugins.
-#: includes/class-admin.php:1121
+#.translators: 1: number of plugins, 2: number of plugins, 3: number of plugins, 4: number of plugins.
+#: includes/class-admin.php:1268
 msgid "%1$d up to date, %2$d behind, %3$d with nothing declared, %4$d not hosted on wordpress.org."
 msgstr "%1$d à jour, %2$d en retard, %3$d sans déclaration, %4$d non hébergées sur wordpress.org."
 
-#: includes/class-admin.php:1129
+#: includes/class-admin.php:1276
 msgid "This reads what each author declares, not what actually works. A stale declaration means nobody may be maintaining the plugin — which is what matters the day a vulnerability is found in it."
 msgstr "Ceci lit ce que déclare chaque auteur, pas ce qui fonctionne réellement. Une déclaration qui n’est plus tenue à jour signifie que plus personne ne s’occupe peut-être de l’extension — et c’est ce qui compte le jour où une faille y est découverte."
 
-#: includes/class-admin.php:1133
+#: includes/class-admin.php:1280
 msgid "Every plugin is declared compatible with a recent release."
 msgstr "Toutes les extensions sont déclarées compatibles avec une version récente."
 
-#: includes/class-admin.php:1141
+#: includes/class-admin.php:1288
 msgid "Declared compatibility"
 msgstr "Compatibilité déclarée"
 
-#. translators: %s: version number.
-#: includes/class-admin.php:1188
-#: includes/class-notifier.php:514
+#.translators: %s: version number.
+#: includes/class-admin.php:1335
+#: includes/class-notifier.php:486
 msgid "still on %s"
 msgstr "toujours en %s"
 
-#: includes/class-admin.php:1244
+#: includes/class-admin.php:1391
 msgid "No updates recorded yet."
 msgstr "Aucune mise à jour enregistrée pour l’instant."
 
-#. translators: %s: date and time.
-#: includes/class-admin.php:1279
+#.translators: %s: date and time.
+#: includes/class-admin.php:1426
 msgid "Next scheduled run: %s"
 msgstr "Prochain passage planifié : %s"
 
-#: includes/class-admin.php:1288
+#: includes/class-admin.php:1435
 msgid "See the full log"
 msgstr "Voir le journal complet"
 
-#. translators: 1: WordPress version, 2: number of releases.
+#.translators: 1: WordPress version, 2: number of releases.
 #: includes/class-compatibility.php:520
 msgid "Tested up to WordPress %1$s — %2$d release behind"
 msgid_plural "Tested up to WordPress %1$s — %2$d releases behind"
@@ -585,12 +596,12 @@ msgstr "Non hébergée sur wordpress.org : il n’y a aucune déclaration à lir
 msgid "Could not be checked"
 msgstr "N’a pas pu être vérifiée"
 
-#. translators: %s: WordPress version.
+#.translators: %s: WordPress version.
 #: includes/class-compatibility.php:541
 msgid "Tested up to WordPress %s — could not be compared"
 msgstr "Testée jusqu’à WordPress %s — comparaison impossible"
 
-#. translators: %s: WordPress version.
+#.translators: %s: WordPress version.
 #: includes/class-compatibility.php:548
 msgid "Tested up to WordPress %s"
 msgstr "Testée jusqu’à WordPress %s"
@@ -635,7 +646,7 @@ msgstr "Mises à jour du cœur de WordPress"
 msgid "Controlled by this plugin."
 msgstr "Pilotées par cette extension."
 
-#. translators: %s: the constant's value.
+#.translators: %s: the constant's value.
 #: includes/class-diagnostics.php:176
 msgid "WP_AUTO_UPDATE_CORE is defined as %s in wp-config.php. It takes precedence, so the core options on the Settings tab are shown but have no effect."
 msgstr "WP_AUTO_UPDATE_CORE est définie à %s dans wp-config.php. Elle prime : les options du cœur, dans l’onglet Réglages, sont affichées mais sans effet."
@@ -662,7 +673,7 @@ msgstr "Droits sur les fichiers"
 msgid "WordPress can write to the filesystem directly."
 msgstr "WordPress peut écrire directement sur le système de fichiers."
 
-#. translators: %s: filesystem method name, e.g. ftpext.
+#.translators: %s: filesystem method name, e.g. ftpext.
 #: includes/class-diagnostics.php:244
 msgid "WordPress would need credentials to write files (method: %s). Unattended updates cannot ask for them, so they will not run. This is usually an ownership problem on the wp-content directory."
 msgstr "WordPress aurait besoin d’identifiants pour écrire les fichiers (méthode : %s). Une mise à jour sans surveillance ne peut pas les demander : elle ne s’exécutera donc pas. C’est généralement un problème de propriétaire sur le dossier wp-content."
@@ -676,7 +687,7 @@ msgstr "indisponible"
 msgid "Version control"
 msgstr "Gestion de versions"
 
-#. translators: 1: version control directory name, 2: containing directory.
+#.translators: 1: version control directory name, 2: containing directory.
 #: includes/class-diagnostics.php:269
 msgid "A %1$s directory was found in %2$s. WordPress refuses to update anything inside a checkout, so updates are expected to arrive through your deployment instead."
 msgstr "Un dossier %1$s a été trouvé dans %2$s. WordPress refuse de mettre à jour quoi que ce soit dans une copie de travail : les mises à jour sont donc censées arriver par votre déploiement."
@@ -695,7 +706,7 @@ msgstr "Tâches planifiées"
 msgid "DISABLE_WP_CRON is set, so WordPress does not run scheduled tasks on page views. That is the right setup, provided a real system cron calls wp-cron.php. If nothing calls it, nothing will ever update."
 msgstr "DISABLE_WP_CRON est définie : WordPress n’exécute pas les tâches planifiées à l’affichage des pages. C’est la bonne configuration, à condition qu’un véritable cron système appelle wp-cron.php. Si rien ne l’appelle, rien ne sera jamais mis à jour."
 
-#. translators: %s: human readable duration.
+#.translators: %s: human readable duration.
 #: includes/class-diagnostics.php:313
 msgid "The earliest pending task is %s late. WP-Cron only fires when somebody visits the site, so on a quiet site a chosen hour is an intention rather than a guarantee. A system cron makes it exact."
 msgstr "La tâche en attente la plus ancienne a %s de retard. WP-Cron ne se déclenche qu’à la visite d’un internaute : sur un site peu fréquenté, une heure choisie est une intention plutôt qu’une garantie. Un cron système la rend exacte."
@@ -712,22 +723,22 @@ msgstr "Les tâches planifiées s’exécutent à l’heure."
 msgid "Core update checks"
 msgstr "Vérifications de mise à jour du cœur"
 
-#. translators: 1: comma-separated list of cron hooks and their recurrence, 2: human readable duration.
+#.translators: 1: comma-separated list of cron hooks and their recurrence, 2: human readable duration.
 #: includes/class-diagnostics.php:399
 msgid "These update checks run less often than the WordPress default of twice a day: %1$s. A new version can go unnoticed for up to %2$s, whatever this plugin is set to. A plugin that reprogrammed them — Companion Auto Update did — does not restore them when it is removed. Deleting the events lets WordPress recreate them at the default."
 msgstr "Ces vérifications s’exécutent moins souvent que la valeur par défaut de WordPress, deux fois par jour : %1$s. Une nouvelle version peut passer inaperçue pendant %2$s, quels que soient les réglages de cette extension. Une extension qui les a reprogrammées — Companion Auto Update le faisait — ne les restaure pas à sa suppression. Supprimer ces événements laisse WordPress les recréer à la valeur par défaut."
 
-#. translators: %s: comma-separated list of cron hooks and their recurrence.
+#.translators: %s: comma-separated list of cron hooks and their recurrence.
 #: includes/class-diagnostics.php:414
 msgid "These update checks are scheduled on a recurrence WordPress no longer knows about: %s. The plugin that defined it has probably been removed, and the events cannot reschedule themselves. Deleting them lets WordPress recreate them at the default."
 msgstr "Ces vérifications sont planifiées selon une récurrence que WordPress ne connaît plus : %s. L’extension qui la définissait a probablement été supprimée, et les événements ne peuvent plus se replanifier. Les supprimer laisse WordPress les recréer à la valeur par défaut."
 
-#. translators: %s: comma-separated list of cron hook names.
+#.translators: %s: comma-separated list of cron hook names.
 #: includes/class-diagnostics.php:428
 msgid "These update checks are not scheduled at all: %s. WordPress normally recreates them on the next page load; if this message persists, something is removing them."
 msgstr "Ces vérifications ne sont pas planifiées du tout : %s. WordPress les recrée normalement au chargement de page suivant ; si ce message persiste, quelque chose les supprime."
 
-#. translators: %s: comma-separated list of cron hooks and their recurrence.
+#.translators: %s: comma-separated list of cron hooks and their recurrence.
 #: includes/class-diagnostics.php:442
 msgid "Update checks run on a non-default but more frequent recurrence: %s. Nothing is delayed by this."
 msgstr "Les vérifications s’exécutent selon une récurrence non standard mais plus fréquente : %s. Cela ne retarde rien."
@@ -745,7 +756,7 @@ msgstr "Planification d’Update Pilot"
 msgid "The schedule is in place."
 msgstr "La planification est en place."
 
-#. translators: %s: error message.
+#.translators: %s: error message.
 #: includes/class-diagnostics.php:482
 msgid "The last attempt to change the schedule failed: %s The previous schedule is still in place."
 msgstr "La dernière tentative de modification de la planification a échoué : %s L’ancienne planification reste en place."
@@ -851,7 +862,7 @@ msgstr "Non merci"
 msgid "You are not allowed to do that."
 msgstr "Vous n’avez pas l’autorisation de faire cela."
 
-#. translators: %s: site name.
+#.translators: %s: site name.
 #: includes/class-notifier.php:113
 msgid "[%s] Plugins that may no longer be maintained"
 msgstr "[%s] Extensions peut-être laissées à l’abandon"
@@ -865,12 +876,12 @@ msgstr "À regarder"
 msgid "The authors of these plugins have not declared compatibility with a recent WordPress release. That does not mean they are broken — it means nobody may be looking after them, which matters the day a vulnerability is found."
 msgstr "Les auteurs de ces extensions n’ont pas déclaré de compatibilité avec une version récente de WordPress. Cela ne veut pas dire qu’elles sont cassées — cela veut dire que plus personne ne s’en occupe peut-être, ce qui compte le jour où une faille est découverte."
 
-#. translators: %s: site name.
+#.translators: %s: site name.
 #: includes/class-notifier.php:170
 msgid "[%s] An update failed"
 msgstr "[%s] Une mise à jour a échoué"
 
-#. translators: %s: site name.
+#.translators: %s: site name.
 #: includes/class-notifier.php:175
 msgid "[%s] Updates installed"
 msgstr "[%s] Mises à jour installées"
@@ -883,61 +894,106 @@ msgstr "Une ou plusieurs mises à jour automatiques ne sont pas allées au bout 
 msgid "The following updates were installed automatically on your site."
 msgstr "Les mises à jour suivantes ont été installées automatiquement sur votre site."
 
-#. translators: 1: site name, 2: number of available updates.
-#: includes/class-notifier.php:232
+#.translators: 1: site name, 2: number of available updates.
+#: includes/class-notifier.php:237
 msgid "[%1$s] %2$d update is available"
 msgid_plural "[%1$s] %2$d updates are available"
 msgstr[0] "[%1$s] %2$d mise à jour est disponible"
 msgstr[1] "[%1$s] %2$d mises à jour sont disponibles"
 
-#: includes/class-notifier.php:239
-msgid "Available"
-msgstr "Disponibles"
+#: includes/class-notifier.php:260
+msgid "Waiting"
+msgstr "En attente"
 
-#: includes/class-notifier.php:244
-msgid "These updates are available on your site and have not been installed."
-msgstr "Ces mises à jour sont disponibles sur votre site et n’ont pas été installées."
+#: includes/class-notifier.php:267
+msgid "Ready to install"
+msgstr "Prêtes à installer"
 
-#: includes/class-notifier.php:365
+#: includes/class-notifier.php:272
+msgid "These updates are available on your site and have not been installed. Anything Update Pilot is holding back says why."
+msgstr "Ces mises à jour sont disponibles sur votre site et n’ont pas été installées. Chaque mise à jour retenue par Update Pilot en indique la raison."
+
+#: includes/class-notifier.php:337
 msgid "Example"
 msgstr "Exemple"
 
-#: includes/class-notifier.php:370
+#: includes/class-notifier.php:342
 msgid "An example plugin"
 msgstr "Une extension d’exemple"
 
-#. translators: %s: 'HTML' or 'Plain text'.
-#: includes/class-notifier.php:381
+#.translators: %s: 'HTML' or 'Plain text'.
+#: includes/class-notifier.php:353
 msgid "This is a test message from Update Pilot. If you are reading it, this site can deliver the notifications you have switched on. Format in use: %s."
 msgstr "Ceci est un message de test d’Update Pilot. Si vous le lisez, ce site est capable de délivrer les notifications que vous avez activées. Format utilisé : %s."
 
-#. translators: %s: site name.
-#: includes/class-notifier.php:388
+#.translators: %s: site name.
+#: includes/class-notifier.php:360
 msgid "[%s] Update Pilot test message"
 msgstr "[%s] Message de test d’Update Pilot"
 
-#. translators: %s: site URL.
-#. translators: %s: site link.
-#: includes/class-notifier.php:558
-#: includes/class-notifier.php:605
+#.translators: %s: site URL.
+#.translators: %s: site link.
+#: includes/class-notifier.php:530
+#: includes/class-notifier.php:577
 msgid "Site: %s"
 msgstr "Site : %s"
 
-#. translators: %s: URL of the update log.
-#. translators: %s: link to the update log.
-#: includes/class-notifier.php:564
-#: includes/class-notifier.php:611
+#.translators: %s: URL of the update log.
+#.translators: %s: link to the update log.
+#: includes/class-notifier.php:536
+#: includes/class-notifier.php:583
 msgid "Full log: %s"
 msgstr "Journal complet : %s"
 
-#: includes/class-notifier.php:569
-#: includes/class-notifier.php:616
+#: includes/class-notifier.php:541
+#: includes/class-notifier.php:588
 msgid "Sent by Update Pilot."
 msgstr "Envoyé par Update Pilot."
 
-#: includes/class-notifier.php:612
+#: includes/class-notifier.php:584
 msgid "Update Pilot log"
 msgstr "Journal d’Update Pilot"
+
+#: includes/class-pending.php:107
+msgid "excluded"
+msgstr "exclu"
+
+#: includes/class-pending.php:110
+msgid "waiting for the maintenance window"
+msgstr "en attente de la fenêtre de maintenance"
+
+#: includes/class-pending.php:116
+#: includes/class-pending.php:144
+msgid "held, delay starting"
+msgstr "retenue, décompte démarré"
+
+#: includes/class-pending.php:119
+msgid "this branch of WordPress is not updated automatically"
+msgstr "cette branche de WordPress n’est pas mise à jour automatiquement"
+
+#: includes/class-pending.php:122
+msgid "withdrawn by wordpress.org"
+msgstr "retirée par wordpress.org"
+
+#: includes/class-pending.php:125
+msgid "left to WordPress"
+msgstr "laissée à WordPress"
+
+#.translators: %s: date and time.
+#: includes/class-pending.php:149
+msgid "held until %s"
+msgstr "retenue jusqu’au %s"
+
+#.translators: %d: number of days.
+#: includes/class-pending.php:164
+msgid "%d day left"
+msgid_plural "%d days left"
+msgstr[0] "%d jour restant"
+msgstr[1] "%d jours restants"
+
+#: includes/class-pending.php:167
+msgid "due now"
+msgstr "échéance atteinte"
 
 #: includes/class-scheduler.php:107
 msgid "Every hour"
@@ -963,7 +1019,7 @@ msgstr "Toutes les deux semaines"
 msgid "Once a month"
 msgstr "Une fois par mois"
 
-#. translators: %s: cron recurrence identifier.
+#.translators: %s: cron recurrence identifier.
 #: includes/class-scheduler.php:168
 msgid "The recurrence \"%s\" is not one WordPress knows about, so the schedule was left untouched."
 msgstr "La récurrence « %s » n’est pas connue de WordPress : la planification n’a pas été modifiée."
@@ -976,28 +1032,28 @@ msgstr "WordPress a refusé de créer l’événement planifié. L’ancienne pl
 msgid "WordPress refused to create the daily housekeeping event, so the log will not be trimmed automatically."
 msgstr "WordPress a refusé de créer l’événement de maintenance quotidien : le journal ne sera donc pas purgé automatiquement."
 
-#. translators: 1: required WordPress version, 2: required PHP version, 3: current WordPress version, 4: current PHP version.
-#: update-pilot.php:135
+#.translators: 1: required WordPress version, 2: required PHP version, 3: current WordPress version, 4: current PHP version.
+#: update-pilot.php:136
 msgid "Update Pilot requires WordPress %1$s and PHP %2$s or higher. This site runs WordPress %3$s on PHP %4$s, so the plugin is not doing anything."
 msgstr "Update Pilot nécessite WordPress %1$s et PHP %2$s ou supérieur. Ce site utilise WordPress %3$s sur PHP %4$s : l’extension ne fait donc rien."
 
-#: update-pilot.php:195
+#: update-pilot.php:196
 msgid "More information about Update Pilot"
 msgstr "Plus d’informations sur Update Pilot"
 
-#: update-pilot.php:197
+#: update-pilot.php:198
 msgid "View details"
 msgstr "Voir les détails"
 
-#: update-pilot.php:204
+#: update-pilot.php:205
 msgid "🐛 Report a Bug"
 msgstr "🐛 Signaler un bogue"
 
-#: update-pilot.php:208
+#: update-pilot.php:209
 msgid "🐛 Report a Bug (install Bug Reporter)"
 msgstr "🐛 Signaler un bogue (installer Bug Reporter)"
 
-#. translators: 1: required WordPress version, 2: required PHP version.
-#: update-pilot.php:255
+#.translators: 1: required WordPress version, 2: required PHP version.
+#: update-pilot.php:256
 msgid "Update Pilot requires WordPress %1$s and PHP %2$s or higher."
 msgstr "Update Pilot nécessite WordPress %1$s et PHP %2$s ou supérieur."

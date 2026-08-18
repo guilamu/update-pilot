@@ -234,6 +234,36 @@ check( Update_Pilot_Policy::DENY, decide( $theme_seen_one_day, $settings, $now )
 $settings['delay']['applies_to'] = array( 'plugins' );
 check( Update_Pilot_Policy::ALLOW, decide( $theme_seen_one_day, $settings, $now ), 'unless themes are left out of it' );
 
+echo "\n== Days remaining ==\n";
+
+$now      = at( '2026-08-16 14:00' );
+$settings = base_settings();
+
+$settings['delay'] = array(
+	'enabled'    => true,
+	'days'       => 7,
+	'applies_to' => array( 'plugins', 'themes' ),
+);
+
+// Rounded up, so a delay armed ten minutes ago still reads as the full week.
+// floor() would say 6, and round() would flip between the two mid-day.
+check( 7, Update_Pilot_Policy::days_remaining( $now->getTimestamp() - 600, $settings, $now ), 'a version seen 10 minutes ago has 7 days left of a 7-day delay' );
+check( 1, Update_Pilot_Policy::days_remaining( $now->getTimestamp() - (int) ( 6.5 * 86400 ), $settings, $now ), 'half a day to run counts as 1 day left' );
+check( 0, Update_Pilot_Policy::days_remaining( $now->getTimestamp() - ( 7 * 86400 ), $settings, $now ), 'the exact moment the delay expires is 0' );
+check( 0, Update_Pilot_Policy::days_remaining( $now->getTimestamp() - ( 8 * 86400 ), $settings, $now ), 'and an expired delay never goes negative' );
+
+$settings['delay']['days'] = 0;
+check( 0, Update_Pilot_Policy::days_remaining( $now->getTimestamp(), $settings, $now ), 'a zero-day delay has nothing left to wait' );
+
+// The countdown is only ever shown for an item the policy reports as delayed,
+// and that reason cannot survive the delay elapsing: the two must not disagree
+// about where the boundary is.
+$settings['delay']['days'] = 7;
+$seen_six_days             = $plugin + array( 'first_seen' => $now->getTimestamp() - ( 6 * 86400 ) );
+
+check( 'delayed', reason( $seen_six_days, $settings, $now ), 'a version seen 6 days ago is still delayed' );
+check( 1, Update_Pilot_Policy::days_remaining( (int) $seen_six_days['first_seen'], $settings, $now ), 'and the countdown agrees there is a day to go' );
+
 echo "\n== Core branches ==\n";
 
 $settings = base_settings(); // minor on, major off.

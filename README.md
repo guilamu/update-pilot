@@ -24,6 +24,7 @@ Take command of WordPress auto-updates: choose what updates, schedule when, dela
 - A log of real update events: version before, version after, what triggered it, and whether it worked — read from WordPress itself, never inferred from file dates
 - Failed updates are recorded and can be e-mailed to you, which is the one thing core does not really tell you
 - A dashboard widget showing the last seven updates, and a Status screen that names whatever is blocking updates
+- A **Pending updates** list on the Status screen, and a countdown on the Exclusions screen, so a release being held by the safety delay says how many days are left; the daily e-mail carries the same reasons, split into what is waiting and what is ready
 - Environment checks for `DISALLOW_FILE_MODS`, `AUTOMATIC_UPDATER_DISABLED`, `WP_AUTO_UPDATE_CORE`, `DISABLE_WP_CRON`, third-party filters, file ownership and version control checkouts
 - A warning when the core update-check events have been left on a slower recurrence by a plugin that has since been removed — a new version can otherwise go unseen for a week
 - A compatibility report showing how many WordPress releases each plugin's author is behind on their "tested up to" declaration, counted against the real release history rather than by subtracting version numbers; plugins that declare nothing, and plugins that are not on wordpress.org, are reported as such rather than called outdated
@@ -118,6 +119,7 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 │   ├── class-logger.php           # Log table, writes and retention
 │   ├── class-log-repository.php   # Log queries, filters and pagination
 │   ├── class-listeners.php        # Records real update results from core hooks
+│   ├── class-pending.php          # What is on offer and why it is waiting
 │   ├── class-notifier.php         # Composes and sends the e-mails
 │   ├── class-compatibility.php    # "Tested up to" reporting for installed plugins
 │   ├── class-diagnostics.php      # Environment checks and Site Health
@@ -132,6 +134,16 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 ```
 
 ## Changelog
+
+### 1.0.1 - 2026-08-17
+
+An update held back by the safety delay was only admitted to on the Exclusions screen, and only as a date. It is now said everywhere, with a countdown.
+
+- The Exclusions screen counts the days left as well as naming the date a held release comes due
+- A **Pending updates** section on the Status screen lists everything on offer and why each item has or has not been installed
+- The daily available-updates e-mail is split into *Waiting* and *Ready to install*, and gives the reason next to each held update
+- Releases wordpress.org has withdrawn are reported as such instead of appearing eligible, matching what the eligibility filter has always done with them
+- One shared collector behind all three, so the screens and the e-mail cannot drift apart — and none of them starts a delay's countdown by being looked at
 
 ### 1.0.0 - 2026-08-17
 

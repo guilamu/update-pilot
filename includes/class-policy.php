@@ -311,6 +311,27 @@ class Update_Pilot_Policy {
 	}
 
 	/**
+	 * How many whole days a delayed item still has to wait.
+	 *
+	 * Rounded up, deliberately. A seven-day delay armed ten minutes ago has six
+	 * days and twenty-three hours to run: "7 days left" is the honest answer,
+	 * floor() would claim 6, and round() would flip between the two halfway
+	 * through every day. The caller does the wording, including the case where
+	 * this returns 0 — the wait is over but the next eligible run has not
+	 * happened yet.
+	 *
+	 * @param int               $first_seen Timestamp of first sighting.
+	 * @param array             $settings   Plugin settings.
+	 * @param DateTimeImmutable $now        Current time.
+	 * @return int Never negative.
+	 */
+	public static function days_remaining( int $first_seen, array $settings, DateTimeImmutable $now ): int {
+		$seconds = self::delay_expires_at( $first_seen, $settings ) - $now->getTimestamp();
+
+		return $seconds <= 0 ? 0 : (int) ceil( $seconds / self::DAY );
+	}
+
+	/**
 	 * Map an item type to the key used in the delay's applies_to list.
 	 *
 	 * @param string $type Item type.

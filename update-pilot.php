@@ -3,7 +3,7 @@
  * Plugin Name:       Update Pilot
  * Plugin URI:        https://github.com/guilamu/update-pilot
  * Description:       Take command of WordPress auto-updates: choose what updates, schedule when, delay risky releases, and get a truthful log of everything that happened.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Guilamu
  * Author URI:        https://github.com/guilamu
  * Text Domain:       update-pilot
@@ -24,7 +24,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'UPILOT_VERSION', '1.0.0' );
+define( 'UPILOT_VERSION', '1.0.1' );
 define( 'UPILOT_FILE', __FILE__ );
 define( 'UPILOT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'UPILOT_URL', plugin_dir_url( __FILE__ ) );
@@ -61,6 +61,7 @@ function upilot_load_classes(): void {
 		'includes/class-logger.php',
 		'includes/class-log-repository.php',
 		'includes/class-listeners.php',
+		'includes/class-pending.php',
 		'includes/class-notifier.php',
 		'includes/class-compatibility.php',
 		'includes/class-diagnostics.php',

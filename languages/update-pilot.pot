@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Update Pilot plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Update Pilot 1.0.0\n"
+"Project-Id-Version: Update Pilot 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/guilamu/update-pilot/issues\n"
-"POT-Creation-Date: 2026-08-17 06:55+0000\n"
+"POT-Creation-Date: 2026-08-17 22:00+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,554 +14,565 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: update-pilot\n"
 
-#: includes/class-admin.php:68
 #: includes/class-admin.php:69
-#: includes/class-admin.php:380
-#: includes/class-admin.php:1229
+#: includes/class-admin.php:70
+#: includes/class-admin.php:416
+#: includes/class-admin.php:1376
 #: includes/class-migrator.php:87
-#: update-pilot.php:196
-#: update-pilot.php:203
+#: update-pilot.php:197
+#: update-pilot.php:204
 msgid "Update Pilot"
 msgstr ""
 
-#: includes/class-admin.php:79
 #: includes/class-admin.php:80
-#: update-pilot.php:227
+#: includes/class-admin.php:81
+#: update-pilot.php:228
 msgid "Settings"
 msgstr ""
 
-#: includes/class-admin.php:88
 #: includes/class-admin.php:89
-#: includes/class-admin.php:425
-#: includes/class-admin.php:657
+#: includes/class-admin.php:90
+#: includes/class-admin.php:476
+#: includes/class-admin.php:748
 msgid "Exclusions"
 msgstr ""
 
-#: includes/class-admin.php:97
 #: includes/class-admin.php:98
+#: includes/class-admin.php:99
 msgid "Log"
 msgstr ""
 
-#: includes/class-admin.php:106
 #: includes/class-admin.php:107
-#: includes/class-admin.php:999
+#: includes/class-admin.php:108
+#: includes/class-admin.php:1066
+#: includes/class-admin.php:1212
 msgid "Status"
 msgstr ""
 
-#: includes/class-admin.php:155
+#: includes/class-admin.php:174
 msgid "You are not allowed to change these settings."
 msgstr ""
 
-#: includes/class-admin.php:284
+#: includes/class-admin.php:303
 msgid "Running updates requires permission to install updates on this site."
 msgstr ""
 
-#: includes/class-admin.php:309
+#: includes/class-admin.php:328
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-admin.php:310
+#: includes/class-admin.php:329
 msgid "Settings saved, but the schedule could not be changed. The previous schedule is still in place — see the Status page."
 msgstr ""
 
-#: includes/class-admin.php:311
+#: includes/class-admin.php:330
 msgid "WordPress has re-checked for updates."
 msgstr ""
 
-#: includes/class-admin.php:312
+#: includes/class-admin.php:331
 msgid "The update pass has run. Anything it did is in the log."
 msgstr ""
 
-#: includes/class-admin.php:313
+#: includes/class-admin.php:332
 msgid "Companion Auto Update settings were imported, and its own data was left untouched. Its schedule was copied into the Scheduled run fields but not switched on — check it before enabling it."
 msgstr ""
 
-#: includes/class-admin.php:314
+#: includes/class-admin.php:333
 msgid "A test message was handed to WordPress. If it does not arrive, the problem is in how this site sends mail, not in Update Pilot."
 msgstr ""
 
-#: includes/class-admin.php:315
+#: includes/class-admin.php:334
 msgid "WordPress refused to send the test message. Check the recipients, and whether an SMTP plugin is configured on this site."
 msgstr ""
 
-#: includes/class-admin.php:345
+#: includes/class-admin.php:364
+#: includes/class-admin.php:427
 msgid "This is a multisite network. Update Pilot 1.0 manages the current site only, has no network settings screen, and does not write the network-wide auto-update options."
 msgstr ""
 
-#: includes/class-admin.php:346
+#: includes/class-admin.php:365
+#: includes/class-admin.php:428
 msgid "This is a sub-site of a network. WordPress runs automatic updates on the main site only, so nothing set here will take effect. Configure Update Pilot on the main site."
 msgstr ""
 
-#: includes/class-admin.php:374
-#: includes/class-admin.php:652
-#: includes/class-admin.php:855
-#: includes/class-admin.php:996
+#: includes/class-admin.php:393
+#: includes/class-admin.php:740
+#: includes/class-admin.php:922
+#: includes/class-admin.php:1063
 msgid "You are not allowed to view this page."
 msgstr ""
 
-#: includes/class-admin.php:383
-msgid "WordPress installs the updates. Update Pilot decides which ones are eligible, when they may run, how long a release must wait, and keeps a record of what happened."
-msgstr ""
-
-#: includes/class-admin.php:391
+#: includes/class-admin.php:400
 msgid "What updates automatically"
 msgstr ""
 
-#: includes/class-admin.php:395
+#: includes/class-admin.php:401
+msgid "When updates may run"
+msgstr ""
+
+#: includes/class-admin.php:402
+msgid "Safety delay"
+msgstr ""
+
+#: includes/class-admin.php:403
+msgid "Notifications"
+msgstr ""
+
+#: includes/class-admin.php:404
+msgid "Access and data"
+msgstr ""
+
+#: includes/class-admin.php:434
+msgid "WordPress installs the updates. Update Pilot decides which ones are eligible, when they may run, how long a release must wait, and keeps a record of what happened."
+msgstr ""
+
+#: includes/class-admin.php:446
 msgid "WP_AUTO_UPDATE_CORE is defined in wp-config.php. It overrides the three core options below, which are shown for reference but have no effect."
 msgstr ""
 
-#: includes/class-admin.php:401
+#: includes/class-admin.php:452
 msgid "WordPress core"
 msgstr ""
 
-#: includes/class-admin.php:405
+#: includes/class-admin.php:456
 msgid "Minor releases (6.9.1 → 6.9.2). These are almost always security and maintenance fixes."
 msgstr ""
 
-#: includes/class-admin.php:406
+#: includes/class-admin.php:457
 msgid "Major releases (6.9 → 7.0)."
 msgstr ""
 
-#: includes/class-admin.php:407
+#: includes/class-admin.php:458
 msgid "Development builds. For test sites only."
 msgstr ""
 
-#: includes/class-admin.php:413
+#: includes/class-admin.php:464
 msgid "Plugins and themes"
 msgstr ""
 
-#: includes/class-admin.php:416
+#: includes/class-admin.php:467
 msgid "Manage plugin auto-updates"
 msgstr ""
 
-#: includes/class-admin.php:417
+#: includes/class-admin.php:468
 msgid "Manage theme auto-updates"
 msgstr ""
 
-#: includes/class-admin.php:418
+#: includes/class-admin.php:469
 msgid "Translation files"
 msgstr ""
 
 #. translators: %s: link to the Exclusions screen.
-#: includes/class-admin.php:424
+#: includes/class-admin.php:475
 msgid "Choose which ones on the %s screen. When these are switched off, Update Pilot leaves plugin and theme auto-updates exactly as WordPress found them rather than forcing them off."
 msgstr ""
 
-#: includes/class-admin.php:433
-msgid "When updates may run"
-msgstr ""
-
-#: includes/class-admin.php:437
+#: includes/class-admin.php:488
 msgid "Maintenance window"
 msgstr ""
 
-#: includes/class-admin.php:439
+#: includes/class-admin.php:490
 msgid "Only allow updates during this window"
 msgstr ""
 
-#: includes/class-admin.php:443
+#: includes/class-admin.php:494
 msgid "From"
 msgstr ""
 
-#: includes/class-admin.php:447
+#: includes/class-admin.php:498
 msgid "to"
 msgstr ""
 
-#: includes/class-admin.php:453
+#: includes/class-admin.php:504
 msgid "Days of the week"
 msgstr ""
 
-#: includes/class-admin.php:458
+#: includes/class-admin.php:509
 msgid "This is what actually confines updates to a time range: outside the window, every eligibility check says no, including during the update runs WordPress starts on its own. It applies to the types Update Pilot manages — anything left unmanaged keeps WordPress's own behaviour. A window may cross midnight: 23:00 to 02:00 works, and belongs to the day it opened."
 msgstr ""
 
-#: includes/class-admin.php:463
+#: includes/class-admin.php:514
 msgid "Scheduled run"
 msgstr ""
 
-#: includes/class-admin.php:465
+#: includes/class-admin.php:516
 msgid "Ask WordPress to install updates at a chosen time"
 msgstr ""
 
-#: includes/class-admin.php:469
+#: includes/class-admin.php:520
 msgid "At"
 msgstr ""
 
-#: includes/class-admin.php:475
+#: includes/class-admin.php:526
 msgid "Repeating"
 msgstr ""
 
 #. translators: %s: the site's timezone string.
-#: includes/class-admin.php:490
+#: includes/class-admin.php:541
 msgid "Times are in the site timezone (%s). WP-Cron only fires when someone visits the site, so without a real system cron this is an intention rather than a guarantee — the Status page shows how late things actually are."
 msgstr ""
 
-#: includes/class-admin.php:499
-msgid "Safety delay"
-msgstr ""
-
-#: includes/class-admin.php:503
+#: includes/class-admin.php:554
 msgid "Hold new releases"
 msgstr ""
 
-#: includes/class-admin.php:505
+#: includes/class-admin.php:556
 msgid "Wait before installing a newly released version"
 msgstr ""
 
-#: includes/class-admin.php:511
+#: includes/class-admin.php:562
 msgid "days after the version first appears"
 msgstr ""
 
-#: includes/class-admin.php:519
-#: includes/class-admin.php:668
+#: includes/class-admin.php:570
+#: includes/class-admin.php:759
 msgid "Plugins"
 msgstr ""
 
-#: includes/class-admin.php:520
-#: includes/class-admin.php:678
+#: includes/class-admin.php:571
+#: includes/class-admin.php:769
 msgid "Themes"
 msgstr ""
 
-#: includes/class-admin.php:521
+#: includes/class-admin.php:572
 msgid "WordPress core — not recommended: minor releases are usually security fixes"
 msgstr ""
 
-#: includes/class-admin.php:526
+#: includes/class-admin.php:577
 msgid "The clock starts the first time this site is offered a given version, and it applies to plugins, themes and core alike."
 msgstr ""
 
-#: includes/class-admin.php:532
-msgid "Notifications"
-msgstr ""
-
-#: includes/class-admin.php:536
+#: includes/class-admin.php:587
 msgid "Send an e-mail when"
 msgstr ""
 
-#: includes/class-admin.php:539
+#: includes/class-admin.php:590
 msgid "An update fails — the one thing WordPress does not really tell you"
 msgstr ""
 
-#: includes/class-admin.php:540
+#: includes/class-admin.php:591
 msgid "An update is installed"
 msgstr ""
 
-#: includes/class-admin.php:541
+#: includes/class-admin.php:592
 msgid "An update is available but not installed (checked once a day)"
 msgstr ""
 
-#: includes/class-admin.php:542
+#: includes/class-admin.php:593
 msgid "A plugin's author stops declaring compatibility with recent WordPress releases (sent only when the list changes)"
 msgstr ""
 
-#: includes/class-admin.php:547
+#: includes/class-admin.php:598
 msgid "Recipients"
 msgstr ""
 
 #. translators: %s: the site administration e-mail address.
-#: includes/class-admin.php:556
+#: includes/class-admin.php:607
 msgid "One address per line. Leave empty to use the site administration address (%s)."
 msgstr ""
 
-#: includes/class-admin.php:564
+#: includes/class-admin.php:615
 msgid "Format"
 msgstr ""
 
-#: includes/class-admin.php:566
-#: includes/class-notifier.php:382
+#: includes/class-admin.php:617
+#: includes/class-notifier.php:354
 msgid "HTML"
 msgstr ""
 
-#: includes/class-admin.php:567
-#: includes/class-notifier.php:382
+#: includes/class-admin.php:618
+#: includes/class-notifier.php:354
 msgid "Plain text"
 msgstr ""
 
-#: includes/class-admin.php:571
+#: includes/class-admin.php:622
 msgid "WordPress e-mails"
 msgstr ""
 
-#: includes/class-admin.php:573
+#: includes/class-admin.php:624
 msgid "Stop WordPress from sending its own update e-mails"
 msgstr ""
 
-#: includes/class-admin.php:575
+#: includes/class-admin.php:626
 msgid "Off by default, so our messages are added to the native ones rather than replacing them. If this plugin ever stops working, the site still gets WordPress's own notifications."
 msgstr ""
 
-#: includes/class-admin.php:581
-msgid "Access and data"
-msgstr ""
-
-#: includes/class-admin.php:585
+#: includes/class-admin.php:636
 msgid "Who may use Update Pilot"
 msgstr ""
 
-#: includes/class-admin.php:587
+#: includes/class-admin.php:638
 msgid "Administrator (always)"
 msgstr ""
 
-#: includes/class-admin.php:609
+#: includes/class-admin.php:660
 msgid "This grants a real capability, and it is the same capability these pages require."
 msgstr ""
 
-#: includes/class-admin.php:614
+#: includes/class-admin.php:665
 msgid "Keep log entries for"
 msgstr ""
 
-#: includes/class-admin.php:618
+#: includes/class-admin.php:669
 msgid "days (0 keeps everything)"
 msgstr ""
 
-#: includes/class-admin.php:622
+#: includes/class-admin.php:673
 msgid "On uninstall"
 msgstr ""
 
-#: includes/class-admin.php:624
+#: includes/class-admin.php:675
 msgid "Delete all Update Pilot data when the plugin is uninstalled"
 msgstr ""
 
-#: includes/class-admin.php:626
+#: includes/class-admin.php:677
 msgid "Off by default. Deactivating the plugin never deletes anything."
 msgstr ""
 
-#: includes/class-admin.php:660
+#: includes/class-admin.php:707
+msgid "Settings sections"
+msgstr ""
+
+#: includes/class-admin.php:751
 msgid "Tick what may update on its own. These boxes are the same information as the Auto-updates column on the Plugins and Themes screens, and changing them in either place changes both."
 msgstr ""
 
-#: includes/class-admin.php:672
+#: includes/class-admin.php:763
 msgid "Plugin auto-updates are not managed by Update Pilot at the moment, so these boxes have no effect. Switch it on in Settings."
 msgstr ""
 
-#: includes/class-admin.php:682
+#: includes/class-admin.php:773
 msgid "Theme auto-updates are not managed by Update Pilot at the moment, so these boxes have no effect. Switch it on in Settings."
 msgstr ""
 
-#: includes/class-admin.php:712
-#: includes/class-admin.php:1139
+#: includes/class-admin.php:804
+#: includes/class-admin.php:1286
 #: includes/class-log-repository.php:195
 msgid "Plugin"
 msgstr ""
 
-#: includes/class-admin.php:713
-#: includes/class-admin.php:756
-#: includes/class-admin.php:1140
+#: includes/class-admin.php:805
+#: includes/class-admin.php:849
+#: includes/class-admin.php:1287
 #: includes/class-notifier.php:190
 msgid "Installed"
 msgstr ""
 
-#: includes/class-admin.php:714
-#: includes/class-admin.php:757
+#: includes/class-admin.php:806
+#: includes/class-admin.php:850
 msgid "Update"
 msgstr ""
 
-#: includes/class-admin.php:755
+#: includes/class-admin.php:848
 #: includes/class-log-repository.php:198
 msgid "Theme"
 msgstr ""
 
-#: includes/class-admin.php:798
+#: includes/class-admin.php:891
 msgid "Up to date"
 msgstr ""
 
 #. translators: %s: version number.
-#: includes/class-admin.php:811
+#: includes/class-admin.php:896
 msgid "%s available"
 msgstr ""
 
-#: includes/class-admin.php:817
-msgid "excluded"
-msgstr ""
-
-#: includes/class-admin.php:820
-msgid "waiting for the maintenance window"
-msgstr ""
-
-#. translators: %s: date and time.
-#: includes/class-admin.php:827
-msgid "held until %s"
-msgstr ""
-
-#: includes/class-admin.php:832
-msgid "held, delay starting"
-msgstr ""
-
-#: includes/class-admin.php:835
-msgid "left to WordPress"
-msgstr ""
-
-#: includes/class-admin.php:838
+#: includes/class-admin.php:903
+#: includes/class-admin.php:1219
 msgid "eligible"
 msgstr ""
 
-#: includes/class-admin.php:875
+#: includes/class-admin.php:942
 msgid "Update log"
 msgstr ""
 
-#: includes/class-admin.php:878
+#: includes/class-admin.php:945
 msgid "Every entry comes from WordPress reporting an update it actually performed, with the version before and after. Nothing here is reconstructed from file dates."
 msgstr ""
 
-#: includes/class-admin.php:886
+#: includes/class-admin.php:953
 msgid "All types"
 msgstr ""
 
-#: includes/class-admin.php:895
+#: includes/class-admin.php:962
 msgid "All outcomes"
 msgstr ""
 
-#: includes/class-admin.php:903
+#: includes/class-admin.php:970
 msgid "Search"
 msgstr ""
 
-#: includes/class-admin.php:905
+#: includes/class-admin.php:972
 msgid "Filter"
 msgstr ""
 
-#: includes/class-admin.php:911
+#: includes/class-admin.php:978
 msgid "When"
 msgstr ""
 
-#: includes/class-admin.php:912
+#: includes/class-admin.php:979
 msgid "What"
 msgstr ""
 
-#: includes/class-admin.php:913
+#: includes/class-admin.php:980
 msgid "Versions"
 msgstr ""
 
-#: includes/class-admin.php:914
+#: includes/class-admin.php:981
 msgid "Trigger"
 msgstr ""
 
-#: includes/class-admin.php:915
+#: includes/class-admin.php:982
 msgid "Outcome"
 msgstr ""
 
-#: includes/class-admin.php:920
+#: includes/class-admin.php:987
 msgid "Nothing recorded yet."
 msgstr ""
 
-#: includes/class-admin.php:1007
+#: includes/class-admin.php:1074
 msgid "Schedule"
 msgstr ""
 
-#: includes/class-admin.php:1011
+#: includes/class-admin.php:1078
 msgid "Next scheduled run"
 msgstr ""
 
-#: includes/class-admin.php:1012
+#: includes/class-admin.php:1079
 msgid "No scheduled run — Update Pilot is not asking for one, so WordPress updates on its own timing."
 msgstr ""
 
-#: includes/class-admin.php:1016
+#: includes/class-admin.php:1083
 msgid "Last run"
 msgstr ""
 
-#: includes/class-admin.php:1017
+#: includes/class-admin.php:1084
 msgid "Never"
 msgstr ""
 
-#: includes/class-admin.php:1021
+#: includes/class-admin.php:1088
 msgid "WP-Cron"
 msgstr ""
 
 #. translators: %s: human readable duration.
-#: includes/class-admin.php:1025
+#: includes/class-admin.php:1092
 msgid "Running %s behind schedule"
 msgstr ""
 
-#: includes/class-admin.php:1028
+#: includes/class-admin.php:1095
 msgid "On time"
 msgstr ""
 
-#: includes/class-admin.php:1031
+#: includes/class-admin.php:1098
 msgid "Site timezone"
 msgstr ""
 
-#: includes/class-admin.php:1035
+#: includes/class-admin.php:1104
 msgid "Environment"
 msgstr ""
 
-#: includes/class-admin.php:1058
+#: includes/class-admin.php:1127
 msgid "Last 30 days"
 msgstr ""
 
-#: includes/class-admin.php:1060
+#: includes/class-admin.php:1129
 msgid "Updates installed"
 msgstr ""
 
-#: includes/class-admin.php:1061
+#: includes/class-admin.php:1130
 msgid "Updates that failed"
 msgstr ""
 
-#: includes/class-admin.php:1062
+#: includes/class-admin.php:1131
 #: includes/class-log-repository.php:226
 msgid "Rolled back"
 msgstr ""
 
-#: includes/class-admin.php:1065
+#: includes/class-admin.php:1134
 msgid "Actions"
 msgstr ""
 
-#: includes/class-admin.php:1071
+#: includes/class-admin.php:1140
 msgid "Check for updates now"
 msgstr ""
 
-#: includes/class-admin.php:1077
+#: includes/class-admin.php:1146
 msgid "Run an update pass now"
 msgstr ""
 
-#: includes/class-admin.php:1083
+#: includes/class-admin.php:1152
 msgid "Send a test e-mail"
 msgstr ""
 
-#: includes/class-admin.php:1087
+#: includes/class-admin.php:1156
 msgid "An update pass runs in this request and can take a while on a slow connection. It obeys the same rules as a scheduled run, including the maintenance window."
 msgstr ""
 
-#: includes/class-admin.php:1103
+#: includes/class-admin.php:1176
+msgid "Pending updates"
+msgstr ""
+
+#: includes/class-admin.php:1179
+msgid "No updates are available."
+msgstr ""
+
+#: includes/class-admin.php:1193
+msgid "Nothing is waiting. Every available update is eligible to install."
+msgstr ""
+
+#: includes/class-admin.php:1199
+msgid "Only the first rule that applies is named. An update that is both outside the maintenance window and still inside its safety delay is reported as waiting for the window, because that is the order the decision is made in."
+msgstr ""
+
+#: includes/class-admin.php:1210
+msgid "Item"
+msgstr ""
+
+#: includes/class-admin.php:1211
+msgid "Version"
+msgstr ""
+
+#: includes/class-admin.php:1250
 msgid "Plugin compatibility"
 msgstr ""
 
-#: includes/class-admin.php:1107
+#: includes/class-admin.php:1254
 msgid "No check has run yet. It happens once a day, or immediately with the button below."
 msgstr ""
 
 #. translators: 1: number of plugins, 2: number of plugins, 3: number of plugins, 4: number of plugins.
-#: includes/class-admin.php:1121
+#: includes/class-admin.php:1268
 msgid "%1$d up to date, %2$d behind, %3$d with nothing declared, %4$d not hosted on wordpress.org."
 msgstr ""
 
-#: includes/class-admin.php:1129
+#: includes/class-admin.php:1276
 msgid "This reads what each author declares, not what actually works. A stale declaration means nobody may be maintaining the plugin — which is what matters the day a vulnerability is found in it."
 msgstr ""
 
-#: includes/class-admin.php:1133
+#: includes/class-admin.php:1280
 msgid "Every plugin is declared compatible with a recent release."
 msgstr ""
 
-#: includes/class-admin.php:1141
+#: includes/class-admin.php:1288
 msgid "Declared compatibility"
 msgstr ""
 
 #. translators: %s: version number.
-#: includes/class-admin.php:1188
-#: includes/class-notifier.php:514
+#: includes/class-admin.php:1335
+#: includes/class-notifier.php:486
 msgid "still on %s"
 msgstr ""
 
-#: includes/class-admin.php:1244
+#: includes/class-admin.php:1391
 msgid "No updates recorded yet."
 msgstr ""
 
 #. translators: %s: date and time.
-#: includes/class-admin.php:1279
+#: includes/class-admin.php:1426
 msgid "Next scheduled run: %s"
 msgstr ""
 
-#: includes/class-admin.php:1288
+#: includes/class-admin.php:1435
 msgid "See the full log"
 msgstr ""
 
@@ -883,59 +894,104 @@ msgid "The following updates were installed automatically on your site."
 msgstr ""
 
 #. translators: 1: site name, 2: number of available updates.
-#: includes/class-notifier.php:232
+#: includes/class-notifier.php:237
 msgid "[%1$s] %2$d update is available"
 msgid_plural "[%1$s] %2$d updates are available"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-notifier.php:239
-msgid "Available"
+#: includes/class-notifier.php:260
+msgid "Waiting"
 msgstr ""
 
-#: includes/class-notifier.php:244
-msgid "These updates are available on your site and have not been installed."
+#: includes/class-notifier.php:267
+msgid "Ready to install"
 msgstr ""
 
-#: includes/class-notifier.php:365
+#: includes/class-notifier.php:272
+msgid "These updates are available on your site and have not been installed. Anything Update Pilot is holding back says why."
+msgstr ""
+
+#: includes/class-notifier.php:337
 msgid "Example"
 msgstr ""
 
-#: includes/class-notifier.php:370
+#: includes/class-notifier.php:342
 msgid "An example plugin"
 msgstr ""
 
 #. translators: %s: 'HTML' or 'Plain text'.
-#: includes/class-notifier.php:381
+#: includes/class-notifier.php:353
 msgid "This is a test message from Update Pilot. If you are reading it, this site can deliver the notifications you have switched on. Format in use: %s."
 msgstr ""
 
 #. translators: %s: site name.
-#: includes/class-notifier.php:388
+#: includes/class-notifier.php:360
 msgid "[%s] Update Pilot test message"
 msgstr ""
 
 #. translators: %s: site URL.
 #. translators: %s: site link.
-#: includes/class-notifier.php:558
-#: includes/class-notifier.php:605
+#: includes/class-notifier.php:530
+#: includes/class-notifier.php:577
 msgid "Site: %s"
 msgstr ""
 
 #. translators: %s: URL of the update log.
 #. translators: %s: link to the update log.
-#: includes/class-notifier.php:564
-#: includes/class-notifier.php:611
+#: includes/class-notifier.php:536
+#: includes/class-notifier.php:583
 msgid "Full log: %s"
 msgstr ""
 
-#: includes/class-notifier.php:569
-#: includes/class-notifier.php:616
+#: includes/class-notifier.php:541
+#: includes/class-notifier.php:588
 msgid "Sent by Update Pilot."
 msgstr ""
 
-#: includes/class-notifier.php:612
+#: includes/class-notifier.php:584
 msgid "Update Pilot log"
+msgstr ""
+
+#: includes/class-pending.php:107
+msgid "excluded"
+msgstr ""
+
+#: includes/class-pending.php:110
+msgid "waiting for the maintenance window"
+msgstr ""
+
+#: includes/class-pending.php:116
+#: includes/class-pending.php:144
+msgid "held, delay starting"
+msgstr ""
+
+#: includes/class-pending.php:119
+msgid "this branch of WordPress is not updated automatically"
+msgstr ""
+
+#: includes/class-pending.php:122
+msgid "withdrawn by wordpress.org"
+msgstr ""
+
+#: includes/class-pending.php:125
+msgid "left to WordPress"
+msgstr ""
+
+#. translators: %s: date and time.
+#: includes/class-pending.php:149
+msgid "held until %s"
+msgstr ""
+
+#. translators: %d: number of days.
+#: includes/class-pending.php:164
+msgid "%d day left"
+msgid_plural "%d days left"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-pending.php:167
+msgid "due now"
 msgstr ""
 
 #: includes/class-scheduler.php:107
@@ -976,27 +1032,27 @@ msgid "WordPress refused to create the daily housekeeping event, so the log will
 msgstr ""
 
 #. translators: 1: required WordPress version, 2: required PHP version, 3: current WordPress version, 4: current PHP version.
-#: update-pilot.php:135
+#: update-pilot.php:136
 msgid "Update Pilot requires WordPress %1$s and PHP %2$s or higher. This site runs WordPress %3$s on PHP %4$s, so the plugin is not doing anything."
 msgstr ""
 
-#: update-pilot.php:195
+#: update-pilot.php:196
 msgid "More information about Update Pilot"
 msgstr ""
 
-#: update-pilot.php:197
+#: update-pilot.php:198
 msgid "View details"
 msgstr ""
 
-#: update-pilot.php:204
+#: update-pilot.php:205
 msgid "🐛 Report a Bug"
 msgstr ""
 
-#: update-pilot.php:208
+#: update-pilot.php:209
 msgid "🐛 Report a Bug (install Bug Reporter)"
 msgstr ""
 
 #. translators: 1: required WordPress version, 2: required PHP version.
-#: update-pilot.php:255
+#: update-pilot.php:256
 msgid "Update Pilot requires WordPress %1$s and PHP %2$s or higher."
 msgstr ""

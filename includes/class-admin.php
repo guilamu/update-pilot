@@ -742,6 +742,9 @@ class Update_Pilot_Admin {
 
 		$settings = Update_Pilot_Settings::get();
 
+		// Evaluated once for the whole screen, not once per installed item.
+		$pending = Update_Pilot_Pending::all();
+
 		self::open_page( __( 'Exclusions', 'update-pilot' ) );
 
 		echo '<p class="description">'
@@ -761,7 +764,7 @@ class Update_Pilot_Admin {
 				</p>
 			<?php endif; ?>
 
-			<?php self::render_plugin_table( $settings ); ?>
+			<?php self::render_plugin_table( $settings, Update_Pilot_Pending::index( $pending, 'plugin' ) ); ?>
 
 			<h2><?php esc_html_e( 'Themes', 'update-pilot' ); ?></h2>
 
@@ -771,7 +774,7 @@ class Update_Pilot_Admin {
 				</p>
 			<?php endif; ?>
 
-			<?php self::render_theme_table( $settings ); ?>
+			<?php self::render_theme_table( $settings, Update_Pilot_Pending::index( $pending, 'theme' ) ); ?>
 
 			<?php submit_button(); ?>
 		</form>
@@ -784,9 +787,10 @@ class Update_Pilot_Admin {
 	 * The plugin list.
 	 *
 	 * @param array $settings Settings.
+	 * @param array $pending  Offered plugin updates, keyed by plugin file.
 	 * @return void
 	 */
-	private static function render_plugin_table( array $settings ): void {
+	private static function render_plugin_table( array $settings, array $pending ): void {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -820,7 +824,7 @@ class Update_Pilot_Admin {
 				esc_html( (string) $file )
 			);
 			printf( '<td>%s</td>', esc_html( (string) ( $data['Version'] ?? '' ) ) );
-			printf( '<td>%s</td>', wp_kses_post( self::pending_note( 'plugin', (string) $file ) ) );
+			printf( '<td>%s</td>', wp_kses_post( self::pending_note( $pending[ (string) $file ] ?? null ) ) );
 			echo '</tr>';
 		}
 
@@ -831,9 +835,10 @@ class Update_Pilot_Admin {
 	 * The theme list.
 	 *
 	 * @param array $settings Settings.
+	 * @param array $pending  Offered theme updates, keyed by stylesheet.
 	 * @return void
 	 */
-	private static function render_theme_table( array $settings ): void {
+	private static function render_theme_table( array $settings, array $pending ): void {
 		$themes   = wp_get_themes();
 		$excluded = (array) $settings['themes']['excluded'];
 
@@ -862,7 +867,7 @@ class Update_Pilot_Admin {
 				esc_html( (string) $stylesheet )
 			);
 			printf( '<td>%s</td>', esc_html( (string) $theme->get( 'Version' ) ) );
-			printf( '<td>%s</td>', wp_kses_post( self::pending_note( 'theme', (string) $stylesheet ) ) );
+			printf( '<td>%s</td>', wp_kses_post( self::pending_note( $pending[ (string) $stylesheet ] ?? null ) ) );
 			echo '</tr>';
 		}
 
@@ -870,61 +875,35 @@ class Update_Pilot_Admin {
 	}
 
 	/**
-	 * What the policy would say about an item right now.
+	 * What the policy says about an item right now.
 	 *
-	 * This is the engine explaining itself: the same evaluation that runs during
-	 * an update, rendered as a sentence.
+	 * This is the engine explaining itself: the same verdict that decides an
+	 * update, rendered as a phrase. The row is handed in rather than looked up,
+	 * so the whole table costs one pass over the update transients — and so this
+	 * screen cannot start a delay's clock by being opened.
 	 *
-	 * @param string $type Item type.
-	 * @param string $id   Identifier.
+	 * @param array|null $row Row from Update_Pilot_Pending, or null when the item
+	 *                        has no update on offer.
 	 * @return string
 	 */
-	private static function pending_note( string $type, string $id ): string {
-		$transient = get_site_transient( 'plugin' === $type ? 'update_plugins' : 'update_themes' );
-
-		if ( ! is_object( $transient ) || empty( $transient->response[ $id ] ) ) {
+	private static function pending_note( ?array $row ): string {
+		if ( null === $row ) {
 			return '<span class="upilot-muted">' . esc_html__( 'Up to date', 'update-pilot' ) . '</span>';
 		}
-
-		$offer   = $transient->response[ $id ];
-		$offer   = is_array( $offer ) ? (object) $offer : $offer;
-		$version = isset( $offer->new_version ) ? (string) $offer->new_version : '';
-
-		$item = Update_Pilot_Policy_Filters::normalise( $type, $offer );
-
-		$verdict = Update_Pilot_Policy::evaluate( $item, Update_Pilot_Settings::get(), Update_Pilot_Policy_Filters::now() );
 
 		$label = sprintf(
 			/* translators: %s: version number. */
 			esc_html__( '%s available', 'update-pilot' ),
-			esc_html( $version )
+			esc_html( (string) ( $row['to_version'] ?? '' ) )
 		);
 
-		switch ( $verdict['reason'] ) {
-			case 'excluded':
-				return $label . '<br><span class="upilot-muted">' . esc_html__( 'excluded', 'update-pilot' ) . '</span>';
+		$note = Update_Pilot_Pending::describe( $row );
 
-			case 'outside_window':
-				return $label . '<br><span class="upilot-muted">' . esc_html__( 'waiting for the maintenance window', 'update-pilot' ) . '</span>';
-
-			case 'delayed':
-				$expiry = Update_Pilot_Policy::delay_expires_at( (int) $item['first_seen'], Update_Pilot_Settings::get() );
-
-				return $label . '<br><span class="upilot-muted">' . sprintf(
-					/* translators: %s: date and time. */
-					esc_html__( 'held until %s', 'update-pilot' ),
-					esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $expiry ) )
-				) . '</span>';
-
-			case 'delay_pending_first_sighting':
-				return $label . '<br><span class="upilot-muted">' . esc_html__( 'held, delay starting', 'update-pilot' ) . '</span>';
-
-			case 'unmanaged':
-				return $label . '<br><span class="upilot-muted">' . esc_html__( 'left to WordPress', 'update-pilot' ) . '</span>';
-
-			default:
-				return $label . '<br><span class="upilot-muted">' . esc_html__( 'eligible', 'update-pilot' ) . '</span>';
+		if ( '' === $note ) {
+			$note = __( 'eligible', 'update-pilot' );
 		}
+
+		return $label . '<br><span class="upilot-muted">' . esc_html( $note ) . '</span>';
 	}
 
 	/*
@@ -1120,6 +1099,8 @@ class Update_Pilot_Admin {
 
 		echo '</tbody></table>';
 
+		self::render_pending_section();
+
 		echo '<h2>' . esc_html__( 'Environment', 'update-pilot' ) . '</h2>';
 		echo '<table class="widefat striped"><tbody>';
 
@@ -1177,6 +1158,84 @@ class Update_Pilot_Admin {
 		<?php
 
 		self::close_page();
+	}
+
+	/**
+	 * Updates that are on offer, and why they have not gone in.
+	 *
+	 * The one screen that answers the question a delayed site actually raises.
+	 * Read-only: no form, no action, nothing recorded — opening this page must
+	 * not start a safety delay's countdown, which is why it goes through
+	 * Update_Pilot_Pending rather than the filter path.
+	 *
+	 * @return void
+	 */
+	private static function render_pending_section(): void {
+		$rows = Update_Pilot_Pending::all();
+
+		echo '<h2>' . esc_html__( 'Pending updates', 'update-pilot' ) . '</h2>';
+
+		if ( array() === $rows ) {
+			echo '<p>' . esc_html__( 'No updates are available.', 'update-pilot' ) . '</p>';
+
+			return;
+		}
+
+		/*
+		 * A row with nothing to explain is one the policy allows outright. When
+		 * every row is like that there is no table worth printing — and saying so
+		 * in a sentence is the same choice the compatibility section makes.
+		 * An unmanaged item does have something to say, so it keeps the table.
+		 */
+		$explained = array_filter( $rows, static fn( $row ) => '' !== Update_Pilot_Pending::describe( $row ) );
+
+		if ( array() === $explained ) {
+			echo '<p>' . esc_html__( 'Nothing is waiting. Every available update is eligible to install.', 'update-pilot' ) . '</p>';
+
+			return;
+		}
+
+		echo '<p class="description">'
+			. esc_html__( 'Only the first rule that applies is named. An update that is both outside the maintenance window and still inside its safety delay is reported as waiting for the window, because that is the order the decision is made in.', 'update-pilot' )
+			. '</p>';
+
+		// Held back first: they are why anyone opened this section.
+		$held = array_values( array_filter( $rows, array( 'Update_Pilot_Pending', 'is_held' ) ) );
+
+		$eligible = array_values(
+			array_filter( $rows, static fn( $row ) => ! Update_Pilot_Pending::is_held( $row ) )
+		);
+
+		echo '<table class="widefat striped"><thead><tr>';
+		echo '<th scope="col">' . esc_html__( 'Item', 'update-pilot' ) . '</th>';
+		echo '<th scope="col">' . esc_html__( 'Version', 'update-pilot' ) . '</th>';
+		echo '<th scope="col">' . esc_html__( 'Status', 'update-pilot' ) . '</th>';
+		echo '</tr></thead><tbody>';
+
+		foreach ( array_merge( $held, $eligible ) as $row ) {
+			$note = Update_Pilot_Pending::describe( $row );
+
+			if ( '' === $note ) {
+				$note = __( 'eligible', 'update-pilot' );
+			}
+
+			echo '<tr>';
+			printf(
+				'<td><span class="upilot-dot upilot-dot-%1$s"></span> <strong>%2$s</strong><br><span class="upilot-muted">%3$s · %4$s</span></td>',
+				esc_attr( Update_Pilot_Pending::is_held( $row ) ? Update_Pilot_Diagnostics::WARNING : Update_Pilot_Diagnostics::GOOD ),
+				esc_html( (string) $row['name'] ),
+				esc_html( Update_Pilot_Log_Repository::type_label( (string) $row['type'] ) ),
+				esc_html( (string) $row['item'] )
+			);
+
+			$versions = self::version_range( $row );
+
+			printf( '<td>%s</td>', '' === $versions ? '—' : esc_html( $versions ) );
+			printf( '<td>%s</td>', esc_html( $note ) );
+			echo '</tr>';
+		}
+
+		echo '</tbody></table>';
 	}
 
 	/**

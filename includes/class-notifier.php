@@ -221,12 +221,17 @@ class Update_Pilot_Notifier {
 			return;
 		}
 
-		$pending = self::pending_updates();
+		$pending = Update_Pilot_Pending::all();
 
 		if ( array() === $pending ) {
 			return;
 		}
 
+		/*
+		 * The count stays every offered update, not just the held ones. A subject
+		 * line is a headline, and quietly changing what its number means is worse
+		 * than a number that needs the body to qualify it.
+		 */
 		$subject = sprintf(
 			/* translators: 1: site name, 2: number of available updates. */
 			_n( '[%1$s] %2$d update is available', '[%1$s] %2$d updates are available', count( $pending ), 'update-pilot' ),
@@ -234,14 +239,37 @@ class Update_Pilot_Notifier {
 			count( $pending )
 		);
 
-		$sections = array(
-			array(
-				'title'  => __( 'Available', 'update-pilot' ),
-				'events' => $pending,
-			),
-		);
+		$waiting = array();
+		$ready   = array();
 
-		$intro = __( 'These updates are available on your site and have not been installed.', 'update-pilot' );
+		foreach ( $pending as $row ) {
+			if ( Update_Pilot_Pending::is_held( $row ) ) {
+				$waiting[] = self::to_event( $row );
+
+				continue;
+			}
+
+			$ready[] = self::to_event( $row );
+		}
+
+		$sections = array();
+
+		// Held back first: it is the half of the list that needs explaining.
+		if ( array() !== $waiting ) {
+			$sections[] = array(
+				'title'  => __( 'Waiting', 'update-pilot' ),
+				'events' => $waiting,
+			);
+		}
+
+		if ( array() !== $ready ) {
+			$sections[] = array(
+				'title'  => __( 'Ready to install', 'update-pilot' ),
+				'events' => $ready,
+			);
+		}
+
+		$intro = __( 'These updates are available on your site and have not been installed. Anything Update Pilot is holding back says why.', 'update-pilot' );
 
 		self::send(
 			$subject,
@@ -251,95 +279,39 @@ class Update_Pilot_Notifier {
 	}
 
 	/**
-	 * Everything WordPress currently has on offer.
+	 * Everything WordPress currently has on offer, with the reason it is waiting.
 	 *
-	 * Read from the update transients, which core keeps fresh. No HTTP request
-	 * of our own: Companion Auto Update made one plugins_api() call per
-	 * installed plugin, in series, from a cron job, with no cache.
+	 * Update_Pilot_Pending does the reading, so this mail, the Exclusions column
+	 * and the Status screen can never disagree about why an update has not gone
+	 * in. Nothing here starts a safety delay: cron runs unauthenticated, and a
+	 * report must not mutate the state it is reporting on.
 	 *
 	 * @return array Log-shaped event rows.
 	 */
 	public static function pending_updates(): array {
-		$pending = array();
-
-		$plugins = get_site_transient( 'update_plugins' );
-
-		if ( is_object( $plugins ) && ! empty( $plugins->response ) && is_array( $plugins->response ) ) {
-			foreach ( $plugins->response as $file => $offer ) {
-				$offer = is_array( $offer ) ? (object) $offer : $offer;
-
-				$pending[] = array(
-					'type'         => 'plugin',
-					'item'         => (string) $file,
-					'name'         => self::plugin_name( (string) $file ),
-					'from_version' => Update_Pilot_Listeners::installed_version( 'plugin', (string) $file ),
-					'to_version'   => isset( $offer->new_version ) ? (string) $offer->new_version : null,
-					'status'       => 'available',
-				);
-			}
-		}
-
-		$themes = get_site_transient( 'update_themes' );
-
-		if ( is_object( $themes ) && ! empty( $themes->response ) && is_array( $themes->response ) ) {
-			foreach ( $themes->response as $stylesheet => $offer ) {
-				$offer = is_array( $offer ) ? (object) $offer : $offer;
-				$theme = wp_get_theme( (string) $stylesheet );
-
-				$pending[] = array(
-					'type'         => 'theme',
-					'item'         => (string) $stylesheet,
-					'name'         => $theme->exists() ? (string) $theme->get( 'Name' ) : (string) $stylesheet,
-					'from_version' => Update_Pilot_Listeners::installed_version( 'theme', (string) $stylesheet ),
-					'to_version'   => isset( $offer->new_version ) ? (string) $offer->new_version : null,
-					'status'       => 'available',
-				);
-			}
-		}
-
-		$core = get_site_transient( 'update_core' );
-
-		if ( is_object( $core ) && ! empty( $core->updates ) && is_array( $core->updates ) ) {
-			foreach ( $core->updates as $offer ) {
-				$offer = is_array( $offer ) ? (object) $offer : $offer;
-
-				if ( is_object( $offer ) && 'upgrade' === ( $offer->response ?? '' ) ) {
-					$pending[] = array(
-						'type'         => 'core',
-						'item'         => 'core',
-						'name'         => 'WordPress',
-						'from_version' => (string) get_bloginfo( 'version' ),
-						'to_version'   => isset( $offer->current ) ? (string) $offer->current : null,
-						'status'       => 'available',
-					);
-					break;
-				}
-			}
-		}
-
-		return $pending;
+		return array_map( array( __CLASS__, 'to_event' ), Update_Pilot_Pending::all() );
 	}
 
 	/**
-	 * A plugin's display name.
+	 * Turn a pending row into the event shape the composer understands.
 	 *
-	 * @param string $file Plugin file.
-	 * @return string
+	 * describe() lands in `message`, which is all it takes: describe() at the
+	 * bottom of this class already appends a message to the line, so both bodies
+	 * pick the reason up without a change of their own.
+	 *
+	 * @param array $row Row from Update_Pilot_Pending::all().
+	 * @return array
 	 */
-	private static function plugin_name( string $file ): string {
-		if ( ! function_exists( 'get_plugin_data' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$path = WP_PLUGIN_DIR . '/' . $file;
-
-		if ( ! file_exists( $path ) ) {
-			return $file;
-		}
-
-		$data = get_plugin_data( $path, false, false );
-
-		return empty( $data['Name'] ) ? $file : (string) $data['Name'];
+	private static function to_event( array $row ): array {
+		return array(
+			'type'         => (string) $row['type'],
+			'item'         => (string) $row['item'],
+			'name'         => (string) $row['name'],
+			'from_version' => $row['from_version'],
+			'to_version'   => $row['to_version'],
+			'status'       => 'available',
+			'message'      => Update_Pilot_Pending::describe( $row ),
+		);
 	}
 
 	/*
