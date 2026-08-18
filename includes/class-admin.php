@@ -496,8 +496,17 @@ class Update_Pilot_Admin {
 
 		self::render_tabs_header( $sections );
 
-		echo '<hr class="wp-header-end">';
 		echo '<div class="upilot-tabs-body">';
+
+		/*
+		 * Inside the column, not above it. WordPress moves every admin notice
+		 * on the screen to just after .wp-header-end — ours and any other
+		 * plugin's — so wherever that marker sits is where notices end up. With
+		 * it between the header and the body they were being lifted out of the
+		 * 800px column and drawn edge to edge, against a page whose content
+		 * was centred. Core styles the element itself invisible.
+		 */
+		echo '<hr class="wp-header-end">';
 
 		self::render_message();
 

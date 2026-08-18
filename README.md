@@ -135,6 +135,12 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.5 - 2026-08-18
+
+Admin notices were drawn edge to edge, across a page whose content is centred.
+
+- The `.wp-header-end` marker now sits inside the 800px column. WordPress moves every notice on a screen to just after that marker — ours and any other plugin's — so with it above the column, notices were being lifted out of it and stretched the full width of the page
+
 ### 1.1.4 - 2026-08-18
 
 Exclusions and Status now have sections of their own, as the settings screen does.
