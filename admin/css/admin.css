@@ -160,6 +160,17 @@ a.upilot-tab[aria-current="page"] {
 	display: none;
 }
 
+/*
+ * A heading that follows the panels belongs to the screen rather than to any
+ * one section — the Status screen's actions. It is the first h2 of its parent
+ * and so would lose the rule above it that separates one section from the
+ * next; here that rule is exactly what marks the end of the panels.
+ */
+.update-pilot .upilot-tab-panel + h2 {
+	border-top: 1px solid #dcdcde;
+	padding-top: 1em;
+}
+
 .upilot-tab-panel > .form-table:first-child {
 	margin-top: 0;
 }

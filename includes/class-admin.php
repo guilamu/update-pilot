@@ -522,6 +522,32 @@ class Update_Pilot_Admin {
 		echo '</div>'; // .upilot-tabbed
 	}
 
+	/**
+	 * Open one section panel.
+	 *
+	 * The slug ties the panel to its tab: admin.js shows the panel whose id
+	 * matches the tab that was pressed. Without the script every panel stays
+	 * visible and the screen is the one long page it used to be.
+	 *
+	 * @param string $slug Section slug, as passed to open_page().
+	 * @return void
+	 */
+	private static function open_panel( string $slug ): void {
+		printf(
+			'<div class="upilot-tab-panel" id="upilot-panel-%1$s" role="tabpanel" aria-labelledby="upilot-tab-%1$s" tabindex="0">',
+			esc_attr( $slug )
+		);
+	}
+
+	/**
+	 * Close a section panel.
+	 *
+	 * @return void
+	 */
+	private static function close_panel(): void {
+		echo '</div>';
+	}
+
 	/*
 	 * ---------------------------------------------------------------------
 	 * Settings screen
@@ -887,7 +913,12 @@ class Update_Pilot_Admin {
 		// Evaluated once for the whole screen, not once per installed item.
 		$pending = Update_Pilot_Pending::all();
 
-		self::open_page();
+		self::open_page(
+			array(
+				'plugins' => __( 'Plugins', 'update-pilot' ),
+				'themes'  => __( 'Themes', 'update-pilot' ),
+			)
+		);
 
 		echo '<p class="description">'
 			. esc_html__( 'Tick what may update on its own. These boxes are the same information as the Auto-updates column on the Plugins and Themes screens, and changing them in either place changes both.', 'update-pilot' )
@@ -898,7 +929,7 @@ class Update_Pilot_Admin {
 			<input type="hidden" name="action" value="update_pilot_save_exclusions">
 			<?php wp_nonce_field( 'update_pilot_save_exclusions' ); ?>
 
-			<h2><?php esc_html_e( 'Plugins', 'update-pilot' ); ?></h2>
+			<?php self::open_panel( 'plugins' ); ?>
 
 			<?php if ( ! $settings['plugins']['enabled'] ) : ?>
 				<p class="notice notice-info upilot-inline-notice">
@@ -908,7 +939,9 @@ class Update_Pilot_Admin {
 
 			<?php self::render_plugin_table( $settings, Update_Pilot_Pending::index( $pending, 'plugin' ) ); ?>
 
-			<h2><?php esc_html_e( 'Themes', 'update-pilot' ); ?></h2>
+			<?php self::close_panel(); ?>
+
+			<?php self::open_panel( 'themes' ); ?>
 
 			<?php if ( ! $settings['themes']['enabled'] ) : ?>
 				<p class="notice notice-info upilot-inline-notice">
@@ -918,7 +951,15 @@ class Update_Pilot_Admin {
 
 			<?php self::render_theme_table( $settings, Update_Pilot_Pending::index( $pending, 'theme' ) ); ?>
 
-			<?php submit_button(); ?>
+			<?php self::close_panel(); ?>
+
+			<?php
+			/*
+			 * Outside the panels, like the settings screen's own button: both
+			 * sections post together, so a save must be reachable from either.
+			 */
+			submit_button();
+			?>
 		</form>
 		<?php
 
@@ -1205,7 +1246,14 @@ class Update_Pilot_Admin {
 			wp_die( esc_html__( 'You are not allowed to view this page.', 'update-pilot' ), '', array( 'response' => 403 ) );
 		}
 
-		self::open_page();
+		self::open_page(
+			array(
+				'schedule'      => __( 'Schedule', 'update-pilot' ),
+				'pending'       => __( 'Pending updates', 'update-pilot' ),
+				'environment'   => __( 'Environment', 'update-pilot' ),
+				'compatibility' => __( 'Plugin compatibility', 'update-pilot' ),
+			)
+		);
 
 		$next     = Update_Pilot_Scheduler::next_run();
 		$last     = Update_Pilot_Scheduler::last_run();
@@ -1213,7 +1261,13 @@ class Update_Pilot_Admin {
 		$counts   = Update_Pilot_Log_Repository::status_counts( 30 );
 		$format   = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 
-		echo '<h2>' . esc_html__( 'Schedule', 'update-pilot' ) . '</h2>';
+		/*
+		 * No heading inside a panel that repeats its own tab: the tab is the
+		 * heading. Only a section within a panel keeps one — "Last 30 days"
+		 * below, which sits under Schedule.
+		 */
+		self::open_panel( 'schedule' );
+
 		echo '<table class="widefat striped"><tbody>';
 
 		self::status_row(
@@ -1241,9 +1295,21 @@ class Update_Pilot_Admin {
 
 		echo '</tbody></table>';
 
-		self::render_pending_section();
+		echo '<h2>' . esc_html__( 'Last 30 days', 'update-pilot' ) . '</h2>';
+		echo '<table class="widefat striped"><tbody>';
+		self::status_row( __( 'Updates installed', 'update-pilot' ), (string) $counts['success'] );
+		self::status_row( __( 'Updates that failed', 'update-pilot' ), (string) $counts['failed'] );
+		self::status_row( __( 'Rolled back', 'update-pilot' ), (string) $counts['rolled_back'] );
+		echo '</tbody></table>';
 
-		echo '<h2>' . esc_html__( 'Environment', 'update-pilot' ) . '</h2>';
+		self::close_panel();
+
+		self::open_panel( 'pending' );
+		self::render_pending_section();
+		self::close_panel();
+
+		self::open_panel( 'environment' );
+
 		echo '<table class="widefat striped"><tbody>';
 
 		foreach ( Update_Pilot_Diagnostics::checks() as $check ) {
@@ -1264,15 +1330,16 @@ class Update_Pilot_Admin {
 
 		echo '</tbody></table>';
 
+		self::close_panel();
+
+		self::open_panel( 'compatibility' );
 		self::render_compatibility_section();
+		self::close_panel();
 
-		echo '<h2>' . esc_html__( 'Last 30 days', 'update-pilot' ) . '</h2>';
-		echo '<table class="widefat striped"><tbody>';
-		self::status_row( __( 'Updates installed', 'update-pilot' ), (string) $counts['success'] );
-		self::status_row( __( 'Updates that failed', 'update-pilot' ), (string) $counts['failed'] );
-		self::status_row( __( 'Rolled back', 'update-pilot' ), (string) $counts['rolled_back'] );
-		echo '</tbody></table>';
-
+		/*
+		 * Outside the panels: these three act on the site as a whole, not on
+		 * whichever section happens to be showing.
+		 */
 		echo '<h2>' . esc_html__( 'Actions', 'update-pilot' ) . '</h2>';
 		?>
 		<p>
@@ -1314,8 +1381,6 @@ class Update_Pilot_Admin {
 	 */
 	private static function render_pending_section(): void {
 		$rows = Update_Pilot_Pending::all();
-
-		echo '<h2>' . esc_html__( 'Pending updates', 'update-pilot' ) . '</h2>';
 
 		if ( array() === $rows ) {
 			echo '<p>' . esc_html__( 'No updates are available.', 'update-pilot' ) . '</p>';
@@ -1448,7 +1513,6 @@ class Update_Pilot_Admin {
 	 * @return void
 	 */
 	private static function render_compatibility_section(): void {
-		echo '<h2>' . esc_html__( 'Plugin compatibility', 'update-pilot' ) . '</h2>';
 
 		if ( ! Update_Pilot_Compatibility::has_report() ) {
 			echo '<p class="description">'

@@ -135,6 +135,15 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.4 - 2026-08-18
+
+Exclusions and Status now have sections of their own, as the settings screen does.
+
+- Exclusions is split into **Plugins** and **Themes**; Status into **Schedule**, **Pending updates**, **Environment** and **Plugin compatibility**
+- A panel no longer repeats its own tab as a heading. **Last 30 days** keeps its heading and sits under Schedule, where it belongs
+- What acts on the whole screen stays outside the sections and reachable from any of them: the save button on Exclusions, and the three buttons under **Actions** on Status
+- As on the settings screen, the sections are a convenience of the browser's: without JavaScript every panel shows at once and the screen is the one long page it was before
+
 ### 1.1.3 - 2026-08-18
 
 The settings screen stood a little tighter than the other three.
