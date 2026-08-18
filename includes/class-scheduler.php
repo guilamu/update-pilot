@@ -325,9 +325,10 @@ class Update_Pilot_Scheduler {
 	 * update transients and hands over to WP_Automatic_Updater. Everything this
 	 * plugin decides has already been said through the eligibility filters.
 	 *
-	 * @return void
+	 * @return array<int, string> Plugins the pass switched off and could not
+	 *                             switch back on. See restore_active_plugins().
 	 */
-	public static function run(): void {
+	public static function run(): array {
 		/*
 		 * Mark the request as an automatic run before anything happens.
 		 * WordPress has no constant of its own for this, so without a marker the
@@ -351,7 +352,71 @@ class Update_Pilot_Scheduler {
 		 */
 		self::force_update_checks();
 
+		$active_before = self::active_plugins();
+
 		wp_maybe_auto_update();
+
+		return self::restore_active_plugins( $active_before );
+	}
+
+	/**
+	 * The plugins WordPress considers active at this instant.
+	 *
+	 * @return array<int, string>
+	 */
+	private static function active_plugins(): array {
+		return array_values( (array) get_option( 'active_plugins', array() ) );
+	}
+
+	/**
+	 * Switch back on anything the upgrader switched off.
+	 *
+	 * Plugin_Upgrader::upgrade() hooks deactivate_plugin_before_upgrade() onto
+	 * upgrader_pre_install, and that method deactivates the plugin it is about
+	 * to replace — silently, hooks suppressed — unless wp_doing_cron() is true.
+	 * Its own comment says why: "When in cron (background updates) don't
+	 * deactivate the plugin, as we require a browser to reactivate it." Nothing
+	 * in core reactivates it afterwards; the browser update flow does that from
+	 * wp-admin/update.php, which is not the path a pass of ours takes.
+	 *
+	 * So an update run from the Status screen — a browser request, where
+	 * wp_doing_cron() is false — installed the new version and left the plugin
+	 * off. Update Pilot updating itself switched itself off, and its own menu
+	 * with it. Scheduled runs were never affected: cron is exactly the case
+	 * core exempts.
+	 *
+	 * Reactivation is not silent, deliberately. Running the activation hooks and
+	 * core's fatal-error check is what the browser flow does, and a plugin that
+	 * has just broken itself should stay off and be reported rather than take
+	 * the site down. The plugin file was already included earlier in this
+	 * request, and plugin_sandbox_scrape() uses include_once on the same path,
+	 * so nothing is executed twice.
+	 *
+	 * @param array<int, string> $before Plugins active before the pass.
+	 * @return array<int, string> Plugins that could not be switched back on.
+	 */
+	private static function restore_active_plugins( array $before ): array {
+		$switched_off = array_diff( $before, self::active_plugins() );
+
+		if ( array() === $switched_off ) {
+			return array();
+		}
+
+		if ( ! function_exists( 'activate_plugin' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$failed = array();
+
+		foreach ( $switched_off as $plugin ) {
+			$activated = activate_plugin( (string) $plugin, '', false, false );
+
+			if ( is_wp_error( $activated ) ) {
+				$failed[] = (string) $plugin;
+			}
+		}
+
+		return $failed;
 	}
 
 	/**
@@ -370,9 +435,10 @@ class Update_Pilot_Scheduler {
 	 *
 	 * @param string $type Item type: 'plugin', 'theme' or 'core'.
 	 * @param string $item Item identifier, as Update_Pilot_Pending reports it.
-	 * @return void
+	 * @return array<int, string> Plugins the run switched off and could not
+	 *                            switch back on. See restore_active_plugins().
 	 */
-	public static function run_item( string $type, string $item ): void {
+	public static function run_item( string $type, string $item ): array {
 		if ( ! defined( 'UPDATE_PILOT_AUTOUPDATE' ) ) {
 			define( 'UPDATE_PILOT_AUTOUPDATE', true );
 		}
@@ -410,6 +476,8 @@ class Update_Pilot_Scheduler {
 
 		self::force_update_checks();
 
+		$active_before = self::active_plugins();
+
 		wp_maybe_auto_update();
 
 		remove_filter( 'update_pilot_decision', $only_this_item, PHP_INT_MAX );
@@ -419,6 +487,8 @@ class Update_Pilot_Scheduler {
 			remove_filter( 'allow_major_auto_core_updates', '__return_true', PHP_INT_MAX );
 			remove_filter( 'allow_dev_auto_core_updates', '__return_true', PHP_INT_MAX );
 		}
+
+		return self::restore_active_plugins( $active_before );
 	}
 
 	/**

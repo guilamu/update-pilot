@@ -135,6 +135,14 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.2 - 2026-08-18
+
+An update run from the Status screen left the plugin it had just updated switched off.
+
+- `Plugin_Upgrader::upgrade()` deactivates the plugin it is about to replace, silently, unless the request is a cron one — core's own comment says a browser is then required to switch it back on, and core does that from a path a pass of ours does not take. So **Update now** and **Run an update pass now** installed the new version and left the plugin deactivated. Update Pilot updating itself switched itself off, taking its own menu with it. Both buttons now switch back on whatever the upgrader switched off
+- Scheduled runs were never affected: cron is precisely the case core exempts
+- A plugin that cannot be switched back on again — which normally means the new version is broken — is now reported on screen instead of disappearing quietly. Reactivation runs core's fatal-error check, so a broken release stays off rather than taking the site with it
+
 ### 1.1.1 - 2026-08-18
 
 The four screens now look like one plugin.

@@ -1085,3 +1085,7 @@ msgstr "Forcée à la main"
 #: includes/class-admin.php:832
 msgid "Update Pilot screens"
 msgstr "Écrans d’Update Pilot"
+
+#: includes/class-admin.php:431
+msgid "WordPress switches a plugin off while it replaces its files, and it could not be switched back on afterwards — which usually means the new version has an error in it. Look at the Plugins screen: what is still deactivated there is what to look at first."
+msgstr "WordPress désactive un plugin le temps de remplacer ses fichiers, et il n’a pas pu être réactivé ensuite — ce qui veut généralement dire que la nouvelle version comporte une erreur. Regardez l’écran Extensions : ce qui y est encore désactivé est ce qu’il faut examiner en premier."

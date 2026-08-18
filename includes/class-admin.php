@@ -336,9 +336,9 @@ class Update_Pilot_Admin {
 			);
 		}
 
-		Update_Pilot_Scheduler::run();
+		$left_off = Update_Pilot_Scheduler::run();
 
-		self::redirect( 'update-pilot-status', 'ran' );
+		self::redirect( 'update-pilot-status', array() === $left_off ? 'ran' : 'left-off' );
 	}
 
 	/**
@@ -372,9 +372,9 @@ class Update_Pilot_Admin {
 			self::redirect( 'update-pilot-status', 'forced-gone' );
 		}
 
-		Update_Pilot_Scheduler::run_item( $type, $item );
+		$left_off = Update_Pilot_Scheduler::run_item( $type, $item );
 
-		self::redirect( 'update-pilot-status', 'forced' );
+		self::redirect( 'update-pilot-status', array() === $left_off ? 'forced' : 'left-off' );
 	}
 
 	/**
@@ -457,6 +457,7 @@ class Update_Pilot_Admin {
 			'ran'                   => array( 'success', __( 'The update pass has run. Anything it did is in the log.', 'update-pilot' ) ),
 			'forced'                => array( 'success', __( 'The update was handed to WordPress, ahead of the rule that was holding it. What happened is in the log.', 'update-pilot' ) ),
 			'forced-gone'           => array( 'warning', __( 'That update is no longer on offer, or is no longer being held back. Nothing was installed.', 'update-pilot' ) ),
+			'left-off'              => array( 'error', __( 'WordPress switches a plugin off while it replaces its files, and it could not be switched back on afterwards — which usually means the new version has an error in it. Look at the Plugins screen: what is still deactivated there is what to look at first.', 'update-pilot' ) ),
 			'migrated'              => array( 'success', __( 'Companion Auto Update settings were imported, and its own data was left untouched. Its schedule was copied into the Scheduled run fields but not switched on — check it before enabling it.', 'update-pilot' ) ),
 			'mail-sent'             => array( 'success', __( 'A test message was handed to WordPress. If it does not arrive, the problem is in how this site sends mail, not in Update Pilot.', 'update-pilot' ) ),
 			'mail-failed'           => array( 'error', __( 'WordPress refused to send the test message. Check the recipients, and whether an SMTP plugin is configured on this site.', 'update-pilot' ) ),
