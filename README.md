@@ -137,10 +137,11 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ### 1.0.2 - 2026-08-18
 
-Site Health reported a critical security issue on any site where Update Pilot was doing its job.
+Site Health reported a critical security issue on any site where Update Pilot was doing its job, and the plugin could not see its own new releases.
 
 - The imaginary plugin and theme Site Health passes through the eligibility filters are recognised and left to core's own answer, instead of being held back by the maintenance window or the safety delay and reported as broken auto-updates
 - Those invented items no longer have a first sighting written to the state option every time the Site Health screen is opened
+- **Check for updates now** clears the plugin's own twelve-hour cache of the GitHub release before asking WordPress to look again. It forced the core, plugin and theme checks out to the network, then answered them from a cached release — so a new version of Update Pilot itself stayed invisible for up to twelve hours, however often the button was pressed
 
 ### 1.0.1 - 2026-08-17
 

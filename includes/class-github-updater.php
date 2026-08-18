@@ -299,6 +299,21 @@ class Update_Pilot_GitHub_Updater
     }
 
     /**
+     * Forget the cached release.
+     *
+     * The twelve-hour cache is right for the update checks WordPress fires on
+     * ordinary admin page loads, and wrong the moment somebody asks for a check
+     * on purpose: WordPress would dutifully call this filter again and get the
+     * same stale answer back, with nothing on screen to say why.
+     *
+     * @return void
+     */
+    public static function flush_cache(): void
+    {
+        delete_transient(self::CACHE_KEY);
+    }
+
+    /**
      * Get the download URL for the plugin package.
      *
      * @param array $release_data Release data from GitHub API.

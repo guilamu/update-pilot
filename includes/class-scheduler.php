@@ -362,9 +362,16 @@ class Update_Pilot_Scheduler {
 	 * `$time_not_changed && ! $extra_stats`. Passing a non-empty $extra_stats
 	 * array is the documented way to make them go out to the network.
 	 *
+	 * Update Pilot keeps a twelve-hour cache of its own for the GitHub release
+	 * it updates itself from. Forcing WordPress out to the network while that
+	 * cache answers from memory would report the plugin as up to date against a
+	 * release that has since been superseded, so it goes first.
+	 *
 	 * @return void
 	 */
 	public static function force_update_checks(): void {
+		Update_Pilot_GitHub_Updater::flush_cache();
+
 		$stats = array( 'update_pilot' => UPILOT_VERSION );
 
 		wp_version_check( $stats, true );
