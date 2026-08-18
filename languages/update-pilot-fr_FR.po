@@ -1081,3 +1081,7 @@ msgstr "Mettre à jour maintenant"
 #: includes/class-log-repository.php:245
 msgid "Forced by hand"
 msgstr "Forcée à la main"
+
+#: includes/class-admin.php:832
+msgid "Update Pilot screens"
+msgstr "Écrans d’Update Pilot"

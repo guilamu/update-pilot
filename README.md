@@ -135,6 +135,14 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.1 - 2026-08-18
+
+The four screens now look like one plugin.
+
+- Exclusions, Log and Status wear the same chrome as the settings screen: the plugin's name over a row of tabs moving between the four screens, the current one underlined, and the same 800px column beneath
+- The settings screen keeps its five sections, now on a second row under the first. That row is still a tablist switching panels in place; the row above it is made of links, and loads a screen
+- One list of screens behind both the menu and the tabs, so a screen cannot exist in one and be missing from the other
+
 ### 1.1.0 - 2026-08-18
 
 An update held back can now be installed on the spot, without changing the rule that was holding it.

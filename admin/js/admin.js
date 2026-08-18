@@ -56,7 +56,12 @@
 	 * the same long list it always was.
 	 */
 	function initTabs() {
-		var nav = document.querySelector( '.upilot-tabs-nav' );
+		/*
+		 * The sections row specifically. The row above it moves between the
+		 * plugin's screens and is made of ordinary links: it wears the same
+		 * class to look the same, and must be left alone.
+		 */
+		var nav = document.querySelector( '.upilot-sections-nav' );
 
 		if ( ! nav ) {
 			return;

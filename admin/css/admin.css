@@ -27,16 +27,16 @@
  */
 
 /*
- * .upilot-tabbed (the settings screen's own wrapper, in place of .wrap — see
+ * .upilot-tabbed (the wrapper every screen uses in place of .wrap — see
  * class-admin.php) sits directly in #wpbody-content with no margin of its
  * own, so it already spans #wpcontent's full width. The one thing still in
- * the way is #wpcontent's own left padding, which body.upilot-settings-screen
- * (added by the PHP side) zeroes out, exactly as core does for Privacy and
- * Site Health.
+ * the way is #wpcontent's own left padding, which body.upilot-screen (added
+ * by the PHP side) zeroes out, exactly as core does for Privacy and Site
+ * Health.
  */
 
-body.upilot-settings-screen #wpcontent,
-body.upilot-settings-screen.auto-fold #wpcontent {
+body.upilot-screen #wpcontent,
+body.upilot-screen.auto-fold #wpcontent {
 	padding-left: 0;
 }
 
@@ -87,12 +87,27 @@ body.upilot-settings-screen.auto-fold #wpcontent {
 	line-height: 1.3;
 }
 
+/*
+ * A screen carrying sections of its own shows two rows of tabs, and the
+ * header would grow by the height of the second. The title gives that height
+ * back: the header keeps the size it has everywhere else, and the four screen
+ * tabs stay level as one moves between them.
+ */
+.upilot-tabs-header.upilot-has-sections h1 {
+	margin-bottom: 1rem;
+}
+
 .upilot-tabs-nav {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 }
 
+/*
+ * The screen row is a row of links and the section row a row of buttons; they
+ * have to be indistinguishable, so everything below is stated for both and
+ * the link's own defaults — underline, visited colour — are taken back.
+ */
 .upilot-tab {
 	display: block;
 	background: none;
@@ -106,6 +121,30 @@ body.upilot-settings-screen.auto-fold #wpcontent {
 	transition: box-shadow 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
+a.upilot-tab,
+a.upilot-tab:visited {
+	color: inherit;
+	text-decoration: none;
+}
+
+/*
+ * The rule the first row's tabs sit on. On a screen with one row that rule is
+ * the header's own bottom border; on a screen with two, the first row needs
+ * one of its own, or its active tab's underline would float in mid-air.
+ */
+.upilot-has-sections .upilot-screens-nav {
+	border-bottom: 1px solid #dcdcde;
+}
+
+/* Secondary by size, not by colour: the active one still reads as active. */
+.upilot-sections-nav {
+	padding-top: 0.75rem;
+}
+
+.upilot-sections-nav .upilot-tab {
+	font-size: 13px;
+}
+
 .upilot-tab:hover {
 	color: var( --wp-admin-theme-color, #2271b1 );
 }
@@ -116,9 +155,14 @@ body.upilot-settings-screen.auto-fold #wpcontent {
 	box-shadow: none;
 }
 
-.upilot-tab[aria-selected="true"] {
+.upilot-tab[aria-selected="true"],
+.upilot-tab[aria-current="page"] {
 	box-shadow: inset 0 -3px var( --wp-admin-theme-color, #2271b1 );
 	font-weight: 600;
+	color: #1d2327;
+}
+
+a.upilot-tab[aria-current="page"] {
 	color: #1d2327;
 }
 

@@ -1080,3 +1080,7 @@ msgstr ""
 #: includes/class-log-repository.php:245
 msgid "Forced by hand"
 msgstr ""
+
+#: includes/class-admin.php:832
+msgid "Update Pilot screens"
+msgstr ""

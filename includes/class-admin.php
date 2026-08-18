@@ -150,12 +150,41 @@ class Update_Pilot_Admin {
 	 * @return string
 	 */
 	public static function filter_body_class( string $classes ): string {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, identifies the current screen.
-		if ( isset( $_GET['page'] ) && self::MENU === $_GET['page'] ) {
-			$classes .= ' upilot-settings-screen';
+		if ( '' !== self::current_screen() ) {
+			$classes .= ' upilot-screen';
 		}
 
 		return $classes;
+	}
+
+	/**
+	 * The plugin's screens, in the order they are shown.
+	 *
+	 * The keys are menu slugs, so this is also what register_menu() names and
+	 * what the header navigation links to. One list, so a screen cannot exist
+	 * in the menu and be missing from the tabs.
+	 *
+	 * @return array<string, string> Slug => label.
+	 */
+	private static function screens(): array {
+		return array(
+			self::MENU                => __( 'Settings', 'update-pilot' ),
+			'update-pilot-exclusions' => __( 'Exclusions', 'update-pilot' ),
+			'update-pilot-log'        => __( 'Log', 'update-pilot' ),
+			'update-pilot-status'     => __( 'Status', 'update-pilot' ),
+		);
+	}
+
+	/**
+	 * Which of our screens is being viewed, if any.
+	 *
+	 * @return string Menu slug, or an empty string on somebody else's screen.
+	 */
+	private static function current_screen(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, identifies the current screen.
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+		return isset( self::screens()[ $page ] ) ? $page : '';
 	}
 
 	/*
@@ -447,12 +476,27 @@ class Update_Pilot_Admin {
 	/**
 	 * The shared page header.
 	 *
-	 * @param string $title Page title.
+	 * Every screen wears the same chrome: the plugin's name, a row of tabs
+	 * moving between the four screens, and the 800px column beneath. A screen
+	 * with sections of its own — the settings form — passes them in and gets a
+	 * second row under the first.
+	 *
+	 * No .wrap here, deliberately: it's what puts a 10px gap above Privacy and
+	 * Site Health too, and both skip it for the same reason. Its margins are
+	 * also what the header would have to cancel with negative margins of its
+	 * own — without it the header can just be margin: 0 and still bleed edge to
+	 * edge.
+	 *
+	 * @param array $sections Slug => label for a second row, or empty for none.
 	 * @return void
 	 */
-	private static function open_page( string $title ): void {
-		echo '<div class="wrap update-pilot">';
-		echo '<h1>' . esc_html( $title ) . '</h1>';
+	private static function open_page( array $sections = array() ): void {
+		echo '<div class="update-pilot upilot-tabbed">';
+
+		self::render_tabs_header( $sections );
+
+		echo '<hr class="wp-header-end">';
+		echo '<div class="upilot-tabs-body">';
 
 		self::render_message();
 
@@ -473,7 +517,8 @@ class Update_Pilot_Admin {
 	 * @return void
 	 */
 	private static function close_page(): void {
-		echo '</div>';
+		echo '</div>'; // .upilot-tabs-body
+		echo '</div>'; // .upilot-tabbed
 	}
 
 	/*
@@ -503,31 +548,7 @@ class Update_Pilot_Admin {
 			'access'        => __( 'Access and data', 'update-pilot' ),
 		);
 
-		/*
-		 * No .wrap here, deliberately: it's what puts a 10px gap above Privacy
-		 * and Site Health too, and both skip it for the same reason. Its
-		 * margins are also what the header used to cancel with negative
-		 * margins of its own — dropping it means the header can just be
-		 * margin: 0 and still bleed edge to edge.
-		 */
-		echo '<div class="update-pilot upilot-tabbed">';
-
-		self::render_tabs_header( __( 'Update Pilot', 'update-pilot' ), $tabs );
-
-		echo '<hr class="wp-header-end">';
-		echo '<div class="upilot-tabs-body">';
-
-		self::render_message();
-
-		if ( is_multisite() ) {
-			echo '<div class="notice notice-warning"><p>'
-				. esc_html(
-					is_main_site()
-						? __( 'This is a multisite network. Update Pilot 1.0 manages the current site only, has no network settings screen, and does not write the network-wide auto-update options.', 'update-pilot' )
-						: __( 'This is a sub-site of a network. WordPress runs automatic updates on the main site only, so nothing set here will take effect. Configure Update Pilot on the main site.', 'update-pilot' )
-				)
-				. '</p></div>';
-		}
+		self::open_page( $tabs );
 
 		echo '<p class="description">'
 			. esc_html__( 'WordPress installs the updates. Update Pilot decides which ones are eligible, when they may run, how long a release must wait, and keeps a record of what happened.', 'update-pilot' )
@@ -784,42 +805,63 @@ class Update_Pilot_Admin {
 		</form>
 		<?php
 
-		echo '</div>'; // .upilot-tabs-body
-		echo '</div>'; // .upilot-tabbed
+		self::close_page();
 	}
 
 	/**
-	 * The centred title-and-tabs header used on the settings screen, in the
-	 * style of Settings > Privacy: one h1, tabs below it, the active one
-	 * underlined. Switching tabs is a client-side show/hide of panels within
-	 * the same form — every field posts on save regardless of which tab is
-	 * showing when the button is pressed.
+	 * The centred title-and-tabs header, in the style of Settings > Privacy:
+	 * one h1, tabs below it, the active one underlined.
 	 *
-	 * @param string $title Page title.
-	 * @param array  $tabs  Slug => label.
+	 * The first row moves between the plugin's four screens and is a row of
+	 * links: each loads a page, so the current one is marked with aria-current
+	 * rather than aria-selected. The second row, on a screen that has sections
+	 * of its own, is a real tablist — switching those is a client-side
+	 * show/hide of panels within the same form, and every field posts on save
+	 * regardless of which section is showing when the button is pressed.
+	 *
+	 * @param array $sections Slug => label for the second row, empty for none.
 	 * @return void
 	 */
-	private static function render_tabs_header( string $title, array $tabs ): void {
-		echo '<div class="upilot-tabs-header">';
-		echo '<div class="upilot-tabs-title-section"><h1>' . esc_html( $title ) . '</h1></div>';
+	private static function render_tabs_header( array $sections ): void {
+		$current = self::current_screen();
 
-		echo '<div class="upilot-tabs-nav" role="tablist" aria-label="' . esc_attr__( 'Settings sections', 'update-pilot' ) . '">';
+		printf( '<div class="upilot-tabs-header%s">', $sections ? ' upilot-has-sections' : '' );
 
-		$first = true;
+		echo '<div class="upilot-tabs-title-section"><h1>' . esc_html__( 'Update Pilot', 'update-pilot' ) . '</h1></div>';
 
-		foreach ( $tabs as $slug => $label ) {
+		echo '<nav class="upilot-tabs-nav upilot-screens-nav" aria-label="' . esc_attr__( 'Update Pilot screens', 'update-pilot' ) . '">';
+
+		foreach ( self::screens() as $slug => $label ) {
 			printf(
-				'<button type="button" class="upilot-tab" id="upilot-tab-%1$s" role="tab" aria-controls="upilot-panel-%1$s" aria-selected="%2$s" tabindex="%3$s">%4$s</button>',
-				esc_attr( $slug ),
-				$first ? 'true' : 'false',
-				$first ? '0' : '-1',
+				'<a class="upilot-tab" href="%1$s"%2$s>%3$s</a>',
+				esc_url( admin_url( 'admin.php?page=' . $slug ) ),
+				$slug === $current ? ' aria-current="page"' : '',
 				esc_html( $label )
 			);
-
-			$first = false;
 		}
 
-		echo '</div>';
+		echo '</nav>';
+
+		if ( array() !== $sections ) {
+			echo '<div class="upilot-tabs-nav upilot-sections-nav" role="tablist" aria-label="' . esc_attr__( 'Settings sections', 'update-pilot' ) . '">';
+
+			$first = true;
+
+			foreach ( $sections as $slug => $label ) {
+				printf(
+					'<button type="button" class="upilot-tab" id="upilot-tab-%1$s" role="tab" aria-controls="upilot-panel-%1$s" aria-selected="%2$s" tabindex="%3$s">%4$s</button>',
+					esc_attr( $slug ),
+					$first ? 'true' : 'false',
+					$first ? '0' : '-1',
+					esc_html( $label )
+				);
+
+				$first = false;
+			}
+
+			echo '</div>';
+		}
+
 		echo '</div>';
 	}
 
@@ -844,7 +886,7 @@ class Update_Pilot_Admin {
 		// Evaluated once for the whole screen, not once per installed item.
 		$pending = Update_Pilot_Pending::all();
 
-		self::open_page( __( 'Exclusions', 'update-pilot' ) );
+		self::open_page();
 
 		echo '<p class="description">'
 			. esc_html__( 'Tick what may update on its own. These boxes are the same information as the Auto-updates column on the Plugins and Themes screens, and changing them in either place changes both.', 'update-pilot' )
@@ -1038,7 +1080,7 @@ class Update_Pilot_Admin {
 			)
 		);
 
-		self::open_page( __( 'Update log', 'update-pilot' ) );
+		self::open_page();
 
 		echo '<p class="description">'
 			. esc_html__( 'Every entry comes from WordPress reporting an update it actually performed, with the version before and after. Nothing here is reconstructed from file dates.', 'update-pilot' )
@@ -1162,7 +1204,7 @@ class Update_Pilot_Admin {
 			wp_die( esc_html__( 'You are not allowed to view this page.', 'update-pilot' ), '', array( 'response' => 403 ) );
 		}
 
-		self::open_page( __( 'Status', 'update-pilot' ) );
+		self::open_page();
 
 		$next     = Update_Pilot_Scheduler::next_run();
 		$last     = Update_Pilot_Scheduler::last_run();
