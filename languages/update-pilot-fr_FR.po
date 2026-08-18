@@ -1057,3 +1057,27 @@ msgstr "🐛 Signaler un bogue (installer Bug Reporter)"
 #: update-pilot.php:256
 msgid "Update Pilot requires WordPress %1$s and PHP %2$s or higher."
 msgstr "Update Pilot nécessite WordPress %1$s et PHP %2$s ou supérieur."
+
+#: includes/class-admin.php:429
+msgid "The update was handed to WordPress, ahead of the rule that was holding it. What happened is in the log."
+msgstr "La mise à jour a été confiée à WordPress, sans attendre la règle qui la retenait. Ce qui s’est passé figure dans le journal."
+
+#: includes/class-admin.php:430
+msgid "That update is no longer on offer, or is no longer being held back. Nothing was installed."
+msgstr "Cette mise à jour n’est plus proposée, ou n’est plus retenue. Rien n’a été installé."
+
+#: includes/class-admin.php:1322
+msgid "Action"
+msgstr "Action"
+
+#: includes/class-admin.php:1359
+msgid "Updating one item now overrides the rule holding it, this once and for that item alone. Nothing is changed in the settings, and the next pass judges everything by the rules again."
+msgstr "Mettre à jour un élément maintenant passe outre la règle qui le retient, cette fois-ci et pour lui seul. Rien n’est modifié dans les réglages, et le passage suivant juge de nouveau chaque élément selon les règles."
+
+#: includes/class-admin.php:1393
+msgid "Update now"
+msgstr "Mettre à jour maintenant"
+
+#: includes/class-log-repository.php:245
+msgid "Forced by hand"
+msgstr "Forcée à la main"

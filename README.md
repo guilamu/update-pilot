@@ -135,6 +135,15 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.0 - 2026-08-18
+
+An update held back can now be installed on the spot, without changing the rule that was holding it.
+
+- **Update now** on each held row of the **Pending updates** table on the Status screen. It applies to that item, on that occasion: nothing is written to the settings, and the next pass judges everything by the rules again
+- WordPress still performs the installation. The pass runs exactly as the scheduled one does, with every other item refused for its duration, so asking for one plugin cannot quietly install three
+- The log records these as **Forced by hand** rather than as automatic, because the schedule did not choose them
+- No button is offered where pressing it would do nothing: a release wordpress.org has withdrawn is refused before the policy is consulted, and the column is absent entirely for a user who may read this screen but not install updates. `WP_AUTO_UPDATE_CORE` still outranks the button
+
 ### 1.0.3 - 2026-08-18
 
 The Status screen reported the version a plugin had yesterday.

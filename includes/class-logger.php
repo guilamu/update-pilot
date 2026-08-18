@@ -132,7 +132,7 @@ class Update_Pilot_Logger {
 	 *     @type string      $name           Display name.
 	 *     @type string|null $from_version   Version before the update.
 	 *     @type string|null $to_version     Version after the update.
-	 *     @type string      $trigger_source 'auto', 'manual' or 'cli'.
+	 *     @type string      $trigger_source 'auto', 'forced', 'manual' or 'cli'.
 	 *     @type string      $status         'success', 'failed' or 'rolled_back'.
 	 *     @type string|null $message        Free text, usually an error.
 	 *     @type int|null    $timestamp      Unix time; defaults to now.

@@ -355,6 +355,73 @@ class Update_Pilot_Scheduler {
 	}
 
 	/**
+	 * Install one item now, whatever the policy says about it.
+	 *
+	 * The Status screen explains why an update is waiting; this is the answer to
+	 * "yes, I know — do it anyway". The decision stays a human one and applies to
+	 * one item on one occasion: nothing is written to the settings, and the next
+	 * pass judges everything by the rules again.
+	 *
+	 * WordPress still installs the update. The pass runs exactly as the scheduled
+	 * one does, with a filter that admits this item and refuses every other, so
+	 * asking for one plugin cannot quietly install three. A release wordpress.org
+	 * has withdrawn is refused before the policy is consulted and cannot be
+	 * forced from here at all — the Status screen offers no button for one.
+	 *
+	 * @param string $type Item type: 'plugin', 'theme' or 'core'.
+	 * @param string $item Item identifier, as Update_Pilot_Pending reports it.
+	 * @return void
+	 */
+	public static function run_item( string $type, string $item ): void {
+		if ( ! defined( 'UPDATE_PILOT_AUTOUPDATE' ) ) {
+			define( 'UPDATE_PILOT_AUTOUPDATE', true );
+		}
+
+		// Read by Update_Pilot_Listeners::trigger_source(), so the log says this
+		// was forced by hand rather than claiming the schedule chose it.
+		if ( ! defined( 'UPDATE_PILOT_FORCED' ) ) {
+			define( 'UPDATE_PILOT_FORCED', true );
+		}
+
+		$only_this_item = static function ( $verdict, $normalised ) use ( $type, $item ) {
+			$is_target = $type === ( $normalised['type'] ?? '' )
+				&& $item === (string) ( $normalised['id'] ?? '' );
+
+			return array(
+				'decision' => $is_target ? Update_Pilot_Policy::ALLOW : Update_Pilot_Policy::DENY,
+				'reason'   => $is_target ? 'forced' : 'not_the_forced_item',
+			);
+		};
+
+		add_filter( 'update_pilot_decision', $only_this_item, PHP_INT_MAX, 2 );
+
+		/*
+		 * A core update is settled by the branch filters before `auto_update_core`
+		 * ever sees it, and `filter_core()` may only turn a yes into a no. Forcing
+		 * one therefore means opening its branch for this pass. WP_AUTO_UPDATE_CORE
+		 * is deliberately not touched: an administrator who wrote a constant into
+		 * wp-config.php outranks a button.
+		 */
+		if ( 'core' === $type ) {
+			add_filter( 'allow_minor_auto_core_updates', '__return_true', PHP_INT_MAX );
+			add_filter( 'allow_major_auto_core_updates', '__return_true', PHP_INT_MAX );
+			add_filter( 'allow_dev_auto_core_updates', '__return_true', PHP_INT_MAX );
+		}
+
+		self::force_update_checks();
+
+		wp_maybe_auto_update();
+
+		remove_filter( 'update_pilot_decision', $only_this_item, PHP_INT_MAX );
+
+		if ( 'core' === $type ) {
+			remove_filter( 'allow_minor_auto_core_updates', '__return_true', PHP_INT_MAX );
+			remove_filter( 'allow_major_auto_core_updates', '__return_true', PHP_INT_MAX );
+			remove_filter( 'allow_dev_auto_core_updates', '__return_true', PHP_INT_MAX );
+		}
+	}
+
+	/**
 	 * Ask WordPress to re-check for updates, ignoring the twelve-hour cache.
 	 *
 	 * `wp_version_check()` takes a $force_check argument; the plugin and theme

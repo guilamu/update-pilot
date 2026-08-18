@@ -48,6 +48,7 @@ class Update_Pilot_Admin {
 		add_action( 'admin_post_update_pilot_save_exclusions', array( __CLASS__, 'handle_save_exclusions' ) );
 		add_action( 'admin_post_update_pilot_check_now', array( __CLASS__, 'handle_check_now' ) );
 		add_action( 'admin_post_update_pilot_run_now', array( __CLASS__, 'handle_run_now' ) );
+		add_action( 'admin_post_update_pilot_update_item', array( __CLASS__, 'handle_update_item' ) );
 		add_action( 'admin_post_update_pilot_test_email', array( __CLASS__, 'handle_test_email' ) );
 	}
 
@@ -312,6 +313,102 @@ class Update_Pilot_Admin {
 	}
 
 	/**
+	 * Install one held update now.
+	 *
+	 * The nonce action carries the type and the identifier, so a nonce minted
+	 * for one row cannot be replayed against another. What may be forced is not
+	 * taken from the request either: the item has to be on offer and held right
+	 * now, which is the same list the screen was drawn from.
+	 *
+	 * @return void
+	 */
+	public static function handle_update_item(): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Verified below, by an action built from these values.
+		$raw  = wp_unslash( $_POST );
+		$type = isset( $raw['upilot_type'] ) ? sanitize_key( $raw['upilot_type'] ) : '';
+		$item = isset( $raw['upilot_item'] ) ? sanitize_text_field( (string) $raw['upilot_item'] ) : '';
+		// phpcs:enable
+
+		self::guard( self::update_item_action( $type, $item ) );
+
+		if ( ! self::can_install( $type ) ) {
+			wp_die(
+				esc_html__( 'Running updates requires permission to install updates on this site.', 'update-pilot' ),
+				'',
+				array( 'response' => 403 )
+			);
+		}
+
+		if ( ! self::is_forceable( $type, $item ) ) {
+			self::redirect( 'update-pilot-status', 'forced-gone' );
+		}
+
+		Update_Pilot_Scheduler::run_item( $type, $item );
+
+		self::redirect( 'update-pilot-status', 'forced' );
+	}
+
+	/**
+	 * The nonce action for one row's button.
+	 *
+	 * @param string $type Item type.
+	 * @param string $item Item identifier.
+	 * @return string
+	 */
+	private static function update_item_action( string $type, string $item ): string {
+		return 'update_pilot_update_item|' . $type . '|' . $item;
+	}
+
+	/**
+	 * Whether this user may install this kind of update.
+	 *
+	 * Reading the policy and installing code on the server are different powers;
+	 * see handle_run_now(). WordPress splits the second one by type, and so does
+	 * this.
+	 *
+	 * @param string $type Item type.
+	 * @return bool
+	 */
+	private static function can_install( string $type ): bool {
+		switch ( $type ) {
+			case 'plugin':
+				return current_user_can( 'update_plugins' );
+
+			case 'theme':
+				return current_user_can( 'update_themes' );
+
+			case 'core':
+				return current_user_can( 'update_core' );
+
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Whether an item is on offer, held back, and may be forced.
+	 *
+	 * A withdrawn release is refused by the eligibility filter before the policy
+	 * is consulted, so a button for one would do nothing at all. Saying so is
+	 * better than a button that lies.
+	 *
+	 * @param string $type Item type.
+	 * @param string $item Item identifier.
+	 * @return bool
+	 */
+	private static function is_forceable( string $type, string $item ): bool {
+		foreach ( Update_Pilot_Pending::all() as $row ) {
+			if ( $type !== ( $row['type'] ?? '' ) || $item !== (string) ( $row['item'] ?? '' ) ) {
+				continue;
+			}
+
+			return Update_Pilot_Pending::is_held( $row ) && 'withdrawn' !== ( $row['reason'] ?? '' );
+		}
+
+		return false;
+	}
+
+	/**
 	 * Show the message left by a redirect.
 	 *
 	 * @return void
@@ -329,6 +426,8 @@ class Update_Pilot_Admin {
 			'saved-schedule-failed' => array( 'warning', __( 'Settings saved, but the schedule could not be changed. The previous schedule is still in place — see the Status page.', 'update-pilot' ) ),
 			'checked'               => array( 'success', __( 'WordPress has re-checked for updates.', 'update-pilot' ) ),
 			'ran'                   => array( 'success', __( 'The update pass has run. Anything it did is in the log.', 'update-pilot' ) ),
+			'forced'                => array( 'success', __( 'The update was handed to WordPress, ahead of the rule that was holding it. What happened is in the log.', 'update-pilot' ) ),
+			'forced-gone'           => array( 'warning', __( 'That update is no longer on offer, or is no longer being held back. Nothing was installed.', 'update-pilot' ) ),
 			'migrated'              => array( 'success', __( 'Companion Auto Update settings were imported, and its own data was left untouched. Its schedule was copied into the Scheduled run fields but not switched on — check it before enabling it.', 'update-pilot' ) ),
 			'mail-sent'             => array( 'success', __( 'A test message was handed to WordPress. If it does not arrive, the problem is in how this site sends mail, not in Update Pilot.', 'update-pilot' ) ),
 			'mail-failed'           => array( 'error', __( 'WordPress refused to send the test message. Check the recipients, and whether an SMTP plugin is configured on this site.', 'update-pilot' ) ),
@@ -1206,10 +1305,23 @@ class Update_Pilot_Admin {
 			array_filter( $rows, static fn( $row ) => ! Update_Pilot_Pending::is_held( $row ) )
 		);
 
+		/*
+		 * The action column only exists for somebody who could act. An editor
+		 * given manage_update_pilot may read this screen; installing code on the
+		 * server is a different power, and its absence should be silent rather
+		 * than a column of disabled buttons.
+		 */
+		$can_act = self::can_install( 'plugin' ) || self::can_install( 'theme' ) || self::can_install( 'core' );
+
 		echo '<table class="widefat striped"><thead><tr>';
 		echo '<th scope="col">' . esc_html__( 'Item', 'update-pilot' ) . '</th>';
 		echo '<th scope="col">' . esc_html__( 'Version', 'update-pilot' ) . '</th>';
 		echo '<th scope="col">' . esc_html__( 'Status', 'update-pilot' ) . '</th>';
+
+		if ( $can_act ) {
+			echo '<th scope="col">' . esc_html__( 'Action', 'update-pilot' ) . '</th>';
+		}
+
 		echo '</tr></thead><tbody>';
 
 		foreach ( array_merge( $held, $eligible ) as $row ) {
@@ -1232,10 +1344,56 @@ class Update_Pilot_Admin {
 
 			printf( '<td>%s</td>', '' === $versions ? '—' : esc_html( $versions ) );
 			printf( '<td>%s</td>', esc_html( $note ) );
+
+			if ( $can_act ) {
+				self::render_force_cell( $row );
+			}
+
 			echo '</tr>';
 		}
 
 		echo '</tbody></table>';
+
+		if ( $can_act ) {
+			echo '<p class="description">'
+				. esc_html__( 'Updating one item now overrides the rule holding it, this once and for that item alone. Nothing is changed in the settings, and the next pass judges everything by the rules again.', 'update-pilot' )
+				. '</p>';
+		}
+	}
+
+	/**
+	 * The action cell of one pending row.
+	 *
+	 * A button appears only where pressing it would do something: the item has
+	 * to be held back by a rule of ours, and this user has to be allowed to
+	 * install that kind of update. An eligible item needs no button — the next
+	 * pass installs it — and a release wordpress.org has withdrawn is refused
+	 * before the policy is consulted, so no button could lift it.
+	 *
+	 * @param array $row Row from Update_Pilot_Pending.
+	 * @return void
+	 */
+	private static function render_force_cell( array $row ): void {
+		$type = (string) ( $row['type'] ?? '' );
+		$item = (string) ( $row['item'] ?? '' );
+
+		if ( ! Update_Pilot_Pending::is_held( $row ) || 'withdrawn' === ( $row['reason'] ?? '' ) || ! self::can_install( $type ) ) {
+			echo '<td>—</td>';
+
+			return;
+		}
+
+		echo '<td>';
+		?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<input type="hidden" name="action" value="update_pilot_update_item">
+			<input type="hidden" name="upilot_type" value="<?php echo esc_attr( $type ); ?>">
+			<input type="hidden" name="upilot_item" value="<?php echo esc_attr( $item ); ?>">
+			<?php wp_nonce_field( self::update_item_action( $type, $item ) ); ?>
+			<?php submit_button( __( 'Update now', 'update-pilot' ), 'secondary small', '', false ); ?>
+		</form>
+		<?php
+		echo '</td>';
 	}
 
 	/**

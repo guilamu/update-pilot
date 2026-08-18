@@ -241,6 +241,9 @@ class Update_Pilot_Log_Repository {
 			case 'auto':
 				return __( 'Automatic', 'update-pilot' );
 
+			case 'forced':
+				return __( 'Forced by hand', 'update-pilot' );
+
 			case 'manual':
 				return __( 'Manual', 'update-pilot' );
 

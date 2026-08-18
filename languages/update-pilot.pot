@@ -1056,3 +1056,27 @@ msgstr ""
 #: update-pilot.php:256
 msgid "Update Pilot requires WordPress %1$s and PHP %2$s or higher."
 msgstr ""
+
+#: includes/class-admin.php:429
+msgid "The update was handed to WordPress, ahead of the rule that was holding it. What happened is in the log."
+msgstr ""
+
+#: includes/class-admin.php:430
+msgid "That update is no longer on offer, or is no longer being held back. Nothing was installed."
+msgstr ""
+
+#: includes/class-admin.php:1322
+msgid "Action"
+msgstr ""
+
+#: includes/class-admin.php:1359
+msgid "Updating one item now overrides the rule holding it, this once and for that item alone. Nothing is changed in the settings, and the next pass judges everything by the rules again."
+msgstr ""
+
+#: includes/class-admin.php:1393
+msgid "Update now"
+msgstr ""
+
+#: includes/class-log-repository.php:245
+msgid "Forced by hand"
+msgstr ""

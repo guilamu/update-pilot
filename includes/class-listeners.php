@@ -78,9 +78,18 @@ class Update_Pilot_Listeners {
 	/**
 	 * Where an update came from.
 	 *
-	 * @return string 'auto', 'cli' or 'manual'.
+	 * 'forced' is a run somebody asked for from the Status screen, on one item,
+	 * knowing the policy was holding it back. It reads as automatic to
+	 * WordPress — the same code installs it — but recording it as automatic
+	 * would credit the schedule with a decision a person made.
+	 *
+	 * @return string 'auto', 'forced', 'cli' or 'manual'.
 	 */
 	public static function trigger_source(): string {
+		if ( defined( 'UPDATE_PILOT_FORCED' ) && UPDATE_PILOT_FORCED ) {
+			return 'forced';
+		}
+
 		if ( self::is_automatic() ) {
 			return 'auto';
 		}
