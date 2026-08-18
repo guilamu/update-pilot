@@ -205,6 +205,19 @@ a.upilot-tab[aria-current="page"] {
 	margin: 0 0 12px;
 }
 
+/*
+ * A bare admin notice carries `margin: 5px 15px 2px` from core, and core takes
+ * the side margins back only for notices inside .wrap — which these screens
+ * deliberately do not use. Left alone, a notice sits 15px inside the column it
+ * is supposed to line up with, and 2px above whatever follows it. This is
+ * core's own .wrap rule, applied where the notices actually land.
+ */
+.upilot-tabs-body > .notice,
+.upilot-tabs-body > div.updated,
+.upilot-tabs-body > div.error {
+	margin: 5px 0 15px;
+}
+
 /* Migration notice buttons (outside a <p>, so the markup stays valid) */
 
 .upilot-notice-actions {

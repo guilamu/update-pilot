@@ -135,6 +135,12 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.6 - 2026-08-18
+
+Notices sat inside the column, but not aligned with it.
+
+- A bare admin notice carries `margin: 5px 15px 2px` from WordPress, and WordPress takes those side margins back only for notices inside `.wrap` — which these screens deliberately do not use. A notice therefore stood 15px in from the column it belongs to, and 2px above whatever followed. Core's own rule is now applied where the notices actually land
+
 ### 1.1.5 - 2026-08-18
 
 Admin notices were drawn edge to edge, across a page whose content is centred.
