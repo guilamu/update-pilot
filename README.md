@@ -135,6 +135,13 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.0.2 - 2026-08-18
+
+Site Health reported a critical security issue on any site where Update Pilot was doing its job.
+
+- The imaginary plugin and theme Site Health passes through the eligibility filters are recognised and left to core's own answer, instead of being held back by the maintenance window or the safety delay and reported as broken auto-updates
+- Those invented items no longer have a first sighting written to the state option every time the Site Health screen is opened
+
 ### 1.0.1 - 2026-08-17
 
 An update held back by the safety delay was only admitted to on the Exclusions screen, and only as a date. It is now said everywhere, with a countdown.

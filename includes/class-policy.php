@@ -389,6 +389,17 @@ class Update_Pilot_Policy {
 class Update_Pilot_Policy_Filters {
 
 	/**
+	 * Identifiers of the imaginary plugin and theme Site Health runs through the
+	 * eligibility filters. Fixed in core since 5.5.
+	 *
+	 * @see WP_Site_Health::detect_plugin_theme_auto_update_issues()
+	 */
+	private const SITE_HEALTH_PROBES = array(
+		'plugin' => 'a-fake-plugin/a-fake-plugin.php',
+		'theme'  => 'a-fake-theme',
+	);
+
+	/**
 	 * Register the six eligibility filters.
 	 *
 	 * @return void
@@ -548,6 +559,25 @@ class Update_Pilot_Policy_Filters {
 
 		if ( is_object( $offer ) && ! empty( $offer->disable_autoupdate ) ) {
 			return false;
+		}
+
+		/*
+		 * Site Health does not ask about a real update. It invents a plugin and a
+		 * theme, offers them at version 9.9 with $update already true, and reads
+		 * the answer as "do automatic updates work on this site at all?". Anything
+		 * we hold back — a closed maintenance window, a safety delay that has no
+		 * countdown for an item nobody has ever seen — comes back as a critical
+		 * security issue on the Site Health screen, and the invented item gets a
+		 * first sighting written into the state option every time it is looked at.
+		 *
+		 * The honest answer to the question actually being asked is the one core
+		 * arrived with: Update Pilot schedules automatic updates, it does not
+		 * switch them off. Both identifiers read `$item->{$type}`, as core does.
+		 */
+		$probe = self::SITE_HEALTH_PROBES[ $type ] ?? null;
+
+		if ( null !== $probe && is_object( $offer ) && $probe === ( $offer->{$type} ?? null ) ) {
+			return $update;
 		}
 
 		$normalised = self::normalise( $type, $item );
