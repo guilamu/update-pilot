@@ -204,7 +204,43 @@ class Update_Pilot_Compatibility {
 	public static function report(): array {
 		$cached = get_transient( self::CACHE_KEY );
 
-		return is_array( $cached ) ? $cached : array();
+		return is_array( $cached ) ? self::with_installed_state( $cached ) : array();
+	}
+
+	/**
+	 * Re-read the facts that cost nothing to know.
+	 *
+	 * Only the compatibility wordpress.org declares is worth caching for a day;
+	 * asking for it means a network request per plugin. A plugin's name and
+	 * version are already in memory, so a cached copy of them buys nothing and
+	 * goes stale the moment anything updates — which is the one moment somebody
+	 * is most likely to be looking at this table. A plugin deleted since the
+	 * report was built is dropped rather than listed with a verdict about
+	 * software that is no longer on the server.
+	 *
+	 * @param array $report Cached report.
+	 * @return array
+	 */
+	private static function with_installed_state( array $report ): array {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$installed = get_plugins();
+		$current   = array();
+
+		foreach ( $report as $file => $row ) {
+			if ( ! isset( $installed[ $file ] ) ) {
+				continue;
+			}
+
+			$row['name']    = (string) ( $installed[ $file ]['Name'] ?? ( $row['name'] ?? $file ) );
+			$row['version'] = (string) ( $installed[ $file ]['Version'] ?? '' );
+
+			$current[ $file ] = $row;
+		}
+
+		return $current;
 	}
 
 	/**

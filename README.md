@@ -135,6 +135,13 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.0.3 - 2026-08-18
+
+The Status screen reported the version a plugin had yesterday.
+
+- The **Plugin compatibility** table reads each plugin's name and version from the site itself on every load, instead of from the day-long cache. Only the compatibility wordpress.org declares is cached, because only that costs a network request — so a plugin updated since the last check no longer shows its previous version, sometimes for a full day
+- Plugins deleted since the last check are left out of the table rather than listed with a verdict about software that is no longer installed
+
 ### 1.0.2 - 2026-08-18
 
 Site Health reported a critical security issue on any site where Update Pilot was doing its job, and the plugin could not see its own new releases.
