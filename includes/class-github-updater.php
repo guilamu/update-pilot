@@ -475,7 +475,7 @@ class Update_Pilot_GitHub_Updater
         $res->author       = sprintf('<a href="https://github.com/%s">%s</a>', self::GITHUB_USER, self::GITHUB_USER);
         $res->homepage     = sprintf('https://github.com/%s/%s', self::GITHUB_USER, self::GITHUB_REPO);
         $res->requires     = self::REQUIRES_WP;
-        $res->tested       = get_bloginfo('version');
+        $res->tested       = self::TESTED_WP;
         $res->requires_php = self::REQUIRES_PHP;
         $res->external     = true;
         $res->banners      = array();
@@ -544,7 +544,7 @@ class Update_Pilot_GitHub_Updater
         $result->author       = sprintf('<a href="https://github.com/%s">%s</a>', self::GITHUB_USER, self::GITHUB_USER);
         $result->homepage     = sprintf('https://github.com/%s/%s', self::GITHUB_USER, self::GITHUB_REPO);
         $result->requires     = self::REQUIRES_WP;
-        $result->tested       = get_bloginfo('version');
+        $result->tested       = self::TESTED_WP;
         $result->requires_php = self::REQUIRES_PHP;
         $result->external     = true;
         $result->banners      = array();

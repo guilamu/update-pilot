@@ -90,6 +90,22 @@ class Update_Pilot_Compatibility {
 	public const UNKNOWN = 'unknown';
 
 	/**
+	 * wordpress.org supplied the declaration.
+	 */
+	public const DIRECTORY = 'directory';
+
+	/**
+	 * The plugin supplied its own declaration.
+	 *
+	 * Kept apart from the directory's answer rather than merged into it. Both
+	 * figures are written by the same hand — the author's — and neither is
+	 * verified by anyone, but a plugin distributed outside wordpress.org is
+	 * saying it about itself with nobody else in the room, and the table should
+	 * not quietly present that as a third party's word.
+	 */
+	public const SELF_DECLARED = 'plugin';
+
+	/**
 	 * Register hooks.
 	 *
 	 * @return void
@@ -281,7 +297,8 @@ class Update_Pilot_Compatibility {
 		$threshold = max( 1, (int) apply_filters( 'update_pilot_untested_threshold', self::DEFAULT_THRESHOLD ) );
 
 		$previous = self::report();
-		$declared = self::declared_versions_from_transient();
+		$declared = self::declarations_from_transient();
+		$slugs    = self::slugs_from_transient();
 
 		$report = array();
 
@@ -298,11 +315,11 @@ class Update_Pilot_Compatibility {
 			// Free when WordPress already knows: plugins with a pending update
 			// carry their "tested up to" figure in the update transient.
 			if ( isset( $declared[ $file ] ) ) {
-				$report[ $file ] = array_merge( $row, self::classify( $declared[ $file ], $current_branch, $branches, $threshold ) );
+				$report[ $file ] = self::compose( $row, $declared[ $file ], $current_branch, $branches, $threshold );
 				continue;
 			}
 
-			$verdict = self::look_up( $file );
+			$verdict = self::look_up( self::slug( $file, $slugs ) );
 
 			if ( $verdict instanceof WP_Error ) {
 				/*
@@ -325,12 +342,31 @@ class Update_Pilot_Compatibility {
 				continue;
 			}
 
-			$report[ $file ] = array_merge( $row, self::classify( $verdict, $current_branch, $branches, $threshold ) );
+			$report[ $file ] = self::compose( $row, $verdict, $current_branch, $branches, $threshold );
 		}
 
 		set_transient( self::CACHE_KEY, $report, self::CACHE_TTL );
 
 		return $report;
+	}
+
+	/**
+	 * One finished row: the plugin's own facts, the verdict, and whose
+	 * declaration the verdict was reached from.
+	 *
+	 * @param array                                     $row            Plugin facts.
+	 * @param array{tested: string|null, source: string} $answer         The declaration.
+	 * @param string                                    $current_branch Branch this site runs.
+	 * @param string[]                                  $branches       Every WordPress branch.
+	 * @param int                                       $threshold      Releases before flagging.
+	 * @return array
+	 */
+	private static function compose( array $row, array $answer, string $current_branch, array $branches, int $threshold ): array {
+		return array_merge(
+			$row,
+			self::classify( $answer['tested'] ?? null, $current_branch, $branches, $threshold ),
+			array( 'source' => (string) ( $answer['source'] ?? self::DIRECTORY ) )
+		);
 	}
 
 	/**
@@ -341,9 +377,9 @@ class Update_Pilot_Compatibility {
 	 * update pending — and absent from `no_update`. So this saves a request for
 	 * some plugins, not for all of them.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, array{tested: string, source: string}>
 	 */
-	private static function declared_versions_from_transient(): array {
+	private static function declarations_from_transient(): array {
 		$found = array();
 
 		$transient = get_site_transient( 'update_plugins' );
@@ -361,7 +397,10 @@ class Update_Pilot_Compatibility {
 				$entry = is_array( $entry ) ? (object) $entry : $entry;
 
 				if ( is_object( $entry ) && ! empty( $entry->tested ) ) {
-					$found[ (string) $file ] = (string) $entry->tested;
+					$found[ (string) $file ] = array(
+						'tested' => (string) $entry->tested,
+						'source' => self::source_of( $entry ),
+					);
 				}
 			}
 		}
@@ -370,15 +409,113 @@ class Update_Pilot_Compatibility {
 	}
 
 	/**
+	 * Whose opinion the `tested` figure in a transient entry is.
+	 *
+	 * Core stamps `w.org/plugins/<slug>` on every entry wordpress.org answered
+	 * for. A plugin filling the entry from its own updater stamps something
+	 * else — `github.com/user/repo`, in the updater this plugin ships — so the
+	 * id is the one field that says who wrote the figure. An entry with no id
+	 * at all predates that convention, and only the directory was filling
+	 * these buckets then.
+	 *
+	 * @param object $entry Transient entry.
+	 * @return string
+	 */
+	private static function source_of( object $entry ): string {
+		$id = (string) ( $entry->id ?? '' );
+
+		return ( '' === $id || 0 === strpos( $id, 'w.org/' ) )
+			? self::DIRECTORY
+			: self::SELF_DECLARED;
+	}
+
+	/**
+	 * The directory slug of each installed plugin, as WordPress understands it.
+	 *
+	 * The folder name is only a guess. Gravity PDF installs into `gravity-pdf`
+	 * and is published as `gravity-forms-pdf-extended`, and asking wordpress.org
+	 * about the folder gets a 404 — which would report a maintained plugin as
+	 * absent from a directory it is in fact in. Core's update check already
+	 * carries the real slug for every plugin the directory recognises, so that
+	 * is used where it exists and the folder name only where it does not.
+	 *
+	 * @return array<string, string> Plugin file => slug.
+	 */
+	private static function slugs_from_transient(): array {
+		$found = array();
+
+		$transient = get_site_transient( 'update_plugins' );
+
+		if ( ! is_object( $transient ) ) {
+			return $found;
+		}
+
+		foreach ( array( 'response', 'no_update' ) as $bucket ) {
+			if ( empty( $transient->{$bucket} ) || ! is_array( $transient->{$bucket} ) ) {
+				continue;
+			}
+
+			foreach ( $transient->{$bucket} as $file => $entry ) {
+				$entry = is_array( $entry ) ? (object) $entry : $entry;
+
+				if ( is_object( $entry ) && ! empty( $entry->slug ) ) {
+					$found[ (string) $file ] = (string) $entry->slug;
+				}
+			}
+		}
+
+		return $found;
+	}
+
+	/**
+	 * The slug to ask wordpress.org about.
+	 *
+	 * @param string                $file  Plugin file.
+	 * @param array<string, string> $known Slugs from the update transient.
+	 * @return string
+	 */
+	private static function slug( string $file, array $known ): string {
+		if ( isset( $known[ $file ] ) && '' !== $known[ $file ] ) {
+			return $known[ $file ];
+		}
+
+		$directory = dirname( $file );
+
+		return ( '.' === $directory ) ? basename( $file, '.php' ) : $directory;
+	}
+
+	/**
 	 * Ask wordpress.org for one plugin's declaration.
 	 *
-	 * @param string $file Plugin file.
-	 * @return string|null|WP_Error The declared version, null when absent, or an
-	 *                              error when the plugin is not hosted there.
+	 * @param string $slug Directory slug.
+	 * @return array{tested: string|null, source: string}|WP_Error The declaration
+	 *                              and who made it, or an error when there is
+	 *                              none to be had.
 	 */
-	private static function look_up( string $file ) {
-		$directory = dirname( $file );
-		$slug      = ( '.' === $directory ) ? basename( $file, '.php' ) : $directory;
+	private static function look_up( string $slug ) {
+		/*
+		 * plugins_api() flattens two opposite answers into the same WP_Error:
+		 * "wordpress.org has no plugin with this slug" and "wordpress.org could
+		 * not be reached". Treating the first as the second is what filled this
+		 * report with "could not be checked" for every commercial plugin on the
+		 * site; treating the second as the first would relabel a whole site's
+		 * plugins as absent during an outage. Only the HTTP status tells them
+		 * apart, and plugins_api() does not report it — so it is read off the
+		 * response as it goes past. A request that never completes does not
+		 * reach this filter at all, which is exactly right: the status stays
+		 * unknown, and so does the verdict.
+		 */
+		$status = null;
+
+		$capture = static function ( $response, $args, $url ) use ( &$status ) {
+			if ( is_string( $url ) && false !== strpos( $url, '://api.wordpress.org/plugins/info/' ) ) {
+				$status = (int) wp_remote_retrieve_response_code( $response );
+			}
+
+			return $response;
+		};
+
+		add_filter( 'http_response', $capture, 10, 3 );
 
 		$api = plugins_api(
 			'plugin_information',
@@ -395,25 +532,53 @@ class Update_Pilot_Compatibility {
 			)
 		);
 
+		remove_filter( 'http_response', $capture, 10 );
+
 		if ( is_wp_error( $api ) ) {
-			return $api;
+			return 404 === $status
+				? new WP_Error( 'update_pilot_not_hosted', 'wordpress.org has no plugin with this slug.' )
+				: $api;
 		}
 
 		/*
-		 * A plugin that ships its own GitHub updater answers plugins_api itself
-		 * — this plugin does exactly that — and marks the payload `external`.
-		 * The reply is its own, not wordpress.org's, so it says nothing about
-		 * whether anyone is still maintaining it.
+		 * A plugin that ships its own updater answers plugins_api itself — this
+		 * plugin does exactly that — and marks the payload `external`. The reply
+		 * is the author's own word rather than the directory's, which is worth
+		 * reading and worth labelling: a maintained plugin outside wordpress.org
+		 * still declares what it was tested against, and refusing to look was
+		 * how every such plugin ended up in this table with nothing to say.
 		 */
-		if ( is_object( $api ) && ! empty( $api->external ) ) {
-			return new WP_Error( 'update_pilot_not_hosted', 'Answered locally by the plugin itself.' );
-		}
+		$source = ( is_object( $api ) && ! empty( $api->external ) )
+			? self::SELF_DECLARED
+			: self::DIRECTORY;
 
 		if ( is_object( $api ) && ! empty( $api->tested ) ) {
-			return (string) $api->tested;
+			return self::answer( (string) $api->tested, $source );
 		}
 
-		return null;
+		/*
+		 * Nothing declared. On wordpress.org that is a fact about a plugin in
+		 * the directory; outside it, there is simply no directory entry to have
+		 * an opinion about, and saying "the author declares nothing" would
+		 * invent a comparison that was never available.
+		 */
+		return self::SELF_DECLARED === $source
+			? new WP_Error( 'update_pilot_not_hosted', 'Answered by the plugin itself, and it declares nothing.' )
+			: self::answer( null, $source );
+	}
+
+	/**
+	 * Shape one lookup result.
+	 *
+	 * @param string|null $tested Declared version, or null when absent.
+	 * @param string      $source Who declared it.
+	 * @return array{tested: string|null, source: string}
+	 */
+	private static function answer( ?string $tested, string $source ): array {
+		return array(
+			'tested' => $tested,
+			'source' => $source,
+		);
 	}
 
 	/**
@@ -545,6 +710,29 @@ class Update_Pilot_Compatibility {
 	 * @return string
 	 */
 	public static function describe( array $row ): string {
+		$note = self::phrase( $row );
+
+		/*
+		 * Said in the same breath as the figure, never separately. A plugin
+		 * outside wordpress.org declares this about itself, and the sentence
+		 * has to carry that or the table claims a third party's word for it.
+		 */
+		if ( self::SELF_DECLARED === ( $row['source'] ?? self::DIRECTORY )
+			&& in_array( (string) ( $row['status'] ?? '' ), array( self::CURRENT, self::BEHIND ), true )
+		) {
+			return $note . ' ' . __( '(declared by the plugin itself, not by wordpress.org)', 'update-pilot' );
+		}
+
+		return $note;
+	}
+
+	/**
+	 * The sentence itself, before any attribution.
+	 *
+	 * @param array $row Report row.
+	 * @return string
+	 */
+	private static function phrase( array $row ): string {
 		$status = (string) ( $row['status'] ?? self::UNKNOWN );
 		$tested = $row['tested'] ?? null;
 		$behind = $row['behind'] ?? null;

@@ -164,6 +164,81 @@ check( $first, Update_Pilot_Compatibility::fingerprint( $report ), 'plugins outs
 $report['b/b.php']['tested'] = '6.7';
 check( true, $first !== Update_Pilot_Compatibility::fingerprint( $report ), 'but a changed declaration does' );
 
+echo "\n== Whose declaration it is ==\n";
+
+/*
+ * describe() is the only place the distinction is visible, so it is the only
+ * place worth asserting it. The two translation functions are stubbed to the
+ * identity, which is what they do on an untranslated site anyway.
+ */
+if ( ! function_exists( '__' ) ) {
+	/**
+	 * Stub.
+	 *
+	 * @param string $text   Text.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	function __( string $text, string $domain = 'default' ): string {
+		return $text;
+	}
+
+	/**
+	 * Stub.
+	 *
+	 * @param string $single Singular.
+	 * @param string $plural Plural.
+	 * @param int    $number Count.
+	 * @param string $domain Text domain.
+	 * @return string
+	 */
+	function _n( string $single, string $plural, int $number, string $domain = 'default' ): string {
+		return 1 === $number ? $single : $plural;
+	}
+}
+
+$from_org = array_merge(
+	Update_Pilot_Compatibility::classify( '6.5', $current, $branches, $default ),
+	array( 'source' => Update_Pilot_Compatibility::DIRECTORY )
+);
+
+$from_self = array_merge(
+	Update_Pilot_Compatibility::classify( '6.5', $current, $branches, $default ),
+	array( 'source' => Update_Pilot_Compatibility::SELF_DECLARED )
+);
+
+check(
+	'Tested up to WordPress 6.5 — 5 releases behind',
+	Update_Pilot_Compatibility::describe( $from_org ),
+	'wordpress.org speaks for itself and needs no attribution'
+);
+
+check(
+	'Tested up to WordPress 6.5 — 5 releases behind (declared by the plugin itself, not by wordpress.org)',
+	Update_Pilot_Compatibility::describe( $from_self ),
+	'a plugin speaking about itself says so'
+);
+
+// A row from before this field existed must not gain an attribution it never had.
+unset( $from_org['source'] );
+
+check(
+	'Tested up to WordPress 6.5 — 5 releases behind',
+	Update_Pilot_Compatibility::describe( $from_org ),
+	'a cached row with no source is treated as the directory'
+);
+
+check(
+	'Not hosted on wordpress.org, so there is no declaration to read',
+	Update_Pilot_Compatibility::describe(
+		array(
+			'status' => Update_Pilot_Compatibility::NOT_HOSTED,
+			'source' => Update_Pilot_Compatibility::SELF_DECLARED,
+		)
+	),
+	'a row with nothing to declare is not attributed to anybody'
+);
+
 printf( "\n%d checks, %d failures\n", $tests_run, $tests_failed );
 
 exit( $tests_failed > 0 ? 1 : 0 );

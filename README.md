@@ -135,6 +135,28 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.7 - 2026-08-21
+
+The menu opened on a form instead of on the answer.
+
+- **Status** is now the screen the Update Pilot menu lands on, and the first entry in both the submenu and the row of tabs. Settings is where a site is set up, once; Status is where it is read, every time
+- The **Pending updates** table moved out of a tab of its own and into **Schedule**, the section the screen opens on. What is held back, and how many days are left on each delay, is now the first thing the screen says rather than something behind a click
+- Settings keeps its `page=update-pilot` address, so the plugin's own Settings link and any bookmark still land where they did
+
+The compatibility report called a plugin's absence from wordpress.org a failure to check it.
+
+- `plugins_api()` returns the same `WP_Error` for two opposite answers: "wordpress.org has no plugin with this slug" and "wordpress.org could not be reached". Only the first is a fact, and only the HTTP status separates them — 404 against everything else — so the status is now read off the response as it goes past. A site of 68 plugins, most of them commercial, reported 39 of them as **Could not be checked**; they are simply not in the directory, and now say so
+- A transport failure never reaches that point, so an outage still cannot relabel a whole site's plugins as absent from a directory nobody managed to ask — the verdict stays unknown, which is what it is
+- The slug asked about comes from core's update check where it exists, not from the folder name. Gravity PDF installs into `gravity-pdf` and is published as `gravity-forms-pdf-extended`; the folder name got a 404 and the plugin was written off unread
+- The summary line counts the plugins that genuinely could not be checked. Four numbers that added up to 29 of 68 installed plugins, and said nothing about the other 39, was the whole complaint
+
+A plugin distributed outside wordpress.org was never asked what it declares.
+
+- The bundled GitHub updater answered `plugins_api` with `tested` set to `get_bloginfo('version')` — "tested against whatever you happen to be running", which is true of nothing. It now returns `TESTED_WP`, the constant that already fed the update transient. The **View details** popup was reporting a version the author never claimed
+- The compatibility report reads that declaration instead of discarding it. A maintained plugin outside the directory still says what it was tested against, and refusing to look was why every such plugin sat in the table with nothing to say
+- It is attributed, never merged: a self-declared figure is followed by *(declared by the plugin itself, not by wordpress.org)*. Both numbers are written by the same hand and verified by nobody, but one of them is said with no third party in the room, and the table should not blur that
+- A plugin outside the directory that declares nothing at all is still reported as not hosted, not as an author who forgot — there is no directory entry to have an opinion about
+
 ### 1.1.6 - 2026-08-18
 
 Notices sat inside the column, but not aligned with it.

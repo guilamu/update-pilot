@@ -546,6 +546,13 @@ msgstr "Aucune vérification n’a encore eu lieu. Elle se fait une fois par jou
 msgid "%1$d up to date, %2$d behind, %3$d with nothing declared, %4$d not hosted on wordpress.org."
 msgstr "%1$d à jour, %2$d en retard, %3$d sans déclaration, %4$d non hébergées sur wordpress.org."
 
+#.translators: %d: number of plugins.
+#: includes/class-admin.php:1587
+msgid "%d could not be checked, because wordpress.org did not answer for it."
+msgid_plural "%d could not be checked, because wordpress.org did not answer for them."
+msgstr[0] "%d n’a pas pu être vérifiée, car wordpress.org n’a pas répondu à son sujet."
+msgstr[1] "%d n’ont pas pu être vérifiées, car wordpress.org n’a pas répondu à leur sujet."
+
 #: includes/class-admin.php:1276
 msgid "This reads what each author declares, not what actually works. A stale declaration means nobody may be maintaining the plugin — which is what matters the day a vulnerability is found in it."
 msgstr "Ceci lit ce que déclare chaque auteur, pas ce qui fonctionne réellement. Une déclaration qui n’est plus tenue à jour signifie que plus personne ne s’occupe peut-être de l’extension — et c’est ce qui compte le jour où une faille y est découverte."
@@ -591,6 +598,10 @@ msgstr "Aucune version « testée jusqu’à » déclarée par l’auteur"
 #: includes/class-compatibility.php:534
 msgid "Not hosted on wordpress.org, so there is no declaration to read"
 msgstr "Non hébergée sur wordpress.org : il n’y a aucune déclaration à lire"
+
+#: includes/class-compatibility.php:723
+msgid "(declared by the plugin itself, not by wordpress.org)"
+msgstr "(déclaration de l’extension elle-même, pas de wordpress.org)"
 
 #: includes/class-compatibility.php:538
 msgid "Could not be checked"

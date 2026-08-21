@@ -29,9 +29,23 @@ defined( 'ABSPATH' ) || exit;
 class Update_Pilot_Admin {
 
 	/**
-	 * Top-level menu slug.
+	 * The settings screen's slug.
+	 *
+	 * Kept as 'update-pilot' although the top-level menu now points elsewhere:
+	 * it is the slug the plugin's own action link and any bookmark already use,
+	 * and WordPress is perfectly happy with a submenu whose slug differs from
+	 * its parent's.
 	 */
 	public const MENU = 'update-pilot';
+
+	/**
+	 * Top-level menu slug — the screen the menu lands on.
+	 *
+	 * Status, not Settings. Settings is where a site is set up, once; Status is
+	 * where it is read, every time. Opening the menu should answer "what is
+	 * happening?" rather than reopen a form that is already correct.
+	 */
+	public const MENU_ROOT = 'update-pilot-status';
 
 	/**
 	 * Register hooks.
@@ -70,14 +84,28 @@ class Update_Pilot_Admin {
 			__( 'Update Pilot', 'update-pilot' ),
 			__( 'Update Pilot', 'update-pilot' ),
 			$capability,
-			self::MENU,
-			array( __CLASS__, 'render_settings' ),
+			self::MENU_ROOT,
+			array( __CLASS__, 'render_status' ),
 			'dashicons-update',
 			80
 		);
 
+		/*
+		 * Registered in the order they are shown, and in the same order as
+		 * screens() — the submenu and the row of tabs are the same list read
+		 * twice, so one cannot drift from the other.
+		 */
 		add_submenu_page(
-			self::MENU,
+			self::MENU_ROOT,
+			__( 'Status', 'update-pilot' ),
+			__( 'Status', 'update-pilot' ),
+			$capability,
+			self::MENU_ROOT,
+			array( __CLASS__, 'render_status' )
+		);
+
+		add_submenu_page(
+			self::MENU_ROOT,
 			__( 'Settings', 'update-pilot' ),
 			__( 'Settings', 'update-pilot' ),
 			$capability,
@@ -86,7 +114,7 @@ class Update_Pilot_Admin {
 		);
 
 		add_submenu_page(
-			self::MENU,
+			self::MENU_ROOT,
 			__( 'Exclusions', 'update-pilot' ),
 			__( 'Exclusions', 'update-pilot' ),
 			$capability,
@@ -95,21 +123,12 @@ class Update_Pilot_Admin {
 		);
 
 		add_submenu_page(
-			self::MENU,
+			self::MENU_ROOT,
 			__( 'Log', 'update-pilot' ),
 			__( 'Log', 'update-pilot' ),
 			$capability,
 			'update-pilot-log',
 			array( __CLASS__, 'render_log' )
-		);
-
-		add_submenu_page(
-			self::MENU,
-			__( 'Status', 'update-pilot' ),
-			__( 'Status', 'update-pilot' ),
-			$capability,
-			'update-pilot-status',
-			array( __CLASS__, 'render_status' )
 		);
 	}
 
@@ -168,10 +187,10 @@ class Update_Pilot_Admin {
 	 */
 	private static function screens(): array {
 		return array(
+			self::MENU_ROOT           => __( 'Status', 'update-pilot' ),
 			self::MENU                => __( 'Settings', 'update-pilot' ),
 			'update-pilot-exclusions' => __( 'Exclusions', 'update-pilot' ),
 			'update-pilot-log'        => __( 'Log', 'update-pilot' ),
-			'update-pilot-status'     => __( 'Status', 'update-pilot' ),
 		);
 	}
 
@@ -1258,7 +1277,6 @@ class Update_Pilot_Admin {
 		self::open_page(
 			array(
 				'schedule'      => __( 'Schedule', 'update-pilot' ),
-				'pending'       => __( 'Pending updates', 'update-pilot' ),
 				'environment'   => __( 'Environment', 'update-pilot' ),
 				'compatibility' => __( 'Plugin compatibility', 'update-pilot' ),
 			)
@@ -1272,8 +1290,8 @@ class Update_Pilot_Admin {
 
 		/*
 		 * No heading inside a panel that repeats its own tab: the tab is the
-		 * heading. Only a section within a panel keeps one — "Last 30 days"
-		 * below, which sits under Schedule.
+		 * heading. Only a section within a panel keeps one — "Pending updates"
+		 * and "Last 30 days" below, which both sit under Schedule.
 		 */
 		self::open_panel( 'schedule' );
 
@@ -1304,6 +1322,17 @@ class Update_Pilot_Admin {
 
 		echo '</tbody></table>';
 
+		/*
+		 * Under Schedule rather than behind a tab of its own. This is the
+		 * landing screen, and the question it exists to answer — what is
+		 * waiting, and for how much longer — should be answered without
+		 * anything being clicked first. It reads in time order: the next run
+		 * above, what that run will find here, what the last thirty days did
+		 * below.
+		 */
+		echo '<h2>' . esc_html__( 'Pending updates', 'update-pilot' ) . '</h2>';
+		self::render_pending_section();
+
 		echo '<h2>' . esc_html__( 'Last 30 days', 'update-pilot' ) . '</h2>';
 		echo '<table class="widefat striped"><tbody>';
 		self::status_row( __( 'Updates installed', 'update-pilot' ), (string) $counts['success'] );
@@ -1311,10 +1340,6 @@ class Update_Pilot_Admin {
 		self::status_row( __( 'Rolled back', 'update-pilot' ), (string) $counts['rolled_back'] );
 		echo '</tbody></table>';
 
-		self::close_panel();
-
-		self::open_panel( 'pending' );
-		self::render_pending_section();
 		self::close_panel();
 
 		self::open_panel( 'environment' );
@@ -1546,6 +1571,29 @@ class Update_Pilot_Admin {
 				(int) $counts[ Update_Pilot_Compatibility::NOT_HOSTED ]
 			)
 		);
+
+		/*
+		 * Said out loud rather than left out of the arithmetic. Four numbers
+		 * that did not add up to the number of installed plugins was the whole
+		 * complaint: a site of sixty-eight plugins reported on twenty-nine of
+		 * them and said nothing about the rest.
+		 */
+		if ( $counts[ Update_Pilot_Compatibility::UNKNOWN ] > 0 ) {
+			echo ' ';
+			echo esc_html(
+				sprintf(
+					/* translators: %d: number of plugins. */
+					_n(
+						'%d could not be checked, because wordpress.org did not answer for it.',
+						'%d could not be checked, because wordpress.org did not answer for them.',
+						(int) $counts[ Update_Pilot_Compatibility::UNKNOWN ],
+						'update-pilot'
+					),
+					(int) $counts[ Update_Pilot_Compatibility::UNKNOWN ]
+				)
+			);
+		}
+
 		echo '<br>';
 		echo esc_html__( 'This reads what each author declares, not what actually works. A stale declaration means nobody may be maintaining the plugin — which is what matters the day a vulnerability is found in it.', 'update-pilot' );
 		echo '</p>';

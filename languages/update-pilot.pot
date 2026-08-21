@@ -545,6 +545,13 @@ msgstr ""
 msgid "%1$d up to date, %2$d behind, %3$d with nothing declared, %4$d not hosted on wordpress.org."
 msgstr ""
 
+#. translators: %d: number of plugins.
+#: includes/class-admin.php:1587
+msgid "%d could not be checked, because wordpress.org did not answer for it."
+msgid_plural "%d could not be checked, because wordpress.org did not answer for them."
+msgstr[0] ""
+msgstr[1] ""
+
 #: includes/class-admin.php:1276
 msgid "This reads what each author declares, not what actually works. A stale declaration means nobody may be maintaining the plugin — which is what matters the day a vulnerability is found in it."
 msgstr ""
@@ -589,6 +596,10 @@ msgstr ""
 
 #: includes/class-compatibility.php:534
 msgid "Not hosted on wordpress.org, so there is no declaration to read"
+msgstr ""
+
+#: includes/class-compatibility.php:723
+msgid "(declared by the plugin itself, not by wordpress.org)"
 msgstr ""
 
 #: includes/class-compatibility.php:538
