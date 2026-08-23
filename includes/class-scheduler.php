@@ -443,8 +443,10 @@ class Update_Pilot_Scheduler {
 			define( 'UPDATE_PILOT_AUTOUPDATE', true );
 		}
 
-		// Read by Update_Pilot_Listeners::trigger_source(), so the log says this
-		// was forced by hand rather than claiming the schedule chose it.
+		// Read by the listeners when they write the log entry, so it says this was
+		// forced by hand rather than claiming the schedule chose it. Both paths
+		// matter: an update WordPress installs reaches the log through
+		// automatic_updates_complete, not through trigger_source().
 		if ( ! defined( 'UPDATE_PILOT_FORCED' ) ) {
 			define( 'UPDATE_PILOT_FORCED', true );
 		}

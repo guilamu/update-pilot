@@ -135,121 +135,73 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.8 - 2026-08-23
+
+- An update forced by hand from the Status screen was logged as **Automatic**. The marker saying a person asked for it was never read on the path that writes the entry, so **Forced by hand** — a label offered since 1.1.0 — could not appear. The marker is now read where the entry is actually written
+- Entries already in the log keep the source they were written with: the column is stored at the time of the update, not worked out again when the log is read
+
 ### 1.1.7 - 2026-08-21
 
-The menu opened on a form instead of on the answer.
-
-- **Status** is now the screen the Update Pilot menu lands on, and the first entry in both the submenu and the row of tabs. Settings is where a site is set up, once; Status is where it is read, every time
-- The **Pending updates** table moved out of a tab of its own and into **Schedule**, the section the screen opens on. What is held back, and how many days are left on each delay, is now the first thing the screen says rather than something behind a click
-- Settings keeps its `page=update-pilot` address, so the plugin's own Settings link and any bookmark still land where they did
-
-The compatibility report called a plugin's absence from wordpress.org a failure to check it.
-
-- `plugins_api()` returns the same `WP_Error` for two opposite answers: "wordpress.org has no plugin with this slug" and "wordpress.org could not be reached". Only the first is a fact, and only the HTTP status separates them — 404 against everything else — so the status is now read off the response as it goes past. A site of 68 plugins, most of them commercial, reported 39 of them as **Could not be checked**; they are simply not in the directory, and now say so
-- A transport failure never reaches that point, so an outage still cannot relabel a whole site's plugins as absent from a directory nobody managed to ask — the verdict stays unknown, which is what it is
-- The slug asked about comes from core's update check where it exists, not from the folder name. Gravity PDF installs into `gravity-pdf` and is published as `gravity-forms-pdf-extended`; the folder name got a 404 and the plugin was written off unread
-- The summary line counts the plugins that genuinely could not be checked. Four numbers that added up to 29 of 68 installed plugins, and said nothing about the other 39, was the whole complaint
-
-A plugin distributed outside wordpress.org was never asked what it declares.
-
-- The bundled GitHub updater answered `plugins_api` with `tested` set to `get_bloginfo('version')` — "tested against whatever you happen to be running", which is true of nothing. It now returns `TESTED_WP`, the constant that already fed the update transient. The **View details** popup was reporting a version the author never claimed
-- The compatibility report reads that declaration instead of discarding it. A maintained plugin outside the directory still says what it was tested against, and refusing to look was why every such plugin sat in the table with nothing to say
-- It is attributed, never merged: a self-declared figure is followed by *(declared by the plugin itself, not by wordpress.org)*. Both numbers are written by the same hand and verified by nobody, but one of them is said with no third party in the room, and the table should not blur that
-- A plugin outside the directory that declares nothing at all is still reported as not hosted, not as an author who forgot — there is no directory entry to have an opinion about
+- **Status** is the screen the menu opens on, and **Pending updates** moved into it rather than sitting behind a tab. Settings keeps its `page=update-pilot` address
+- The compatibility report no longer calls a plugin's absence from wordpress.org a failure to check it: `plugins_api()` returns the same error for both, so the 404 is now read off the response. The slug comes from core's update check where it exists, not from the folder name
+- A plugin outside the directory is asked what it declares, and the figure is shown as self-declared rather than merged with wordpress.org's. The bundled GitHub updater stopped answering `tested` with whatever WordPress the site happens to run
 
 ### 1.1.6 - 2026-08-18
 
-Notices sat inside the column, but not aligned with it.
-
-- A bare admin notice carries `margin: 5px 15px 2px` from WordPress, and WordPress takes those side margins back only for notices inside `.wrap` — which these screens deliberately do not use. A notice therefore stood 15px in from the column it belongs to, and 2px above whatever followed. Core's own rule is now applied where the notices actually land
+- A bare admin notice carries core's `margin: 5px 15px 2px`, and core takes the side margins back only inside `.wrap` — which these screens do not use. That rule is now applied where the notices actually land
 
 ### 1.1.5 - 2026-08-18
 
-Admin notices were drawn edge to edge, across a page whose content is centred.
-
-- The `.wp-header-end` marker now sits inside the 800px column. WordPress moves every notice on a screen to just after that marker — ours and any other plugin's — so with it above the column, notices were being lifted out of it and stretched the full width of the page
+- The `.wp-header-end` marker moved inside the 800px column. WordPress moves every notice to just after it, so notices were being lifted out of the column and stretched across the page
 
 ### 1.1.4 - 2026-08-18
 
-Exclusions and Status now have sections of their own, as the settings screen does.
-
-- Exclusions is split into **Plugins** and **Themes**; Status into **Schedule**, **Pending updates**, **Environment** and **Plugin compatibility**
-- A panel no longer repeats its own tab as a heading. **Last 30 days** keeps its heading and sits under Schedule, where it belongs
-- What acts on the whole screen stays outside the sections and reachable from any of them: the save button on Exclusions, and the three buttons under **Actions** on Status
-- As on the settings screen, the sections are a convenience of the browser's: without JavaScript every panel shows at once and the screen is the one long page it was before
+- Exclusions and Status gained sections of their own: **Plugins** and **Themes**; **Schedule**, **Pending updates**, **Environment** and **Plugin compatibility**
+- What acts on the whole screen stays outside the sections and reachable from any of them. Without JavaScript every panel shows at once, as before
 
 ### 1.1.3 - 2026-08-18
 
-The settings screen stood a little tighter than the other three.
-
-- Its title now sits the same distance above its tabs as everywhere else. The second row of tabs makes that header taller, rather than the title moving up to hold the header at a fixed height
+- The settings title now sits the same distance above its tabs as on the other three screens; the second row of tabs makes the header taller instead
 
 ### 1.1.2 - 2026-08-18
 
-An update run from the Status screen left the plugin it had just updated switched off.
-
-- `Plugin_Upgrader::upgrade()` deactivates the plugin it is about to replace, silently, unless the request is a cron one — core's own comment says a browser is then required to switch it back on, and core does that from a path a pass of ours does not take. So **Update now** and **Run an update pass now** installed the new version and left the plugin deactivated. Update Pilot updating itself switched itself off, taking its own menu with it. Both buttons now switch back on whatever the upgrader switched off
-- Scheduled runs were never affected: cron is precisely the case core exempts
-- A plugin that cannot be switched back on again — which normally means the new version is broken — is now reported on screen instead of disappearing quietly. Reactivation runs core's fatal-error check, so a broken release stays off rather than taking the site with it
+- `Plugin_Upgrader::upgrade()` deactivates the plugin it is replacing unless the request is a cron one, so **Update now** and **Run an update pass now** installed the new version and left the plugin off — Update Pilot updating itself took its own menu with it. Both buttons now switch back on whatever the upgrader switched off
+- Scheduled runs were never affected. A plugin that cannot be reactivated, which normally means a broken release, is reported on screen instead of disappearing quietly
 
 ### 1.1.1 - 2026-08-18
 
-The four screens now look like one plugin.
-
-- Exclusions, Log and Status wear the same chrome as the settings screen: the plugin's name over a row of tabs moving between the four screens, the current one underlined, and the same 800px column beneath
-- The settings screen keeps its five sections, now on a second row under the first. That row is still a tablist switching panels in place; the row above it is made of links, and loads a screen
+- Exclusions, Log and Status wear the same chrome as the settings screen: the plugin's name over a row of tabs, the current one underlined, and the same 800px column
 - One list of screens behind both the menu and the tabs, so a screen cannot exist in one and be missing from the other
 
 ### 1.1.0 - 2026-08-18
 
-An update held back can now be installed on the spot, without changing the rule that was holding it.
-
-- **Update now** on each held row of the **Pending updates** table on the Status screen. It applies to that item, on that occasion: nothing is written to the settings, and the next pass judges everything by the rules again
-- WordPress still performs the installation. The pass runs exactly as the scheduled one does, with every other item refused for its duration, so asking for one plugin cannot quietly install three
-- The log records these as **Forced by hand** rather than as automatic, because the schedule did not choose them
-- No button is offered where pressing it would do nothing: a release wordpress.org has withdrawn is refused before the policy is consulted, and the column is absent entirely for a user who may read this screen but not install updates. `WP_AUTO_UPDATE_CORE` still outranks the button
+- **Update now** on each held row of **Pending updates** installs that item on that occasion, without changing the rule holding it: nothing is written to the settings
+- WordPress still performs the installation, with every other item refused for the run's duration. The log records these as **Forced by hand**
+- No button is offered where pressing it would do nothing: withdrawn releases are refused before the policy is consulted, and `WP_AUTO_UPDATE_CORE` still outranks the button
 
 ### 1.0.3 - 2026-08-18
 
-The Status screen reported the version a plugin had yesterday.
-
-- The **Plugin compatibility** table reads each plugin's name and version from the site itself on every load, instead of from the day-long cache. Only the compatibility wordpress.org declares is cached, because only that costs a network request — so a plugin updated since the last check no longer shows its previous version, sometimes for a full day
-- Plugins deleted since the last check are left out of the table rather than listed with a verdict about software that is no longer installed
+- The **Plugin compatibility** table reads each plugin's name and version from the site on every load, so a plugin updated since the last check no longer shows yesterday's version. Only the wordpress.org verdict stays cached, and deleted plugins are left out
 
 ### 1.0.2 - 2026-08-18
 
-Site Health reported a critical security issue on any site where Update Pilot was doing its job, and the plugin could not see its own new releases.
-
-- The imaginary plugin and theme Site Health passes through the eligibility filters are recognised and left to core's own answer, instead of being held back by the maintenance window or the safety delay and reported as broken auto-updates
-- Those invented items no longer have a first sighting written to the state option every time the Site Health screen is opened
-- **Check for updates now** clears the plugin's own twelve-hour cache of the GitHub release before asking WordPress to look again. It forced the core, plugin and theme checks out to the network, then answered them from a cached release — so a new version of Update Pilot itself stayed invisible for up to twelve hours, however often the button was pressed
+- The imaginary plugin and theme Site Health passes through the eligibility filters are left to core's own answer, instead of being held back and reported as broken auto-updates on any site doing its job
+- **Check for updates now** clears the plugin's own twelve-hour cache of the GitHub release first, so a new version of Update Pilot is no longer invisible for up to twelve hours
 
 ### 1.0.1 - 2026-08-17
 
-An update held back by the safety delay was only admitted to on the Exclusions screen, and only as a date. It is now said everywhere, with a countdown.
-
-- The Exclusions screen counts the days left as well as naming the date a held release comes due
-- A **Pending updates** section on the Status screen lists everything on offer and why each item has or has not been installed
-- The daily available-updates e-mail is split into *Waiting* and *Ready to install*, and gives the reason next to each held update
-- Releases wordpress.org has withdrawn are reported as such instead of appearing eligible, matching what the eligibility filter has always done with them
+- A held update now says why it is waiting and how many days are left: on Exclusions, in a **Pending updates** section on Status, and in the daily e-mail, split into *Waiting* and *Ready to install*
+- Releases wordpress.org has withdrawn are reported as such instead of appearing eligible
 - One shared collector behind all three, so the screens and the e-mail cannot drift apart — and none of them starts a delay's countdown by being looked at
 
 ### 1.0.0 - 2026-08-17
 
 Initial release.
 
-- Eligibility engine for plugins, themes, core branches and translations, with per-item exclusions kept in sync with the native auto-update options
-- Releases that wordpress.org has flagged with `disable_autoupdate` — pulled, or found harmful — are never installed, whatever the rest of the policy allows
-- Maintenance window with weekday selection, correct across midnight
-- Scheduled update pass on the plugin's own cron event, leaving every WordPress core event untouched
-- Safety delay of 1 to 90 days from a version's first sighting, covering plugins, themes and core
-- Update log built from `automatic_updates_complete` and `upgrader_process_complete`, with versions before and after, trigger source and outcome
-- E-mail alerts for failed updates, installed updates and available updates, sent one message per recipient so addresses are never disclosed to each other
-- Status screen and Site Health test covering `DISALLOW_FILE_MODS`, `AUTOMATIC_UPDATER_DISABLED`, `WP_AUTO_UPDATE_CORE`, `DISABLE_WP_CRON`, third-party filters, filesystem access, version control, WP-Cron lateness and the recurrence of the core update-check events
-- Compatibility report and optional alert for plugins whose author has stopped declaring support for recent WordPress releases, counted against the real release history; plugins with no declaration, and plugins outside wordpress.org, are reported as such
-- Test e-mail button on the Status screen
-- Non-destructive import of Companion Auto Update settings
-- `manage_update_pilot` capability, grantable to editors and authors; running an update pass additionally requires permission to install updates
+- Eligibility engine for plugins, themes, core branches and translations, with per-item exclusions kept in sync with the native auto-update options; releases wordpress.org has flagged `disable_autoupdate` are never installed
+- Maintenance window correct across midnight, weekday exclusions, a scheduled pass on the plugin's own cron event leaving core's events untouched, and a safety delay of 1 to 90 days from a version's first sighting
+- Update log built from core's own hooks with versions before and after, trigger source and outcome; e-mail alerts for failed, installed and available updates, one message per recipient
+- Status screen and Site Health test covering the constants, cron lateness and third-party filters; compatibility report for plugins whose author has stopped declaring support; Companion Auto Update import; `manage_update_pilot` capability
 
 ## Security
 

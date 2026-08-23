@@ -302,7 +302,13 @@ class Update_Pilot_Listeners {
 			'name'           => self::display_name( $type, $id, $entry ),
 			'from_version'   => $from,
 			'to_version'     => $to,
-			'trigger_source' => 'auto',
+			/*
+			 * WordPress installed this, so the manual and WP-CLI cases cannot
+			 * apply here — but a run somebody forced from the Status screen
+			 * arrives through this same hook, and recording it as automatic
+			 * credits the schedule with a decision a person made.
+			 */
+			'trigger_source' => ( defined( 'UPDATE_PILOT_FORCED' ) && UPDATE_PILOT_FORCED ) ? 'forced' : 'auto',
 			'status'         => $status,
 			'message'        => $message,
 			'timestamp'      => time(),
