@@ -135,6 +135,12 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.1.9 - 2026-08-24
+
+- A release wordpress.org flags `disable_autoupdate` was reported as **withdrawn by wordpress.org**, which it is not. The flag means one thing only — do not install this one unattended. The release stays published and the Extensions screen offers it normally; a plugin genuinely pulled from the directory draws no update offer at all. The row now says wordpress.org has blocked unattended installation of this release
+- **Update now** works on those rows again. It no longer goes through `WP_Automatic_Updater`, which core stops on the flag before any filter of ours is consulted, but through `Plugin_Upgrader` — the supervised install the flag is asking for, and the one the Extensions screen performs. Automatic passes still refuse the release, exactly as before
+- Rebuilt the French translation binary, which had fallen eight strings behind its source
+
 ### 1.1.8 - 2026-08-23
 
 - An update forced by hand from the Status screen was logged as **Automatic**. The marker saying a person asked for it was never read on the path that writes the entry, so **Forced by hand** — a label offered since 1.1.0 — could not appear. The marker is now read where the entry is actually written
@@ -198,7 +204,7 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 Initial release.
 
-- Eligibility engine for plugins, themes, core branches and translations, with per-item exclusions kept in sync with the native auto-update options; releases wordpress.org has flagged `disable_autoupdate` are never installed
+- Eligibility engine for plugins, themes, core branches and translations, with per-item exclusions kept in sync with the native auto-update options; releases wordpress.org has flagged `disable_autoupdate` are never installed unattended, and are offered as a supervised install from the Status screen instead
 - Maintenance window correct across midnight, weekday exclusions, a scheduled pass on the plugin's own cron event leaving core's events untouched, and a safety delay of 1 to 90 days from a version's first sighting
 - Update log built from core's own hooks with versions before and after, trigger source and outcome; e-mail alerts for failed, installed and available updates, one message per recipient
 - Status screen and Site Health test covering the constants, cron lateness and third-party filters; compatibility report for plugins whose author has stopped declaring support; Companion Auto Update import; `manage_update_pilot` capability

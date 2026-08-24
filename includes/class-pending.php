@@ -118,8 +118,8 @@ class Update_Pilot_Pending {
 			case 'core_branch_disabled':
 				return __( 'this branch of WordPress is not updated automatically', 'update-pilot' );
 
-			case 'withdrawn':
-				return __( 'withdrawn by wordpress.org', 'update-pilot' );
+			case 'manual_only':
+				return __( 'wordpress.org has blocked unattended installation of this release', 'update-pilot' );
 
 			case 'unmanaged':
 				return __( 'left to WordPress', 'update-pilot' );
@@ -328,18 +328,29 @@ class Update_Pilot_Pending {
 	 */
 
 	/**
-	 * Whether wordpress.org has withdrawn this release.
+	 * Whether wordpress.org has blocked unattended installation of this release.
 	 *
-	 * The flag is set on a release that has been pulled or found harmful, and
-	 * Update_Pilot_Policy_Filters::decide() refuses it before the policy is even
-	 * consulted. Reporting such an item as eligible would be the one thing these
-	 * screens exist to prevent: a truthful answer to "why has this not
-	 * installed?".
+	 * The `disable_autoupdate` flag says one thing and no more: do not install
+	 * this release with nobody watching. It is not a withdrawal. The release
+	 * stays published and downloadable, the plugin page stays open, and the
+	 * Extensions screen offers it in the ordinary way — a plugin that really had
+	 * been pulled would draw no update offer at all, because the API falls
+	 * silent.
+	 *
+	 * Core reads it the same way, in WP_Automatic_Updater::should_update(): "If
+	 * the `disable_autoupdate` flag is set, override any user-choice, but allow
+	 * filters." Update_Pilot_Policy_Filters::decide() honours that and refuses
+	 * the unattended install before the policy is even consulted, so the item is
+	 * genuinely held and has to be reported as held.
+	 *
+	 * What it must not be reported as is a dead end. Installing it by hand is
+	 * precisely what wordpress.org is asking for, and the Status screen offers a
+	 * button that does that.
 	 *
 	 * @param mixed $offer Raw offer from the transient.
 	 * @return bool
 	 */
-	private static function withdrawn( $offer ): bool {
+	private static function manual_only( $offer ): bool {
 		return is_object( $offer ) && ! empty( $offer->disable_autoupdate );
 	}
 
@@ -364,10 +375,10 @@ class Update_Pilot_Pending {
 	private static function row( string $type, string $item, string $name, ?string $from, ?string $to, $offer, array $settings, DateTimeImmutable $now ): array {
 		$normalised = Update_Pilot_Policy_Filters::normalise( $type, $offer );
 
-		$verdict = self::withdrawn( $offer )
+		$verdict = self::manual_only( $offer )
 			? array(
 				'decision' => Update_Pilot_Policy::DENY,
-				'reason'   => 'withdrawn',
+				'reason'   => 'manual_only',
 			)
 			: Update_Pilot_Policy::evaluate( $normalised, $settings, $now );
 

@@ -546,14 +546,18 @@ class Update_Pilot_Policy_Filters {
 	 */
 	private static function decide( string $type, $update, $item ) {
 		/*
-		 * wordpress.org sets disable_autoupdate on a release that has been pulled
-		 * or found harmful. Core honours it just before calling this filter, and
-		 * its own comment says the flag "overrides any user-choice, but allows
-		 * filters" — so returning true here would push out a release the people
-		 * who published it have withdrawn.
+		 * wordpress.org sets disable_autoupdate on a release it does not want
+		 * installed unattended. Core honours it just before calling this filter,
+		 * and its own comment says the flag "overrides any user-choice, but allows
+		 * filters" — so returning true here would push out on a schedule, with
+		 * nobody watching, the one release wordpress.org asked to be watched.
 		 *
-		 * Update Pilot decides what may update; it does not overrule that. The
-		 * flag can only ever mean no.
+		 * Update Pilot decides what may update automatically; it does not overrule
+		 * that. On this path the flag can only ever mean no.
+		 *
+		 * It is not a refusal of the release itself. Update_Pilot_Scheduler still
+		 * installs it on request, through Plugin_Upgrader — the supervised path
+		 * the Extensions screen uses, which never consults this flag.
 		 */
 		$offer = is_array( $item ) ? (object) $item : $item;
 

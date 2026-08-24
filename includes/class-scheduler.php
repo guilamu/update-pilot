@@ -429,9 +429,13 @@ class Update_Pilot_Scheduler {
 	 *
 	 * WordPress still installs the update. The pass runs exactly as the scheduled
 	 * one does, with a filter that admits this item and refuses every other, so
-	 * asking for one plugin cannot quietly install three. A release wordpress.org
-	 * has withdrawn is refused before the policy is consulted and cannot be
-	 * forced from here at all — the Status screen offers no button for one.
+	 * asking for one plugin cannot quietly install three.
+	 *
+	 * One case cannot travel that road at all. Core kills a release flagged
+	 * disable_autoupdate inside WP_Automatic_Updater::should_update(), before any
+	 * filter of ours is consulted, so a pass would report success and do nothing.
+	 * That flag asks for a supervised install rather than forbidding the release,
+	 * and install_supervised() gives it exactly that.
 	 *
 	 * @param string $type Item type: 'plugin', 'theme' or 'core'.
 	 * @param string $item Item identifier, as Update_Pilot_Pending reports it.
@@ -439,6 +443,12 @@ class Update_Pilot_Scheduler {
 	 *                            switch back on. See restore_active_plugins().
 	 */
 	public static function run_item( string $type, string $item ): array {
+		self::force_update_checks();
+
+		if ( self::is_manual_only( $type, $item ) ) {
+			return self::install_supervised( $type, $item );
+		}
+
 		if ( ! defined( 'UPDATE_PILOT_AUTOUPDATE' ) ) {
 			define( 'UPDATE_PILOT_AUTOUPDATE', true );
 		}
@@ -476,8 +486,6 @@ class Update_Pilot_Scheduler {
 			add_filter( 'allow_dev_auto_core_updates', '__return_true', PHP_INT_MAX );
 		}
 
-		self::force_update_checks();
-
 		$active_before = self::active_plugins();
 
 		wp_maybe_auto_update();
@@ -489,6 +497,79 @@ class Update_Pilot_Scheduler {
 			remove_filter( 'allow_major_auto_core_updates', '__return_true', PHP_INT_MAX );
 			remove_filter( 'allow_dev_auto_core_updates', '__return_true', PHP_INT_MAX );
 		}
+
+		return self::restore_active_plugins( $active_before );
+	}
+
+	/**
+	 * Whether wordpress.org has blocked unattended installation of this item.
+	 *
+	 * Read back from Update_Pilot_Pending rather than from the transient direct,
+	 * so that the answer the Status screen printed and the road taken here can
+	 * never disagree about the same item.
+	 *
+	 * @param string $type Item type.
+	 * @param string $item Item identifier.
+	 * @return bool
+	 */
+	private static function is_manual_only( string $type, string $item ): bool {
+		foreach ( Update_Pilot_Pending::all() as $row ) {
+			if ( $type === ( $row['type'] ?? '' ) && $item === (string) ( $row['item'] ?? '' ) ) {
+				return 'manual_only' === ( $row['reason'] ?? '' );
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Install one item the way the Extensions screen does.
+	 *
+	 * Plugin_Upgrader and Theme_Upgrader never read disable_autoupdate; only
+	 * WP_Automatic_Updater does. So this is not a way around the flag, it is the
+	 * thing the flag asks for — a person, at the keyboard, who has read the row
+	 * saying wordpress.org wants this one watched.
+	 *
+	 * UPDATE_PILOT_AUTOUPDATE is deliberately left undefined here. It is what
+	 * tells the listeners to expect their report from automatic_updates_complete,
+	 * which this road never fires; leaving it unset lets upgrader_process_complete
+	 * write the log entry instead. UPDATE_PILOT_FORCED is still set, so the entry
+	 * says a person asked for this rather than crediting the schedule.
+	 *
+	 * Only plugins and themes arrive here. Core is offered no button for this
+	 * reason, because there is no equivalent supervised path of ours for core.
+	 *
+	 * @param string $type Item type: 'plugin' or 'theme'.
+	 * @param string $item Item identifier.
+	 * @return array<int, string> Plugins the install switched off and could not
+	 *                            switch back on. See restore_active_plugins().
+	 */
+	private static function install_supervised( string $type, string $item ): array {
+		if ( ! defined( 'UPDATE_PILOT_FORCED' ) ) {
+			define( 'UPDATE_PILOT_FORCED', true );
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/admin.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+		$skin = new Automatic_Upgrader_Skin();
+
+		switch ( $type ) {
+			case 'plugin':
+				$upgrader = new Plugin_Upgrader( $skin );
+				break;
+
+			case 'theme':
+				$upgrader = new Theme_Upgrader( $skin );
+				break;
+
+			default:
+				return array();
+		}
+
+		$active_before = self::active_plugins();
+
+		$upgrader->upgrade( $item );
 
 		return self::restore_active_plugins( $active_before );
 	}

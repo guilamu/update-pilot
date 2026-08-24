@@ -983,8 +983,8 @@ msgid "this branch of WordPress is not updated automatically"
 msgstr "cette branche de WordPress n’est pas mise à jour automatiquement"
 
 #: includes/class-pending.php:122
-msgid "withdrawn by wordpress.org"
-msgstr "retirée par wordpress.org"
+msgid "wordpress.org has blocked unattended installation of this release"
+msgstr "wordpress.org interdit l’installation sans surveillance de cette version"
 
 #: includes/class-pending.php:125
 msgid "left to WordPress"

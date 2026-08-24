@@ -434,11 +434,16 @@ class Update_Pilot_Admin {
 	}
 
 	/**
-	 * Whether an item is on offer, held back, and may be forced.
+	 * Whether an item is on offer, held back, and may be installed on request.
 	 *
-	 * A withdrawn release is refused by the eligibility filter before the policy
-	 * is consulted, so a button for one would do nothing at all. Saying so is
-	 * better than a button that lies.
+	 * Everything our own policy holds back can be released by hand: that is what
+	 * the button is for. A release wordpress.org has flagged disable_autoupdate is
+	 * held by somebody else's rule, and the button means something narrower there
+	 * — not "overrule wordpress.org" but "install it the supervised way it asked
+	 * for", which Update_Pilot_Scheduler does through Plugin_Upgrader.
+	 *
+	 * That supervised path exists for plugins and themes. A core release under the
+	 * same flag has none, so no button is offered for one.
 	 *
 	 * @param string $type Item type.
 	 * @param string $item Item identifier.
@@ -450,7 +455,15 @@ class Update_Pilot_Admin {
 				continue;
 			}
 
-			return Update_Pilot_Pending::is_held( $row ) && 'withdrawn' !== ( $row['reason'] ?? '' );
+			if ( ! Update_Pilot_Pending::is_held( $row ) ) {
+				return false;
+			}
+
+			if ( 'manual_only' === ( $row['reason'] ?? '' ) ) {
+				return in_array( $type, array( 'plugin', 'theme' ), true );
+			}
+
+			return true;
 		}
 
 		return false;
@@ -1506,11 +1519,12 @@ class Update_Pilot_Admin {
 	/**
 	 * The action cell of one pending row.
 	 *
-	 * A button appears only where pressing it would do something: the item has
-	 * to be held back by a rule of ours, and this user has to be allowed to
-	 * install that kind of update. An eligible item needs no button — the next
-	 * pass installs it — and a release wordpress.org has withdrawn is refused
-	 * before the policy is consulted, so no button could lift it.
+	 * A button appears only where pressing it would do something: the item has to
+	 * be held back, and this user has to be allowed to install that kind of
+	 * update. An eligible item needs no button — the next pass installs it.
+	 * is_forceable() holds the rest of the rule, including what a
+	 * disable_autoupdate flag from wordpress.org does and does not permit, so the
+	 * two can never drift apart and offer a button the handler then refuses.
 	 *
 	 * @param array $row Row from Update_Pilot_Pending.
 	 * @return void
@@ -1519,7 +1533,7 @@ class Update_Pilot_Admin {
 		$type = (string) ( $row['type'] ?? '' );
 		$item = (string) ( $row['item'] ?? '' );
 
-		if ( ! Update_Pilot_Pending::is_held( $row ) || 'withdrawn' === ( $row['reason'] ?? '' ) || ! self::can_install( $type ) ) {
+		if ( ! self::is_forceable( $type, $item ) || ! self::can_install( $type ) ) {
 			echo '<td>—</td>';
 
 			return;

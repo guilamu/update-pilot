@@ -982,7 +982,7 @@ msgid "this branch of WordPress is not updated automatically"
 msgstr ""
 
 #: includes/class-pending.php:122
-msgid "withdrawn by wordpress.org"
+msgid "wordpress.org has blocked unattended installation of this release"
 msgstr ""
 
 #: includes/class-pending.php:125
