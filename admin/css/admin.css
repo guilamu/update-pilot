@@ -306,7 +306,7 @@ a.upilot-tab[aria-current="page"] {
 /* What — the one that has to hold a name of any length. */
 .update-pilot .upilot-log-table th:nth-child(2),
 .update-pilot .upilot-log-table td:nth-child(2) {
-	width: 33%;
+	width: 40%;
 }
 
 /* Versions */
@@ -315,17 +315,16 @@ a.upilot-tab[aria-current="page"] {
 	width: 12%;
 }
 
-/* Trigger. Outcome takes what is left, being the one that holds paragraphs. */
+/* Trigger. Outcome takes what is left: a badge and a button. */
 .update-pilot .upilot-log-table th:nth-child(4),
 .update-pilot .upilot-log-table td:nth-child(4) {
 	width: 9%;
 }
 
 /*
- * The outcome cell on one line: the badge and the closed Details toggle sit
- * side by side. What is prose rather than a label — a short message, and the
- * transcript once it is unfolded — takes the cell's full width instead, so it
- * is read across the column rather than in the sliver left beside the badge.
+ * The outcome cell on one line: the badge and the toggle side by side. A
+ * message short enough to stay in the open is prose, not a label, so it drops
+ * to a line of its own rather than squeezing in beside the badge.
  */
 .update-pilot .upilot-log-outcome {
 	display: flex;
@@ -334,24 +333,57 @@ a.upilot-tab[aria-current="page"] {
 	gap: 4px 8px;
 }
 
-.update-pilot .upilot-log-details {
-	min-width: 0;
-}
-
-.update-pilot .upilot-log-outcome > .upilot-muted,
-.update-pilot .upilot-log-details[open] {
+.update-pilot .upilot-log-outcome > .upilot-muted {
 	flex-basis: 100%;
 }
 
-/* The folded-away transcript of a long message (see render_log). */
-.update-pilot .upilot-log-details > summary {
+/* The transcript toggle. A button, made to read as the disclosure it is. */
+.update-pilot .upilot-log-toggle {
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
 	color: #646970;
 	font-size: 12px;
-	cursor: pointer;
+	line-height: 1.6;
 }
 
-.update-pilot .upilot-log-details[open] > summary {
-	margin-bottom: 4px;
+.update-pilot .upilot-log-toggle::before {
+	content: "B8";
+	margin-right: 4px;
+}
+
+.update-pilot .upilot-log-toggle[aria-expanded="true"]::before {
+	content: "BE";
+}
+
+.update-pilot .upilot-log-toggle:hover {
+	color: var( --wp-admin-theme-color, #2271b1 );
+}
+
+.update-pilot .upilot-log-toggle:focus-visible {
+	color: #1d2327;
+	outline: 1px solid #787c82;
+}
+
+/*
+ * The transcript itself: its own row, spanning every column, so that the
+ * upgrader's output is read across the table instead of down the width of the
+ * outcome cell. It sits directly under the row it belongs to, so it carries
+ * no top border of its own.
+ */
+.update-pilot .upilot-log-transcript > td {
+	padding-top: 0;
+	border-top: 0;
+}
+
+/*
+ * Striping, stated rather than counted. An entry is one row or two, so core's
+ * .striped — nth-child on the row — would put two entries in a row on the
+ * same shade; render_log marks the alternate entries itself.
+ */
+.update-pilot .upilot-log-table > tbody > .upilot-alt > td {
+	background-color: #f6f7f7;
 }
 
 /* Outcome badges */

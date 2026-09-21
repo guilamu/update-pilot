@@ -1204,7 +1204,7 @@ class Update_Pilot_Admin {
 			<?php submit_button( __( 'Filter', 'update-pilot' ), 'secondary', '', false ); ?>
 		</form>
 
-		<table class="wp-list-table widefat striped upilot-log-table">
+		<table class="wp-list-table widefat upilot-log-table">
 			<thead>
 				<tr>
 					<th scope="col"><?php esc_html_e( 'When', 'update-pilot' ); ?></th>
@@ -1218,12 +1218,34 @@ class Update_Pilot_Admin {
 			<?php if ( array() === $result['items'] ) : ?>
 				<tr><td colspan="5"><?php esc_html_e( 'Nothing recorded yet.', 'update-pilot' ); ?></td></tr>
 			<?php else : ?>
+				<?php $stripe = 0; ?>
 				<?php foreach ( $result['items'] as $row ) : ?>
 					<?php
 					// Stored in UTC, rendered in the site's timezone. Always sortable.
 					$timestamp = strtotime( (string) $row['occurred_at'] . ' UTC' );
+
+					$message = (string) $row['message'];
+
+					/*
+					 * A failure says in a line why it failed, and that line is the
+					 * reason to read the table at all, so it stays in the open beside
+					 * the outcome. A success carries WordPress's entire upgrader
+					 * transcript, which is worth keeping but would bury every other
+					 * row, so past a line or two it gets a row of its own that opens
+					 * across the table.
+					 */
+					$transcript = '' !== $message && mb_strlen( $message ) > 160;
+					$panel      = 'upilot-log-' . (int) $row['id'];
+
+					/*
+					 * The stripe is counted per entry, not per row: core's .striped
+					 * is nth-child, which would break the moment one entry takes two
+					 * rows. A transcript wears the stripe of the row it belongs to.
+					 */
+					$alt = 0 === $stripe % 2 ? '' : ' upilot-alt';
+					++$stripe;
 					?>
-					<tr>
+					<tr class="upilot-log-row<?php echo esc_attr( $alt ); ?>">
 						<td>
 							<?php
 							/*
@@ -1268,28 +1290,27 @@ class Update_Pilot_Admin {
 							<span class="upilot-status upilot-status-<?php echo esc_attr( (string) $row['status'] ); ?>">
 								<?php echo esc_html( Update_Pilot_Log_Repository::status_label( (string) $row['status'] ) ); ?>
 							</span>
-							<?php
-							$message = (string) $row['message'];
-
-							/*
-							 * A failure says in a line why it failed, and that line is the
-							 * reason to read the table at all, so it stays in the open. A
-							 * success carries WordPress's entire upgrader transcript —
-							 * every step, every download URL — which is worth keeping but
-							 * would bury every other row, so past a line or two it folds
-							 * away instead.
-							 */
-							if ( '' !== $message && mb_strlen( $message ) <= 160 ) :
-								?>
+							<?php if ( '' !== $message && ! $transcript ) : ?>
 								<span class="upilot-muted"><?php echo esc_html( $message ); ?></span>
-							<?php elseif ( '' !== $message ) : ?>
-								<details class="upilot-log-details">
-									<summary><?php esc_html_e( 'Details', 'update-pilot' ); ?></summary>
-									<span class="upilot-muted"><?php echo esc_html( $message ); ?></span>
-								</details>
+							<?php elseif ( $transcript ) : ?>
+								<?php
+								/*
+								 * Open, and the row below it shown, until admin.js closes
+								 * it — so a browser that never runs the script still shows
+								 * everything the page holds.
+								 */
+								?>
+								<button type="button" class="upilot-log-toggle" aria-expanded="true" aria-controls="<?php echo esc_attr( $panel ); ?>">
+									<?php esc_html_e( 'Details', 'update-pilot' ); ?>
+								</button>
 							<?php endif; ?>
 						</td>
 					</tr>
+					<?php if ( $transcript ) : ?>
+						<tr class="upilot-log-transcript<?php echo esc_attr( $alt ); ?>" id="<?php echo esc_attr( $panel ); ?>">
+							<td colspan="5"><span class="upilot-muted"><?php echo esc_html( $message ); ?></span></td>
+						</tr>
+					<?php endif; ?>
 				<?php endforeach; ?>
 			<?php endif; ?>
 			</tbody>

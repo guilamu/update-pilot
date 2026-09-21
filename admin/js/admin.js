@@ -1,10 +1,11 @@
 /**
  * Update Pilot — admin behaviour.
  *
- * Only one job: dim the fields that belong to an option that is currently
- * switched off, so the form says what it will actually do. Nothing here is
- * required for the settings to work — the server validates every value
- * regardless of what the browser did.
+ * Three jobs: dim the fields belonging to an option that is switched off,
+ * switch the tabbed panels, and fold away the Log's transcripts. None of it is
+ * required — the server validates every value regardless of what the browser
+ * did, and without the script the page is simply the long, fully expanded one
+ * it used to be.
  */
 ( function () {
 	'use strict';
@@ -143,11 +144,44 @@
 		activate( initial, false );
 	}
 
+	/**
+	 * The Log's transcripts.
+	 *
+	 * Each one is a row of its own spanning the whole table, so that a wall of
+	 * upgrader output is read across the page rather than down the width of
+	 * one cell. The server renders them open, and they are closed here: a
+	 * browser that never runs this script shows every transcript instead of
+	 * hiding text behind a button it cannot press.
+	 */
+	function initLog() {
+		var toggles = document.querySelectorAll( '.upilot-log-toggle' );
+
+		Array.prototype.forEach.call( toggles, function ( toggle ) {
+			var panel = document.getElementById( toggle.getAttribute( 'aria-controls' ) );
+
+			if ( ! panel ) {
+				return;
+			}
+
+			function show( open ) {
+				toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+				panel.hidden = ! open;
+			}
+
+			toggle.addEventListener( 'click', function () {
+				show( 'true' !== toggle.getAttribute( 'aria-expanded' ) );
+			} );
+
+			show( false );
+		} );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		bind( 'window_enabled', [ 'window_start_hour', 'window_end_hour', 'window_weekdays[]' ] );
 		bind( 'schedule_enabled', [ 'schedule_hour', 'schedule_minute', 'schedule_interval' ] );
 		bind( 'delay_enabled', [ 'delay_days', 'delay_applies_plugins', 'delay_applies_themes', 'delay_applies_core' ] );
 
 		initTabs();
+		initLog();
 	} );
 }() );

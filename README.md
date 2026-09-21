@@ -135,17 +135,21 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.2.2 - 2026-09-21
+
+- A Log transcript now opens in a row of its own, across the whole table, instead of inside the narrow outcome column
+
 ### 1.2.1 - 2026-09-21
 
-- A row of the Log now fits on one line. It took two or three: the timestamp wrapped, the type sat under the name, **Details** sat under the outcome. The timestamp is numeric here — `21/09/26 04:53` rather than the site's own wording, which cost half the width of the row for something that is scanned, not read — the type has moved beside the name, and the toggle beside the outcome. Only a name long enough to fill a third of the row still takes a second line
-- The Log gets a wider column than the other screens, 960px against 800px. That width is for prose; this screen is a five-column table, and no arrangement of it fits in 800px
+- A Log entry fits on one line: numeric timestamp (`21/09/26 04:53`), type beside the name, **Details** beside the outcome. Only an unusually long name still wraps
+- The Log gets a 960px column rather than the 800px the other screens use. That width is for prose; this screen is a five-column table
 
 ### 1.2.0 - 2026-09-21
 
-- The Log broke the page. An entry's outcome carries WordPress's own upgrader transcript, download URLs and all, and an unbroken URL has no place to wrap: the table took the longest one as a column minimum, grew to nearly twice the width of the screen and put a horizontal scrollbar on the whole admin. Those strings now wrap, and the columns are fixed, so opening one row no longer reshuffles the others
-- A transcript longer than a line or two folds away behind **Details**. A failure's reason is short and stays in the open, which is the line worth reading; a success's step-by-step account is kept but no longer buries every other row
-- The **What** column no longer repeats the item's identifier under its name. A plugin's file, a theme's stylesheet: the same words slugified, on almost every row, and the widest thing in the column. The type stays, since the log mixes plugins, themes, WordPress and translations. Searching still matches the identifier, and Exclusions still shows it, which is where it is acted on
-- Every screen gained the side margin it was missing. These screens clear the padding WordPress puts to the left of its content so the header can span the full width, and nothing had put it back: below 840px the column was running into both edges of the window
+- Fixed the Log breaking the page: a download URL in an entry's outcome has nowhere to wrap, so the table grew to twice the width of the screen and scrolled the whole admin sideways
+- A long transcript folds away behind **Details**. A failure's reason is short and stays in the open
+- The **What** column no longer repeats the item's file path under its name. Search still matches it, and Exclusions still shows it
+- Every screen gained the side margin it was missing below 840px
 
 ### 1.1.9 - 2026-08-24
 
