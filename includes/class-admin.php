@@ -521,14 +521,18 @@ class Update_Pilot_Admin {
 	 * edge.
 	 *
 	 * @param array $sections Slug => label for a second row, or empty for none.
+	 * @param bool  $wide     Widen the column past the 800px reading width.
 	 * @return void
 	 */
-	private static function open_page( array $sections = array() ): void {
+	private static function open_page( array $sections = array(), bool $wide = false ): void {
 		echo '<div class="update-pilot upilot-tabbed">';
 
 		self::render_tabs_header( $sections );
 
-		echo '<div class="upilot-tabs-body">';
+		printf(
+			'<div class="upilot-tabs-body%s">',
+			$wide ? ' upilot-tabs-body-wide' : ''
+		);
 
 		/*
 		 * Inside the column, not above it. WordPress moves every admin notice
@@ -1163,7 +1167,11 @@ class Update_Pilot_Admin {
 			)
 		);
 
-		self::open_page();
+		/*
+		 * Wide: this screen is a five-column table, not prose, and the reading
+		 * width the other screens use put every row on two lines.
+		 */
+		self::open_page( array(), true );
 
 		echo '<p class="description">'
 			. esc_html__( 'Every entry comes from WordPress reporting an update it actually performed, with the version before and after. Nothing here is reconstructed from file dates.', 'update-pilot' )
@@ -1217,22 +1225,34 @@ class Update_Pilot_Admin {
 					?>
 					<tr>
 						<td>
-							<?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $timestamp ) ); ?>
+							<?php
+							/*
+							 * Numeric, not the site's date format. Everywhere else in
+							 * the plugin a date is read once, in a sentence, and takes
+							 * the format the site has chosen; here it is the first of
+							 * five columns repeated down a page, where "21 septembre
+							 * 2026 16 h 52 min" costs half the width of the row and is
+							 * scanned rather than read.
+							 */
+							echo esc_html( wp_date( 'd/m/y H:i', (int) $timestamp ) );
+							?>
 						</td>
 						<td>
-							<strong><?php echo esc_html( (string) $row['name'] ); ?></strong><br>
+							<strong><?php echo esc_html( (string) $row['name'] ); ?></strong>
 							<span class="upilot-muted">
 								<?php
 								/*
-								 * The type only. The identifier this row was stored under
-								 * — a plugin's file, a theme's stylesheet — said little the
-								 * name above it had not already said, being the same words
-								 * slugified, and it was the widest thing in the column. The
-								 * search still reads it (see the repository's query), so it
-								 * is no less findable for not being printed, and Exclusions
-								 * still shows it where it is acted on.
+								 * The type only, and beside the name rather than under
+								 * it. The identifier this row was stored under — a
+								 * plugin's file, a theme's stylesheet — said little the
+								 * name had not already said, being the same words
+								 * slugified, and it was the widest thing in the column.
+								 * The search still reads it (see the repository's
+								 * query), so it is no less findable for not being
+								 * printed, and Exclusions still shows it where it is
+								 * acted on.
 								 */
-								echo esc_html( Update_Pilot_Log_Repository::type_label( (string) $row['type'] ) );
+								echo esc_html( '· ' . Update_Pilot_Log_Repository::type_label( (string) $row['type'] ) );
 								?>
 							</span>
 						</td>
@@ -1244,7 +1264,7 @@ class Update_Pilot_Admin {
 							?>
 						</td>
 						<td><?php echo esc_html( Update_Pilot_Log_Repository::source_label( (string) $row['trigger_source'] ) ); ?></td>
-						<td>
+						<td class="upilot-log-outcome">
 							<span class="upilot-status upilot-status-<?php echo esc_attr( (string) $row['status'] ); ?>">
 								<?php echo esc_html( Update_Pilot_Log_Repository::status_label( (string) $row['status'] ) ); ?>
 							</span>
@@ -1261,7 +1281,7 @@ class Update_Pilot_Admin {
 							 */
 							if ( '' !== $message && mb_strlen( $message ) <= 160 ) :
 								?>
-								<br><span class="upilot-muted"><?php echo esc_html( $message ); ?></span>
+								<span class="upilot-muted"><?php echo esc_html( $message ); ?></span>
 							<?php elseif ( '' !== $message ) : ?>
 								<details class="upilot-log-details">
 									<summary><?php esc_html_e( 'Details', 'update-pilot' ); ?></summary>

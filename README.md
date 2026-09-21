@@ -135,6 +135,11 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.2.1 - 2026-09-21
+
+- A row of the Log now fits on one line. It took two or three: the timestamp wrapped, the type sat under the name, **Details** sat under the outcome. The timestamp is numeric here — `21/09/26 04:53` rather than the site's own wording, which cost half the width of the row for something that is scanned, not read — the type has moved beside the name, and the toggle beside the outcome. Only a name long enough to fill a third of the row still takes a second line
+- The Log gets a wider column than the other screens, 960px against 800px. That width is for prose; this screen is a five-column table, and no arrangement of it fits in 800px
+
 ### 1.2.0 - 2026-09-21
 
 - The Log broke the page. An entry's outcome carries WordPress's own upgrader transcript, download URLs and all, and an unbroken URL has no place to wrap: the table took the longest one as a column minimum, grew to nearly twice the width of the screen and put a horizontal scrollbar on the whole admin. Those strings now wrap, and the columns are fixed, so opening one row no longer reshuffles the others

@@ -86,6 +86,16 @@ body.upilot-screen.auto-fold #wpcontent {
 	padding: 0 20px;
 }
 
+/*
+ * The Log asks for this one. It is a five-column table, not prose, and at the
+ * reading width above every row broke onto two or three lines. Wide enough
+ * for a whole row — date, name, versions, trigger, outcome — to fit on one
+ * line, and still inside the content area of a 1280px screen.
+ */
+.upilot-tabs-body-wide {
+	max-width: 960px;
+}
+
 .upilot-tabs-header h1 {
 	display: inline-block;
 	/* 2.25rem below, not Privacy's 1rem: the other half of the height its
@@ -287,24 +297,50 @@ a.upilot-tab[aria-current="page"] {
 	table-layout: fixed;
 }
 
+/* When */
 .update-pilot .upilot-log-table th:nth-child(1),
 .update-pilot .upilot-log-table td:nth-child(1) {
-	width: 14%;
+	width: 11%;
 }
 
+/* What — the one that has to hold a name of any length. */
 .update-pilot .upilot-log-table th:nth-child(2),
 .update-pilot .upilot-log-table td:nth-child(2) {
-	width: 21%;
+	width: 33%;
 }
 
+/* Versions */
 .update-pilot .upilot-log-table th:nth-child(3),
 .update-pilot .upilot-log-table td:nth-child(3) {
+	width: 12%;
+}
+
+/* Trigger. Outcome takes what is left, being the one that holds paragraphs. */
+.update-pilot .upilot-log-table th:nth-child(4),
+.update-pilot .upilot-log-table td:nth-child(4) {
 	width: 9%;
 }
 
-.update-pilot .upilot-log-table th:nth-child(4),
-.update-pilot .upilot-log-table td:nth-child(4) {
-	width: 11%;
+/*
+ * The outcome cell on one line: the badge and the closed Details toggle sit
+ * side by side. What is prose rather than a label — a short message, and the
+ * transcript once it is unfolded — takes the cell's full width instead, so it
+ * is read across the column rather than in the sliver left beside the badge.
+ */
+.update-pilot .upilot-log-outcome {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px 8px;
+}
+
+.update-pilot .upilot-log-details {
+	min-width: 0;
+}
+
+.update-pilot .upilot-log-outcome > .upilot-muted,
+.update-pilot .upilot-log-details[open] {
+	flex-basis: 100%;
 }
 
 /* The folded-away transcript of a long message (see render_log). */
