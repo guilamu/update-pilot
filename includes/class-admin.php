@@ -1196,7 +1196,7 @@ class Update_Pilot_Admin {
 			<?php submit_button( __( 'Filter', 'update-pilot' ), 'secondary', '', false ); ?>
 		</form>
 
-		<table class="wp-list-table widefat striped">
+		<table class="wp-list-table widefat striped upilot-log-table">
 			<thead>
 				<tr>
 					<th scope="col"><?php esc_html_e( 'When', 'update-pilot' ); ?></th>
@@ -1222,8 +1222,18 @@ class Update_Pilot_Admin {
 						<td>
 							<strong><?php echo esc_html( (string) $row['name'] ); ?></strong><br>
 							<span class="upilot-muted">
-								<?php echo esc_html( Update_Pilot_Log_Repository::type_label( (string) $row['type'] ) ); ?>
-								· <?php echo esc_html( (string) $row['item'] ); ?>
+								<?php
+								/*
+								 * The type only. The identifier this row was stored under
+								 * — a plugin's file, a theme's stylesheet — said little the
+								 * name above it had not already said, being the same words
+								 * slugified, and it was the widest thing in the column. The
+								 * search still reads it (see the repository's query), so it
+								 * is no less findable for not being printed, and Exclusions
+								 * still shows it where it is acted on.
+								 */
+								echo esc_html( Update_Pilot_Log_Repository::type_label( (string) $row['type'] ) );
+								?>
 							</span>
 						</td>
 						<td>
@@ -1238,8 +1248,25 @@ class Update_Pilot_Admin {
 							<span class="upilot-status upilot-status-<?php echo esc_attr( (string) $row['status'] ); ?>">
 								<?php echo esc_html( Update_Pilot_Log_Repository::status_label( (string) $row['status'] ) ); ?>
 							</span>
-							<?php if ( ! empty( $row['message'] ) ) : ?>
-								<br><span class="upilot-muted"><?php echo esc_html( (string) $row['message'] ); ?></span>
+							<?php
+							$message = (string) $row['message'];
+
+							/*
+							 * A failure says in a line why it failed, and that line is the
+							 * reason to read the table at all, so it stays in the open. A
+							 * success carries WordPress's entire upgrader transcript —
+							 * every step, every download URL — which is worth keeping but
+							 * would bury every other row, so past a line or two it folds
+							 * away instead.
+							 */
+							if ( '' !== $message && mb_strlen( $message ) <= 160 ) :
+								?>
+								<br><span class="upilot-muted"><?php echo esc_html( $message ); ?></span>
+							<?php elseif ( '' !== $message ) : ?>
+								<details class="upilot-log-details">
+									<summary><?php esc_html_e( 'Details', 'update-pilot' ); ?></summary>
+									<span class="upilot-muted"><?php echo esc_html( $message ); ?></span>
+								</details>
 							<?php endif; ?>
 						</td>
 					</tr>

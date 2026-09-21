@@ -1099,3 +1099,7 @@ msgstr ""
 #: includes/class-admin.php:431
 msgid "WordPress switches a plugin off while it replaces its files, and it could not be switched back on afterwards — which usually means the new version has an error in it. Look at the Plugins screen: what is still deactivated there is what to look at first."
 msgstr ""
+
+#: includes/class-admin.php:1257
+msgid "Details"
+msgstr ""

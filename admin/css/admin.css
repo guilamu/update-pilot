@@ -70,10 +70,20 @@ body.upilot-screen.auto-fold #wpcontent {
 	padding-top: 20px;
 }
 
-/* The 800px column Privacy and Site Health both use below their header. */
+/*
+ * The 800px column Privacy and Site Health both use below their header, with
+ * a gutter of its own. The breathing room core gives every other screen comes
+ * from #wpcontent's left padding, which this screen zeroes out above so the
+ * header can span the full width; below 840px the column stops being narrower
+ * than the screen and its content would otherwise run into both edges. The
+ * padding sits inside the max-width, so the column is still exactly 800px
+ * wherever there is room for it.
+ */
 .upilot-tabs-body {
-	max-width: 800px;
+	box-sizing: border-box;
+	max-width: 840px;
 	margin: 0 auto;
+	padding: 0 20px;
 }
 
 .upilot-tabs-header h1 {
@@ -249,6 +259,63 @@ a.upilot-tab[aria-current="page"] {
 	gap: 8px;
 	align-items: center;
 	margin: 12px 0;
+}
+
+/* Log table */
+
+/*
+ * The outcome message is WordPress's own upgrader transcript, download URLs
+ * left in, and a URL offers nowhere to wrap. An auto-layout table takes such
+ * a string's full length as a column minimum, which pushed this table past
+ * its container and gave the whole screen a horizontal scrollbar. Stated for
+ * every cell rather than that one, so no field grown long later can do it
+ * again; `anywhere` rather than `break-word` because it is the one that also
+ * lowers the min-content width a table measures.
+ */
+.update-pilot .upilot-log-table td {
+	overflow-wrap: anywhere;
+}
+
+/*
+ * Fixed columns, so that opening one row's transcript does not re-measure the
+ * whole table and shuffle every other row's columns under the reader. The
+ * percentages leave the outcome column the widest, since it is the one
+ * holding paragraphs; the rest are sized to their content — a date, a name
+ * and a path, two version numbers, one word.
+ */
+.update-pilot .upilot-log-table {
+	table-layout: fixed;
+}
+
+.update-pilot .upilot-log-table th:nth-child(1),
+.update-pilot .upilot-log-table td:nth-child(1) {
+	width: 14%;
+}
+
+.update-pilot .upilot-log-table th:nth-child(2),
+.update-pilot .upilot-log-table td:nth-child(2) {
+	width: 21%;
+}
+
+.update-pilot .upilot-log-table th:nth-child(3),
+.update-pilot .upilot-log-table td:nth-child(3) {
+	width: 9%;
+}
+
+.update-pilot .upilot-log-table th:nth-child(4),
+.update-pilot .upilot-log-table td:nth-child(4) {
+	width: 11%;
+}
+
+/* The folded-away transcript of a long message (see render_log). */
+.update-pilot .upilot-log-details > summary {
+	color: #646970;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.update-pilot .upilot-log-details[open] > summary {
+	margin-bottom: 4px;
 }
 
 /* Outcome badges */

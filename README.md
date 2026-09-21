@@ -135,6 +135,13 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.2.0 - 2026-09-21
+
+- The Log broke the page. An entry's outcome carries WordPress's own upgrader transcript, download URLs and all, and an unbroken URL has no place to wrap: the table took the longest one as a column minimum, grew to nearly twice the width of the screen and put a horizontal scrollbar on the whole admin. Those strings now wrap, and the columns are fixed, so opening one row no longer reshuffles the others
+- A transcript longer than a line or two folds away behind **Details**. A failure's reason is short and stays in the open, which is the line worth reading; a success's step-by-step account is kept but no longer buries every other row
+- The **What** column no longer repeats the item's identifier under its name. A plugin's file, a theme's stylesheet: the same words slugified, on almost every row, and the widest thing in the column. The type stays, since the log mixes plugins, themes, WordPress and translations. Searching still matches the identifier, and Exclusions still shows it, which is where it is acted on
+- Every screen gained the side margin it was missing. These screens clear the padding WordPress puts to the left of its content so the header can span the full width, and nothing had put it back: below 840px the column was running into both edges of the window
+
 ### 1.1.9 - 2026-08-24
 
 - A release wordpress.org flags `disable_autoupdate` was reported as **withdrawn by wordpress.org**, which it is not. The flag means one thing only — do not install this one unattended. The release stays published and the Extensions screen offers it normally; a plugin genuinely pulled from the directory draws no update offer at all. The row now says wordpress.org has blocked unattended installation of this release
