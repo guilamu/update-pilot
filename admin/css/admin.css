@@ -349,12 +349,12 @@ a.upilot-tab[aria-current="page"] {
 }
 
 .update-pilot .upilot-log-toggle::before {
-	content: "B8";
+	content: "\25b8";
 	margin-right: 4px;
 }
 
 .update-pilot .upilot-log-toggle[aria-expanded="true"]::before {
-	content: "BE";
+	content: "\25be";
 }
 
 .update-pilot .upilot-log-toggle:hover {

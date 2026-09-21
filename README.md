@@ -135,6 +135,10 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.2.3 - 2026-09-21
+
+- Fixed the Details toggle showing `B8` and `BE` instead of its triangle: the character escape in the stylesheet was written wrong
+
 ### 1.2.2 - 2026-09-21
 
 - A Log transcript now opens in a row of its own, across the whole table, instead of inside the narrow outcome column
