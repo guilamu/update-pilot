@@ -517,9 +517,10 @@ msgstr "Mises à jour en attente"
 msgid "No updates are available."
 msgstr "Aucune mise à jour n’est disponible."
 
-#: includes/class-admin.php:1193
-msgid "Nothing is waiting. Every available update is eligible to install."
-msgstr "Rien n’est en attente. Toutes les mises à jour disponibles sont éligibles à l’installation."
+#.translators: %s: date and time.
+#: includes/class-admin.php
+msgid "eligible — next automatic run %s"
+msgstr "éligible — prochain passage automatique le %s"
 
 #: includes/class-admin.php:1199
 msgid "Only the first rule that applies is named. An update that is both outside the maintenance window and still inside its safety delay is reported as waiting for the window, because that is the order the decision is made in."

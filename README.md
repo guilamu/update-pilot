@@ -136,6 +136,10 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.2.5 - 2026-09-23
+
+- Status no longer says "Nothing is waiting" when updates are available: eligible ones are listed with the time of the next automatic run
+
 ### 1.2.4 - 2026-09-23
 
 - The safety delay counts from the wordpress.org publication date when known, not from when this site first saw the version

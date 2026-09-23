@@ -1631,25 +1631,20 @@ class Update_Pilot_Admin {
 		}
 
 		/*
-		 * A row with nothing to explain is one the policy allows outright. When
-		 * every row is like that there is no table worth printing — and saying so
-		 * in a sentence is the same choice the compatibility section makes.
-		 * An unmanaged item does have something to say, so it keeps the table.
+		 * Every offered update is listed, eligible ones included: an eligible
+		 * update is still waiting — for the next automatic run — and hiding the
+		 * table behind "nothing is waiting" said otherwise.
 		 */
-		$explained = array_filter( $rows, static fn( $row ) => '' !== Update_Pilot_Pending::describe( $row ) );
-
-		if ( array() === $explained ) {
-			echo '<p>' . esc_html__( 'Nothing is waiting. Every available update is eligible to install.', 'update-pilot' ) . '</p>';
-
-			return;
-		}
-
-		echo '<p class="description">'
-			. esc_html__( 'Only the first rule that applies is named. An update that is both outside the maintenance window and still inside its safety delay is reported as waiting for the window, because that is the order the decision is made in.', 'update-pilot' )
-			. '</p>';
-
 		// Held back first: they are why anyone opened this section.
 		$held = array_values( array_filter( $rows, array( 'Update_Pilot_Pending', 'is_held' ) ) );
+
+		if ( array() !== $held ) {
+			echo '<p class="description">'
+				. esc_html__( 'Only the first rule that applies is named. An update that is both outside the maintenance window and still inside its safety delay is reported as waiting for the window, because that is the order the decision is made in.', 'update-pilot' )
+				. '</p>';
+		}
+
+		$next_run = self::next_automatic_run();
 
 		$eligible = array_values(
 			array_filter( $rows, static fn( $row ) => ! Update_Pilot_Pending::is_held( $row ) )
@@ -1678,7 +1673,13 @@ class Update_Pilot_Admin {
 			$note = Update_Pilot_Pending::describe( $row );
 
 			if ( '' === $note ) {
-				$note = __( 'eligible', 'update-pilot' );
+				$note = null === $next_run
+					? __( 'eligible', 'update-pilot' )
+					: sprintf(
+						/* translators: %s: date and time. */
+						__( 'eligible — next automatic run %s', 'update-pilot' ),
+						wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $next_run )
+					);
 			}
 
 			echo '<tr>';
@@ -1709,6 +1710,25 @@ class Update_Pilot_Admin {
 				. esc_html__( 'Updating one item now overrides the rule holding it, this once and for that item alone. Nothing is changed in the settings, and the next pass judges everything by the rules again.', 'update-pilot' )
 				. '</p>';
 		}
+	}
+
+	/**
+	 * When the next automatic update run is due: Update Pilot's own scheduled
+	 * pass when there is one, otherwise core's.
+	 *
+	 * @return int|null Timestamp, or null when nothing is scheduled.
+	 */
+	private static function next_automatic_run(): ?int {
+		$next = Update_Pilot_Scheduler::next_run();
+
+		if ( null !== $next ) {
+			return $next;
+		}
+
+		// Core's own automatic updates ride on its version check.
+		$next = wp_next_scheduled( 'wp_version_check' );
+
+		return $next ? (int) $next : null;
 	}
 
 	/**

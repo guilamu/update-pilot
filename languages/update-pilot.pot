@@ -516,8 +516,9 @@ msgstr ""
 msgid "No updates are available."
 msgstr ""
 
-#: includes/class-admin.php:1193
-msgid "Nothing is waiting. Every available update is eligible to install."
+#. translators: %s: date and time.
+#: includes/class-admin.php
+msgid "eligible — next automatic run %s"
 msgstr ""
 
 #: includes/class-admin.php:1199
