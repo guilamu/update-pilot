@@ -561,10 +561,11 @@ class Update_Pilot_Admin {
 	}
 
 	/**
-	 * Whether an item is on offer, held back, and may be installed on request.
+	 * Whether an item is on offer and may be installed on request.
 	 *
-	 * Everything our own policy holds back can be released by hand: that is what
-	 * the button is for. A release wordpress.org has flagged disable_autoupdate is
+	 * Everything on offer can be installed by hand: a held item overriding the
+	 * rule that holds it, an eligible one without waiting for the next automatic
+	 * run. A release wordpress.org has flagged disable_autoupdate is
 	 * held by somebody else's rule, and the button means something narrower there
 	 * — not "overrule wordpress.org" but "install it the supervised way it asked
 	 * for", which Update_Pilot_Scheduler does through Plugin_Upgrader.
@@ -580,10 +581,6 @@ class Update_Pilot_Admin {
 		foreach ( Update_Pilot_Pending::all() as $row ) {
 			if ( $type !== ( $row['type'] ?? '' ) || $item !== (string) ( $row['item'] ?? '' ) ) {
 				continue;
-			}
-
-			if ( ! Update_Pilot_Pending::is_held( $row ) ) {
-				return false;
 			}
 
 			if ( 'manual_only' === ( $row['reason'] ?? '' ) ) {
@@ -614,8 +611,8 @@ class Update_Pilot_Admin {
 			'saved-schedule-failed' => array( 'warning', __( 'Settings saved, but the schedule could not be changed. The previous schedule is still in place — see the Status page.', 'update-pilot' ) ),
 			'checked'               => array( 'success', __( 'WordPress has re-checked for updates.', 'update-pilot' ) ),
 			'ran'                   => array( 'success', __( 'The update pass has run. Anything it did is in the log.', 'update-pilot' ) ),
-			'forced'                => array( 'success', __( 'The update was handed to WordPress, ahead of the rule that was holding it. What happened is in the log.', 'update-pilot' ) ),
-			'forced-gone'           => array( 'warning', __( 'That update is no longer on offer, or is no longer being held back. Nothing was installed.', 'update-pilot' ) ),
+			'forced'                => array( 'success', __( 'The update was handed to WordPress. What happened is in the log.', 'update-pilot' ) ),
+			'forced-gone'           => array( 'warning', __( 'That update is no longer on offer. Nothing was installed.', 'update-pilot' ) ),
 			'left-off'              => array( 'error', __( 'WordPress switches a plugin off while it replaces its files, and it could not be switched back on afterwards — which usually means the new version has an error in it. Look at the Plugins screen: what is still deactivated there is what to look at first.', 'update-pilot' ) ),
 			'migrated'              => array( 'success', __( 'Companion Auto Update settings were imported, and its own data was left untouched. Its schedule was copied into the Scheduled run fields but not switched on — check it before enabling it.', 'update-pilot' ) ),
 			'mail-sent'             => array( 'success', __( 'A test message was handed to WordPress. If it does not arrive, the problem is in how this site sends mail, not in Update Pilot.', 'update-pilot' ) ),
@@ -1707,7 +1704,7 @@ class Update_Pilot_Admin {
 
 		if ( $can_act ) {
 			echo '<p class="description">'
-				. esc_html__( 'Updating one item now overrides the rule holding it, this once and for that item alone. Nothing is changed in the settings, and the next pass judges everything by the rules again.', 'update-pilot' )
+				. esc_html__( 'Updating one item now installs it without waiting for the next automatic run, overriding any rule holding it, this once and for that item alone. Nothing is changed in the settings, and the next pass judges everything by the rules again.', 'update-pilot' )
 				. '</p>';
 		}
 	}
@@ -1734,10 +1731,8 @@ class Update_Pilot_Admin {
 	/**
 	 * The action cell of one pending row.
 	 *
-	 * A button appears only where pressing it would do something: the item has to
-	 * be held back, and this user has to be allowed to install that kind of
-	 * update. An eligible item needs no button — the next pass installs it.
-	 * is_forceable() holds the rest of the rule, including what a
+	 * A button appears only where pressing it would do something: this user has
+	 * to be allowed to install that kind of update. is_forceable() holds the rest of the rule, including what a
 	 * disable_autoupdate flag from wordpress.org does and does not permit, so the
 	 * two can never drift apart and offer a button the handler then refuses.
 	 *

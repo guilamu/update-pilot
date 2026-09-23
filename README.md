@@ -136,6 +136,10 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 
 ## Changelog
 
+### 1.2.6 - 2026-09-23
+
+- **Update now** is offered for every available update, eligible ones included, not only held ones
+
 ### 1.2.5 - 2026-09-23
 
 - Status no longer says "Nothing is waiting" when updates are available: eligible ones are listed with the time of the next automatic run
