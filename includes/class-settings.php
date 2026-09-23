@@ -139,6 +139,7 @@ class Update_Pilot_Settings {
 		return array_merge(
 			array(
 				'first_seen' => array(),
+				'released'   => array(),
 				'last_run'   => 0,
 				'last_error' => null,
 			),
@@ -603,6 +604,7 @@ class Update_Pilot_Settings {
 				self::STATE_OPTION,
 				array(
 					'first_seen' => array(),
+					'released'   => array(),
 					'last_run'   => 0,
 					'last_error' => null,
 				),

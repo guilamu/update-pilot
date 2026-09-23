@@ -38,7 +38,7 @@ class Update_Pilot_Pending {
 	 *     reason: string,
 	 *     decision: string,
 	 *     expires_at: int|null,
-	 *     days_remaining: int|null
+	 *     seconds_remaining: int|null
 	 * }> Plugins, then themes, then core.
 	 */
 	public static function all(): array {
@@ -150,23 +150,47 @@ class Update_Pilot_Pending {
 			wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $row['expires_at'] )
 		);
 
-		$days = (int) ( $row['days_remaining'] ?? 0 );
+		return $held . ' — ' . self::countdown( (int) ( $row['seconds_remaining'] ?? 0 ) );
+	}
 
+	/**
+	 * A remaining wait, in days down to the last day, then in hours.
+	 *
+	 * Rounded up, deliberately: a seven-day delay armed ten minutes ago has
+	 * "7 days left", and a wait ending in six hours has "6 hours left" — not the
+	 * "1 day left" whole days would round it up to.
+	 *
+	 * @param int $seconds Seconds left.
+	 * @return string
+	 */
+	private static function countdown( int $seconds ): string {
 		/*
 		 * A delay that has run out is reported as elapsed rather than delayed, so
-		 * zero only shows up on the boundary itself. "0 days left" would still be
+		 * zero only shows up on the boundary itself. "0 hours left" would still be
 		 * the wrong thing to print there: the wait is over and what remains is the
 		 * next eligible run.
 		 */
-		$countdown = $days > 0
-			? sprintf(
+		if ( $seconds <= 0 ) {
+			return __( 'due now', 'update-pilot' );
+		}
+
+		if ( $seconds > Update_Pilot_Policy::DAY ) {
+			$days = (int) ceil( $seconds / Update_Pilot_Policy::DAY );
+
+			return sprintf(
 				/* translators: %d: number of days. */
 				_n( '%d day left', '%d days left', $days, 'update-pilot' ),
 				$days
-			)
-			: __( 'due now', 'update-pilot' );
+			);
+		}
 
-		return $held . ' — ' . $countdown;
+		$hours = (int) ceil( $seconds / HOUR_IN_SECONDS );
+
+		return sprintf(
+			/* translators: %d: number of hours. */
+			_n( '%d hour left', '%d hours left', $hours, 'update-pilot' ),
+			$hours
+		);
 	}
 
 	/**
@@ -382,13 +406,13 @@ class Update_Pilot_Pending {
 			)
 			: Update_Pilot_Policy::evaluate( $normalised, $settings, $now );
 
-		$expires_at     = null;
-		$days_remaining = null;
+		$expires_at        = null;
+		$seconds_remaining = null;
+		$start             = Update_Pilot_Policy::delay_start( $normalised );
 
-		if ( 'delayed' === $verdict['reason'] && ! empty( $normalised['first_seen'] ) ) {
-			$first_seen     = (int) $normalised['first_seen'];
-			$expires_at     = Update_Pilot_Policy::delay_expires_at( $first_seen, $settings );
-			$days_remaining = Update_Pilot_Policy::days_remaining( $first_seen, $settings, $now );
+		if ( 'delayed' === $verdict['reason'] && null !== $start ) {
+			$expires_at        = Update_Pilot_Policy::delay_expires_at( $start, $settings );
+			$seconds_remaining = Update_Pilot_Policy::seconds_remaining( $start, $settings, $now );
 		}
 
 		return array(
@@ -399,8 +423,8 @@ class Update_Pilot_Pending {
 			'to_version'     => $to,
 			'reason'         => (string) $verdict['reason'],
 			'decision'       => (string) $verdict['decision'],
-			'expires_at'     => $expires_at,
-			'days_remaining' => $days_remaining,
+			'expires_at'        => $expires_at,
+			'seconds_remaining' => $seconds_remaining,
 		);
 	}
 }

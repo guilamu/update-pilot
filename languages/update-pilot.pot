@@ -221,7 +221,7 @@ msgid "Wait before installing a newly released version"
 msgstr ""
 
 #: includes/class-admin.php:562
-msgid "days after the version first appears"
+msgid "days after the version is released"
 msgstr ""
 
 #: includes/class-admin.php:570
@@ -239,7 +239,7 @@ msgid "WordPress core — not recommended: minor releases are usually security f
 msgstr ""
 
 #: includes/class-admin.php:577
-msgid "The clock starts the first time this site is offered a given version, and it applies to plugins, themes and core alike."
+msgid "For plugins and themes from wordpress.org, the clock starts when the version is published there. For everything else, including core, it starts the first time this site is offered that version."
 msgstr ""
 
 #: includes/class-admin.php:587
@@ -1102,4 +1102,16 @@ msgstr ""
 
 #: includes/class-admin.php:1257
 msgid "Details"
+msgstr ""
+
+#. translators: %d: number of hours.
+#: includes/class-pending.php
+msgid "%d hour left"
+msgid_plural "%d hours left"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: why Update Pilot holds the update back, e.g. "held until 24 September 2026 8:32 am — 21 hours left".
+#: includes/class-admin.php
+msgid "Update Pilot: %s."
 msgstr ""

@@ -56,7 +56,8 @@ class Update_Pilot_Policy {
 	 *     @type string      $id         'akismet/akismet.php', 'twentytwentyone', 'core'.
 	 *     @type string|null $version    Offered version, when known.
 	 *     @type int|null    $first_seen Timestamp this version was first offered.
-	 *     @type string|null $branch     'minor', 'major' or 'dev' — core only.
+	 *     @type int|null    $released   Timestamp wordpress.org published it, when known.
+	 *     @type string|null $branch    'minor', 'major' or 'dev' — core only.
 	 * }
 	 * @param array             $settings Plugin settings.
 	 * @param DateTimeImmutable $now      Current time, in the site's timezone.
@@ -280,9 +281,9 @@ class Update_Pilot_Policy {
 			return 'not_applicable';
 		}
 
-		$first_seen = $item['first_seen'] ?? null;
+		$start = self::delay_start( $item );
 
-		if ( empty( $first_seen ) ) {
+		if ( null === $start ) {
 			return 'unknown';
 		}
 
@@ -292,43 +293,61 @@ class Update_Pilot_Policy {
 			return 'elapsed';
 		}
 
-		return ( $now->getTimestamp() - (int) $first_seen ) >= ( $days * self::DAY )
+		return ( $now->getTimestamp() - $start ) >= ( $days * self::DAY )
 			? 'elapsed'
 			: 'waiting';
 	}
 
 	/**
-	 * When a delayed item becomes eligible.
+	 * When the safety delay's clock started for an item.
 	 *
-	 * @param int   $first_seen Timestamp of first sighting.
-	 * @param array $settings   Plugin settings.
-	 * @return int Timestamp.
+	 * The publication date on wordpress.org when it is known, the first sighting
+	 * otherwise — whichever is earlier. A release this site only noticed hours
+	 * after it came out has been in the wild for those hours all the same, and
+	 * the delay exists to let the wild find its bugs. The earlier of the two, not
+	 * the publication date outright: wordpress.org moves last_updated on a mere
+	 * readme edit, which must never lengthen a wait that was already running.
+	 *
+	 * @param array $item Normalised item.
+	 * @return int|null Null when the version has never been observed.
 	 */
-	public static function delay_expires_at( int $first_seen, array $settings ): int {
-		$days = max( 0, (int) ( $settings['delay']['days'] ?? 0 ) );
+	public static function delay_start( array $item ): ?int {
+		$first_seen = (int) ( $item['first_seen'] ?? 0 );
+		$released   = (int) ( $item['released'] ?? 0 );
 
-		return $first_seen + ( $days * self::DAY );
+		if ( $first_seen <= 0 ) {
+			return null;
+		}
+
+		return $released > 0 ? min( $first_seen, $released ) : $first_seen;
 	}
 
 	/**
-	 * How many whole days a delayed item still has to wait.
+	 * When a delayed item becomes eligible.
 	 *
-	 * Rounded up, deliberately. A seven-day delay armed ten minutes ago has six
-	 * days and twenty-three hours to run: "7 days left" is the honest answer,
-	 * floor() would claim 6, and round() would flip between the two halfway
-	 * through every day. The caller does the wording, including the case where
-	 * this returns 0 — the wait is over but the next eligible run has not
-	 * happened yet.
+	 * @param int   $start    Start of the delay, from delay_start().
+	 * @param array $settings Plugin settings.
+	 * @return int Timestamp.
+	 */
+	public static function delay_expires_at( int $start, array $settings ): int {
+		$days = max( 0, (int) ( $settings['delay']['days'] ?? 0 ) );
+
+		return $start + ( $days * self::DAY );
+	}
+
+	/**
+	 * How many seconds a delayed item still has to wait.
 	 *
-	 * @param int               $first_seen Timestamp of first sighting.
-	 * @param array             $settings   Plugin settings.
-	 * @param DateTimeImmutable $now        Current time.
+	 * Seconds, not days: the caller picks the unit. Counting in whole days
+	 * rounded up reported "1 day left" for a wait ending six hours later.
+	 *
+	 * @param int               $start    Start of the delay, from delay_start().
+	 * @param array             $settings Plugin settings.
+	 * @param DateTimeImmutable $now      Current time.
 	 * @return int Never negative.
 	 */
-	public static function days_remaining( int $first_seen, array $settings, DateTimeImmutable $now ): int {
-		$seconds = self::delay_expires_at( $first_seen, $settings ) - $now->getTimestamp();
-
-		return $seconds <= 0 ? 0 : (int) ceil( $seconds / self::DAY );
+	public static function seconds_remaining( int $start, array $settings, DateTimeImmutable $now ): int {
+		return max( 0, self::delay_expires_at( $start, $settings ) - $now->getTimestamp() );
 	}
 
 	/**
@@ -673,6 +692,7 @@ class Update_Pilot_Policy_Filters {
 			'version'    => $version,
 			'branch'     => $branch,
 			'first_seen' => ( null === $version ) ? null : self::first_seen( $type, $id, $version ),
+			'released'   => ( null === $version ) ? null : self::released( $type, $id, $version ),
 		);
 	}
 
@@ -750,6 +770,27 @@ class Update_Pilot_Policy_Filters {
 		$seen = $state['first_seen'][ $key ][ $version ] ?? null;
 
 		return $seen ? (int) $seen : null;
+	}
+
+	/**
+	 * When wordpress.org published a given version, as far as we know.
+	 *
+	 * @param string $type    Item type.
+	 * @param string $id      Item identifier.
+	 * @param string $version Offered version.
+	 * @return int|null Null when unknown, or not a wordpress.org release.
+	 */
+	public static function released( string $type, string $id, string $version ): ?int {
+		if ( '' === $id || '' === $version ) {
+			return null;
+		}
+
+		$state = Update_Pilot_Settings::get_state();
+		$key   = self::state_key( $type, $id );
+
+		$released = (int) ( $state['released'][ $key ][ $version ] ?? 0 );
+
+		return $released > 0 ? $released : null;
 	}
 
 	/**
@@ -861,6 +902,7 @@ class Update_Pilot_Policy_Filters {
 		}
 
 		$sightings = array();
+		$directory = array();
 
 		foreach ( $value->response as $key => $offer ) {
 			$offer = is_array( $offer ) ? (object) $offer : $offer;
@@ -874,6 +916,12 @@ class Update_Pilot_Policy_Filters {
 
 			if ( '' !== $id && '' !== $version ) {
 				$sightings[ $id ] = $version;
+
+				$slug = self::directory_slug( $type, $id, $offer );
+
+				if ( null !== $slug ) {
+					$directory[ $id ] = array( $slug, $version );
+				}
 			}
 		}
 
@@ -881,6 +929,181 @@ class Update_Pilot_Policy_Filters {
 		// the state option once per plugin, which on a site with many pending
 		// updates meant dozens of writes per update check.
 		self::record_sightings( $type, $sightings );
+		self::record_releases( $type, $directory );
+	}
+
+	/*
+	 * ---------------------------------------------------------------------
+	 * Publication dates — an earlier start for the delay clock
+	 * ---------------------------------------------------------------------
+	 */
+
+	/**
+	 * Directory lookups allowed per update check. New releases arrive a few at
+	 * a time; the cap only matters on the first check after installing, when
+	 * every pending update is looked up at once.
+	 */
+	private const RELEASE_LOOKUPS_PER_CHECK = 5;
+
+	/**
+	 * The wordpress.org slug of an offer, when the offer comes from there.
+	 *
+	 * Judged by the package URL: a commercial plugin can reuse a directory slug
+	 * while updating from its own server, and its release date is not ours to
+	 * read off somebody else's listing.
+	 *
+	 * @param string $type  'plugin' or 'theme'.
+	 * @param string $id    Plugin file or stylesheet.
+	 * @param object $offer Offer from the update transient.
+	 * @return string|null
+	 */
+	private static function directory_slug( string $type, string $id, $offer ): ?string {
+		$package = isset( $offer->package ) ? (string) $offer->package : '';
+
+		if ( 0 !== strpos( $package, 'https://downloads.wordpress.org/' ) ) {
+			return null;
+		}
+
+		if ( 'theme' === $type ) {
+			return $id;
+		}
+
+		return ( isset( $offer->slug ) && '' !== (string) $offer->slug ) ? (string) $offer->slug : null;
+	}
+
+	/**
+	 * Look up and store the publication date of each directory release not yet
+	 * dated.
+	 *
+	 * Runs from the update check, which WordPress mostly performs in a cron
+	 * request; each version is looked up once. A lookup that fails to reach
+	 * wordpress.org stores nothing and is tried again at the next check. An
+	 * answer that does not date this exact version stores 0, which means "use
+	 * the first sighting" and is never asked again.
+	 *
+	 * @param string                               $type      'plugin' or 'theme'.
+	 * @param array<string, array{string, string}> $directory Identifier => [slug, version].
+	 * @return void
+	 */
+	private static function record_releases( string $type, array $directory ): void {
+		if ( array() === $directory ) {
+			return;
+		}
+
+		$state   = Update_Pilot_Settings::get_state();
+		$changed = false;
+		$lookups = 0;
+
+		foreach ( $directory as $id => $pair ) {
+			list( $slug, $version ) = $pair;
+
+			$key = self::state_key( $type, (string) $id );
+
+			if ( isset( $state['released'][ $key ][ $version ] ) ) {
+				continue;
+			}
+
+			if ( $lookups >= self::RELEASE_LOOKUPS_PER_CHECK ) {
+				break;
+			}
+
+			++$lookups;
+
+			$released = self::look_up_release( $type, $slug, $version );
+
+			if ( null === $released ) {
+				continue;
+			}
+
+			// Only the version on offer is kept, as for first sightings.
+			$state['released'][ $key ] = array( $version => $released );
+			$changed                   = true;
+		}
+
+		if ( $changed ) {
+			Update_Pilot_Settings::save_state( $state );
+		}
+	}
+
+	/**
+	 * Ask wordpress.org when a version was published.
+	 *
+	 * last_updated dates the latest release, so it only counts when the
+	 * directory's current version is the one on offer.
+	 *
+	 * @param string $type    'plugin' or 'theme'.
+	 * @param string $slug    Directory slug.
+	 * @param string $version Offered version.
+	 * @return int|null Timestamp, 0 when the directory cannot date this version,
+	 *                  null when wordpress.org could not be reached.
+	 */
+	private static function look_up_release( string $type, string $slug, string $version ): ?int {
+		if ( 'theme' === $type ) {
+			if ( ! function_exists( 'themes_api' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/theme.php';
+			}
+
+			$api = themes_api(
+				'theme_information',
+				array(
+					'slug'   => $slug,
+					'fields' => array(
+						'sections'          => false,
+						'tags'              => false,
+						'last_updated_time' => true,
+					),
+				)
+			);
+		} else {
+			if ( ! function_exists( 'plugins_api' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+			}
+
+			$api = plugins_api(
+				'plugin_information',
+				array(
+					'slug'   => $slug,
+					'fields' => array(
+						'sections'     => false,
+						'ratings'      => false,
+						'contributors' => false,
+						'banners'      => false,
+						'icons'        => false,
+						'versions'     => false,
+					),
+				)
+			);
+		}
+
+		if ( is_wp_error( $api ) || ! is_object( $api ) ) {
+			return null;
+		}
+
+		if ( ! isset( $api->version ) || $version !== (string) $api->version ) {
+			return 0;
+		}
+
+		/*
+		 * Plugins: "2026-09-21 6:19am GMT". Themes: last_updated_time, in GMT
+		 * without saying so, or else a bare date — read as the end of that day,
+		 * so that not knowing the hour can only shorten the head start.
+		 */
+		if ( ! empty( $api->last_updated_time ) ) {
+			$released = strtotime( (string) $api->last_updated_time . ' UTC' );
+		} elseif ( ! empty( $api->last_updated ) ) {
+			$raw      = (string) $api->last_updated;
+			$released = preg_match( '/^\d{4}-\d{2}-\d{2}$/', $raw )
+				? strtotime( $raw . ' 23:59:59 UTC' )
+				: strtotime( $raw );
+		} else {
+			$released = false;
+		}
+
+		if ( false === $released || $released <= 0 || $released > time() ) {
+			return 0;
+		}
+
+		return (int) $released;
 	}
 
 	/**

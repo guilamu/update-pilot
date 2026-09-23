@@ -16,7 +16,7 @@ Take command of WordPress auto-updates: choose what updates, schedule when, dela
 - Set a maintenance window — anything Update Pilot manages updates only inside it, including during the update passes WordPress starts on its own; windows may cross midnight. Types you leave unmanaged keep WordPress's own behaviour, window included
 - Exclude days of the week, so "never on a Friday" is one checkbox
 - Ask for an update pass at a chosen hour and recurrence, from hourly to monthly, without taking over any WordPress cron event
-- Hold a new release for 1 to 90 days after it first appears, for plugins, themes and — if you insist — core
+- Hold a new release for 1 to 90 days after publication, for plugins, themes and — if you insist — core
 - See how late WP-Cron actually is, and the exact system cron line to fix it
 
 ## Visibility & Alerts
@@ -111,7 +111,8 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 │   ├── css
 │   │   └── admin.css              # Styles for the four screens
 │   └── js
-│       └── admin.js               # Dims fields whose parent option is off
+│       ├── admin.js               # Dims fields whose parent option is off
+│       └── update-core.js         # Corrects core's auto-update timing on WordPress Updates
 ├── includes
 │   ├── class-settings.php         # Settings and state, validation, native option sync
 │   ├── class-policy.php           # Eligibility engine (pure) and the six core filters
@@ -134,6 +135,12 @@ Version 1.0 manages the current site only and says so on screen. Network-wide se
 ```
 
 ## Changelog
+
+### 1.2.4 - 2026-09-23
+
+- The safety delay counts from the wordpress.org publication date when known, not from when this site first saw the version
+- The last day of a delay is shown in hours ("6 hours left", not "1 day left")
+- For a held update, core's "Automatic update scheduled in…" is replaced by Update Pilot's reason on the Plugins and WordPress Updates screens
 
 ### 1.2.3 - 2026-09-21
 

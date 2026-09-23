@@ -57,6 +57,8 @@ class Update_Pilot_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_dashboard_widget' ) );
 		add_filter( 'admin_body_class', array( __CLASS__, 'filter_body_class' ) );
+		add_filter( 'plugin_auto_update_setting_html', array( __CLASS__, 'filter_plugin_auto_update_html' ), 10, 2 );
+		add_filter( 'theme_auto_update_setting_html', array( __CLASS__, 'filter_theme_auto_update_html' ), 10, 2 );
 
 		add_action( 'admin_post_update_pilot_save_settings', array( __CLASS__, 'handle_save_settings' ) );
 		add_action( 'admin_post_update_pilot_save_exclusions', array( __CLASS__, 'handle_save_exclusions' ) );
@@ -143,6 +145,11 @@ class Update_Pilot_Admin {
 			return;
 		}
 
+		if ( 'update-core.php' === $hook ) {
+			self::enqueue_update_core_notes();
+			return;
+		}
+
 		/*
 		 * Our own screens, plus the dashboard: the widget carries styles of its
 		 * own, and the dashboard's hook is index.php, so matching only on
@@ -174,6 +181,126 @@ class Update_Pilot_Admin {
 		}
 
 		return $classes;
+	}
+
+	/*
+	 * ---------------------------------------------------------------------
+	 * Core's "Automatic update scheduled in …"
+	 * ---------------------------------------------------------------------
+	 *
+	 * Core dates the next automatic update from the next update check, and
+	 * cannot know that Update Pilot will refuse it. For an item we hold back,
+	 * the reason replaces that sentence on the Plugins, network Themes and
+	 * WordPress Updates screens.
+	 */
+
+	/**
+	 * Held items of one type, with the sentence to show for each.
+	 *
+	 * @param string $type 'plugin' or 'theme'.
+	 * @return array<string, string> Identifier => sentence, unescaped.
+	 */
+	private static function held_notes( string $type ): array {
+		static $rows = null;
+
+		if ( null === $rows ) {
+			$rows = Update_Pilot_Pending::all();
+		}
+
+		$notes = array();
+
+		foreach ( Update_Pilot_Pending::index( $rows, $type ) as $item => $row ) {
+			$reason = Update_Pilot_Pending::describe( $row );
+
+			if ( Update_Pilot_Pending::is_held( $row ) && '' !== $reason ) {
+				/* translators: %s: why Update Pilot holds the update back, e.g. "held until 24 September 2026 8:32 am — 21 hours left". */
+				$notes[ (string) $item ] = sprintf( __( 'Update Pilot: %s.', 'update-pilot' ), $reason );
+			}
+		}
+
+		return $notes;
+	}
+
+	/**
+	 * Replace core's sentence in the auto-updates column of a list table.
+	 *
+	 * @param string $html Column markup.
+	 * @param string $note Sentence, unescaped.
+	 * @return string
+	 */
+	private static function replace_auto_update_time( string $html, string $note ): string {
+		$replaced = preg_replace(
+			'#(<div class="auto-update-time[^"]*">).*?(</div>)#s',
+			'${1}' . str_replace( array( '\\', '$' ), array( '\\\\', '\\$' ), esc_html( $note ) ) . '${2}',
+			$html,
+			1
+		);
+
+		return is_string( $replaced ) ? $replaced : $html;
+	}
+
+	/**
+	 * Plugins screen, auto-updates column.
+	 *
+	 * @param string $html        Column markup.
+	 * @param string $plugin_file Plugin file.
+	 * @return string
+	 */
+	public static function filter_plugin_auto_update_html( $html, $plugin_file ) {
+		$notes = self::held_notes( 'plugin' );
+
+		return ( is_string( $html ) && isset( $notes[ (string) $plugin_file ] ) )
+			? self::replace_auto_update_time( $html, $notes[ (string) $plugin_file ] )
+			: $html;
+	}
+
+	/**
+	 * Network Themes screen, auto-updates column.
+	 *
+	 * @param string $html       Column markup.
+	 * @param string $stylesheet Theme stylesheet.
+	 * @return string
+	 */
+	public static function filter_theme_auto_update_html( $html, $stylesheet ) {
+		$notes = self::held_notes( 'theme' );
+
+		return ( is_string( $html ) && isset( $notes[ (string) $stylesheet ] ) )
+			? self::replace_auto_update_time( $html, $notes[ (string) $stylesheet ] )
+			: $html;
+	}
+
+	/**
+	 * WordPress Updates screen: core prints the sentence inline, with no
+	 * filter, so a small script swaps it. It is the exact string core is about
+	 * to print, computed in the same request.
+	 *
+	 * @return void
+	 */
+	private static function enqueue_update_core_notes(): void {
+		if ( ! function_exists( 'wp_get_auto_update_message' ) ) {
+			return;
+		}
+
+		$items = array_filter(
+			array(
+				'upgrade-plugins' => self::held_notes( 'plugin' ),
+				'upgrade-themes'  => self::held_notes( 'theme' ),
+			)
+		);
+
+		if ( array() === $items ) {
+			return;
+		}
+
+		wp_enqueue_script( 'update-pilot-update-core', UPILOT_URL . 'admin/js/update-core.js', array(), UPILOT_VERSION, true );
+		wp_localize_script(
+			'update-pilot-update-core',
+			'updatePilotUpdateCore',
+			array(
+				'core'  => wp_strip_all_tags( wp_get_auto_update_message() ),
+				'items' => $items,
+			)
+		);
 	}
 
 	/**
@@ -751,7 +878,7 @@ class Update_Pilot_Admin {
 								<label>
 									<input type="number" name="delay_days" min="1" max="90" step="1"
 										value="<?php echo esc_attr( (string) $settings['delay']['days'] ); ?>" class="small-text">
-									<?php esc_html_e( 'days after the version first appears', 'update-pilot' ); ?>
+									<?php esc_html_e( 'days after the version is released', 'update-pilot' ); ?>
 								</label>
 							</p>
 
@@ -766,7 +893,7 @@ class Update_Pilot_Admin {
 							</fieldset>
 
 							<p class="description">
-								<?php esc_html_e( 'The clock starts the first time this site is offered a given version, and it applies to plugins, themes and core alike.', 'update-pilot' ); ?>
+								<?php esc_html_e( 'For plugins and themes from wordpress.org, the clock starts when the version is published there. For everything else, including core, it starts the first time this site is offered that version.', 'update-pilot' ); ?>
 							</p>
 						</td>
 					</tr>
